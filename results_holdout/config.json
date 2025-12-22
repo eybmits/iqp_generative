@@ -1,0 +1,17 @@
+{
+  "n": 12,
+  "arch": "D",
+  "layers": 1,
+  "beta": 0.9,
+  "steps": 600,
+  "lr": 0.05,
+  "sigma": 1.0,
+  "num_alpha": 512,
+  "train_m": 1000,
+  "eval_every": 50,
+  "holdout_k": 20,
+  "holdout_pool": 400,
+  "seed": 42,
+  "outdir": "results_holdout",
+  "fig_target": "col"
+}
