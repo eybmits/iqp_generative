@@ -38,16 +38,21 @@ Outputs (outdir/):
   - config.json
 
 Typical usage:
-  python jonas_full_exploration.py \\
-      --n 14 --arch D --layers 1 --beta 0.9 \\
-      --train-m-list 50 100 200 500 1000 2000 \\
-      --seeds 42 43 44 \\
-      --steps 600 --num-alpha 512 --sigma 1.0 \\
-      --Q0 5000 --Qmax 10000 \\
+  python jonas_full_exploration_fixed.py \
+      --n 14 --arch D --layers 1 --beta 0.9 \
+      --train-m-list 50 100 200 500 1000 2000 \
+      --seeds 42 43 44 \
+      --steps 600 --num-alpha 512 --sigma 1.0 \
+      --Q0 5000 --Qmax 10000 \
       --outdir jonas_exploration --fig-target col
 
 Dependencies:
   pip install pennylane numpy matplotlib
+
+Plotting fixes in this version (paper-ready):
+  - Value annotations are offset from the last datapoint (no touching markers/lines).
+  - Long y-axis labels are automatically wrapped to avoid cropping at fixed figure height.
+  - Legends in reference plots (6/7/8) are moved above the axes (not covering data).
 """
 
 import os
@@ -126,8 +131,9 @@ def set_style(fig_target: str = "col") -> None:
             "grid.linestyle": "--",
             "grid.linewidth": 0.6,
 
+            # Keep tight bounding box, but avoid ultra-tiny padding
             "savefig.bbox": "tight",
-            "savefig.pad_inches": 0.02,
+            "savefig.pad_inches": 0.05,
             "pdf.fonttype": 42,
             "ps.fonttype": 42,
             "figure.dpi": 300,
@@ -153,7 +159,7 @@ def set_style(fig_target: str = "col") -> None:
             "lines.linewidth": 2.6,
             "figure.dpi": 220,
             "savefig.bbox": "tight",
-            "savefig.pad_inches": 0.10,
+            "savefig.pad_inches": 0.12,
             "pdf.fonttype": 42,
             "ps.fonttype": 42,
             "axes.spines.top": False,
@@ -465,7 +471,7 @@ def train_one_run(
     kl = kl_divergence(p_star, q_final, support)
 
     # score-spectrum TVD (overall)
-    uniq_s, p_mass = score_spectrum_masses(p_star, scores, support)
+    _, p_mass = score_spectrum_masses(p_star, scores, support)
     _, q_mass = score_spectrum_masses(q_final, scores, support)
     spectrum_tvd = tvd(onp.array(p_mass), onp.array(q_mass))
 
@@ -516,7 +522,7 @@ def train_one_run(
 
 
 # ------------------------------------------------------------------------------
-# 7) Plotting helpers
+# 7) Plotting helpers (layout-safe)
 # ------------------------------------------------------------------------------
 
 def _save_csv(rows: List[Dict], path: str) -> None:
@@ -528,6 +534,72 @@ def _save_csv(rows: List[Dict], path: str) -> None:
         w.writeheader()
         for r in rows:
             w.writerow(r)
+
+def _wrap_label(text: str, width: int = 28) -> str:
+    """
+    Wrap long plain-text axis labels to avoid cropping at fixed figure height.
+    We keep mathtext (contains '$') as-is.
+    """
+    if not isinstance(text, str):
+        return text
+    if "\n" in text:
+        return text
+    if "$" in text:
+        return text
+    t = text.strip()
+    if len(t) <= width:
+        return t
+    # split into two lines at the last space before width
+    cut = t.rfind(" ", 0, width + 1)
+    if cut <= 0:
+        return t
+    return t[:cut] + "\n" + t[cut + 1:]
+
+def _set_ylabel(ax, text: str) -> None:
+    ax.set_ylabel(_wrap_label(text))
+
+def _xlim_with_margin(ax, x: onp.ndarray, xscale: str = "log") -> None:
+    """Add a small right margin so annotations don't hit the frame."""
+    if x.size == 0:
+        return
+    xmin = float(onp.min(x))
+    xmax = float(onp.max(x))
+    if xscale == "log" and xmin > 0:
+        ax.set_xlim(xmin * 0.90, xmax * 1.25)
+    else:
+        r = xmax - xmin
+        ax.set_xlim(xmin - 0.05 * r, xmax + 0.08 * r)
+
+def _annotate_last_value(ax, fig, x_last: float, y_last: float, text: str, color: str) -> None:
+    """
+    Place a value label near (x_last, y_last) but offset so it does not touch the marker/line.
+    Offset direction is chosen based on proximity to the right/top edge.
+    """
+    # Convert data position -> axes coords (0..1) to decide safe direction
+    try:
+        xa, ya = ax.transAxes.inverted().transform(ax.transData.transform((x_last, y_last)))
+    except Exception:
+        xa, ya = 0.9, 0.9
+
+    dx = -28 if xa > 0.80 else 8
+    dy = -14 if ya > 0.85 else 6
+    ha = "right" if dx < 0 else "left"
+    va = "top" if dy < 0 else "bottom"
+
+    ax.annotate(
+        text,
+        xy=(x_last, y_last),
+        xycoords="data",
+        xytext=(dx, dy),
+        textcoords="offset points",
+        ha=ha,
+        va=va,
+        color=color,
+        fontweight="bold",
+        bbox=dict(boxstyle="round,pad=0.15", facecolor="white", edgecolor="none", alpha=0.85),
+        zorder=30,
+        annotation_clip=False,
+    )
 
 def plot_metric_vs_m(
     m_list: List[int],
@@ -551,19 +623,24 @@ def plot_metric_vs_m(
     ax.plot(x, y, color=COLORS["model"], lw=2.0, alpha=0.95)
 
     ax.set_xlabel(r"Training samples $m$")
-    ax.set_ylabel(ylabel)
+    _set_ylabel(ax, ylabel)
+
     if xscale:
         ax.set_xscale(xscale)
     if yscale:
         ax.set_yscale(yscale)
 
+    _xlim_with_margin(ax, x, xscale=xscale)
+
     ax.grid(True, which="both", linestyle="--", alpha=0.12)
     ax.legend(loc="best")
 
     if annotate_last and len(m_list) > 0:
-        ax.text(x[-1], y[-1], f"{y[-1]:.3g}",
-                ha="left", va="bottom", color=COLORS["model"],
-                fontweight="bold")
+        _annotate_last_value(
+            ax, fig, float(x[-1]), float(y[-1]),
+            text=f"{float(y[-1]):.3g}",
+            color=COLORS["model"]
+        )
 
     fig.savefig(outpath)
     plt.close(fig)
@@ -586,8 +663,11 @@ def plot_two_lines_vs_m(
     ax.errorbar(x, y2_mean, yerr=y2_std, color=y2_color, marker="s", capsize=3.0, lw=2.0, label=y2_label)
 
     ax.set_xlabel(r"Training samples $m$")
-    ax.set_ylabel(ylabel)
+    _set_ylabel(ax, ylabel)
     ax.set_xscale(xscale)
+
+    _xlim_with_margin(ax, x, xscale=xscale)
+
     if ylim is not None:
         ax.set_ylim(*ylim)
 
@@ -642,10 +722,19 @@ def plot_reference_score_spectrum_with_train(p_star, q, emp_dist, scores, suppor
     ax.set_xticklabels([str(int(s)) for s in unique_s])
     ax.set_xlabel("Score")
     ax.set_ylabel("Probability Mass")
-    ax.set_ylim(0, max(max(y_star), max(y_q), max(y_emp)) * 1.25)
+    ax.set_ylim(0, max(max(y_star), max(y_q), max(y_emp)) * 1.30)
 
     ax.grid(axis="y", linestyle=":", alpha=0.25)
-    ax.legend(loc="upper right")
+
+    # Legend ABOVE the axes (no overlap with bars)
+    ax.legend(
+        loc="lower center",
+        bbox_to_anchor=(0.5, 1.02),
+        ncol=3,
+        columnspacing=1.0,
+        handlelength=1.4,
+        borderaxespad=0.0
+    )
 
     fig.savefig(os.path.join(outdir, "6_reference_score_spectrum_with_train.pdf"))
     plt.close(fig)
@@ -700,11 +789,20 @@ def plot_reference_unseen_score_spectrum(p_star, q, scores, support, unseen_mask
     ax.set_xticks(x)
     ax.set_xticklabels([str(int(s)) for s in unique_s])
     ax.set_xlabel("Score")
-    ax.set_ylabel("Conditional mass among unseen states")
-    ax.set_ylim(0, max(max(y_star_c), max(y_q_c)) * 1.25)
+    _set_ylabel(ax, "Conditional mass among unseen states")
+    ax.set_ylim(0, max(max(y_star_c), max(y_q_c)) * 1.30)
 
     ax.grid(axis="y", linestyle=":", alpha=0.25)
-    ax.legend(loc="upper right")
+
+    # Legend ABOVE the axes (no overlap with bars)
+    ax.legend(
+        loc="lower center",
+        bbox_to_anchor=(0.5, 1.02),
+        ncol=2,
+        columnspacing=1.0,
+        handlelength=1.4,
+        borderaxespad=0.0
+    )
 
     fig.savefig(os.path.join(outdir, "7_reference_unseen_score_spectrum.pdf"))
     plt.close(fig)
@@ -728,14 +826,34 @@ def plot_reference_unseen_unique_curve(p_star, q, unseen_mask, outdir, fig_targe
     k = int(onp.sum(unseen_mask))
 
     fig, ax = plt.subplots(figsize=fig_size(fig_target), constrained_layout=True)
-    ax.plot(Q, ys, color=COLORS["target"], linewidth=1.9, label=r"Target $U^*_{\mathrm{unseen}}(Q)$")
-    ax.plot(Q, yq, color=COLORS["model"], linewidth=2.2, label=r"Model $U_{\mathrm{unseen}}(Q)$")
-    ax.axhline(k, color=COLORS["gray"], linestyle=":", linewidth=1.2, label=f"Max ({k})")
+    ax.plot(Q, ys, color=COLORS["target"], linewidth=1.9, label=r"Target $U^*_{\mathrm{unseen}}(Q)$", zorder=6)
+    ax.plot(Q, yq, color=COLORS["model"], linewidth=2.2, label=r"Model $U_{\mathrm{unseen}}(Q)$", zorder=7)
+
+    # Max line (not in legend) + annotation near top
+    ax.axhline(k, color=COLORS["gray"], linestyle=":", linewidth=1.2, zorder=2)
+    ax.text(0.98, 0.95, f"Max ({k})", transform=ax.transAxes,
+            ha="right", va="top", color=COLORS["gray"], style="italic",
+            bbox=dict(boxstyle="round", pad=0.15, facecolor="white", edgecolor="none", alpha=0.90),
+            zorder=10)
 
     ax.set_xscale("log")
     ax.set_xlabel(r"Sampling budget $Q$ (log)")
-    ax.set_ylabel("Expected #unique unseen states")
-    ax.legend(loc="lower right")
+    _set_ylabel(ax, "Expected #unique unseen states")
+
+    # small headroom so the max line is not flush with the border
+    ax.set_ylim(0.0, max(k * 1.05, float(max(ys.max(), yq.max())) * 1.10))
+
+    ax.grid(True, which="both", linestyle="--", alpha=0.12)
+
+    # Legend ABOVE the axes (avoid covering curves at high Q)
+    ax.legend(
+        loc="lower center",
+        bbox_to_anchor=(0.5, 1.02),
+        ncol=2,
+        columnspacing=1.0,
+        handlelength=1.6,
+        borderaxespad=0.0
+    )
 
     fig.savefig(os.path.join(outdir, "8_reference_unseen_unique_vs_Q.pdf"))
     plt.close(fig)
