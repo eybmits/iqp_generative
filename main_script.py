@@ -8,10 +8,9 @@ Paper-grade IQP-QCBM experiments + plots in a clean red/black style.
 
 Update in this version:
   - Adds a *journal-aware* plotting style with consistent typography.
-  - Adds a `--fig-target {col,full}` switch:
-      * col  : RevTeX single-column-ready PDFs (recommended default)
-      * full : two-column / figure*-ready PDFs (bigger, for over-both-columns)
-  - All plots now use explicit figsize derived from `--fig-target`.
+  - Adds a `--fig-target {col,full}` switch.
+  - FORCE SIZE: All plots are now generated with IDENTICAL dimensions
+    (2.8 inches height for col, 3.5 inches for full) to ensure perfect alignment.
   - ADJUSTMENTS:
       * Plot 1 Legend moved to upper center (whitespace).
       * Plot 3 Value label moved below the curve.
@@ -67,6 +66,11 @@ COLORS = {
 # Practical widths for APS/RevTeX, in inches
 COL_W  = 3.37  # single-column
 FULL_W = 6.95  # two-column (figure*)
+
+# --- FORCE UNIFORM HEIGHTS ---
+# Damit alle Plots exakt gleich groß sind:
+FIXED_H_COL  = 2.8
+FIXED_H_FULL = 3.5
 
 def fig_size(fig_target: str, h_col: float, h_full: float) -> Tuple[float, float]:
     """Return (width,height) in inches for the chosen LaTeX target."""
@@ -462,7 +466,7 @@ def train(cfg: Config):
 
 
 # ------------------------------------------------------------------------------
-# 6) Plotting (sizes controlled by fig_target)
+# 6) Plotting (sizes controlled by fig_target AND fixed constants)
 # ------------------------------------------------------------------------------
 
 def plot_dynamics_clean(history, pstar_top5, outdir, fig_target: str):
@@ -470,11 +474,12 @@ def plot_dynamics_clean(history, pstar_top5, outdir, fig_target: str):
     loss = onp.array(history["loss"], dtype=onp.float64)
     top5 = onp.array(history["top5"], dtype=onp.float64)
 
-    fig, ax1 = plt.subplots(figsize=fig_size(fig_target, 2.9, 3.8), constrained_layout=True)
+    # Use FIXED height
+    fig, ax1 = plt.subplots(figsize=fig_size(fig_target, FIXED_H_COL, FIXED_H_FULL), constrained_layout=True)
 
     ax1.plot(steps, loss, color=COLORS["target"], linewidth=2.0, label=r"MMD Loss $\mathcal{L}$")
     ax1.set_xlabel("Training Steps")
-    ax1.set_ylabel("Loss (MMD)", color=COLORS["target"], fontweight="bold")
+    ax1.set_ylabel("Loss (MMD)", color=COLORS["target"])
     ax1.tick_params(axis="y", labelcolor=COLORS["target"])
     ax1.set_yscale("log")
     ax1.text(steps[-1], loss[-1] * 1.12, f"{loss[-1]:.2e}", color=COLORS["target"],
@@ -514,7 +519,8 @@ def plot_score_spectrum_awesome(p_star, q, scores, support, outdir, fig_target: 
     x = onp.arange(len(unique_s))
     width = 0.42
 
-    fig, ax = plt.subplots(figsize=fig_size(fig_target, 2.7, 3.5), constrained_layout=True)
+    # Use FIXED height
+    fig, ax = plt.subplots(figsize=fig_size(fig_target, FIXED_H_COL, FIXED_H_FULL), constrained_layout=True)
     ax.bar(x - width/2, y_star, width, color="white", edgecolor="#333333", linewidth=1.0,
            hatch="///", alpha=0.9, label=r"Target $p^*$", zorder=2)
     ax.bar(x + width/2, y_q, width, color=COLORS["model"], edgecolor="black", linewidth=0.8,
@@ -543,7 +549,8 @@ def plot_diversity_curve(p_star, q, good_mask, outdir, fig_target: str, Qmax=500
     yq = expected_unique_set(q, good_mask, Q)
     k = int(good_mask.sum())
 
-    fig, ax = plt.subplots(figsize=fig_size(fig_target, 2.6, 3.2), constrained_layout=True)
+    # Use FIXED height
+    fig, ax = plt.subplots(figsize=fig_size(fig_target, FIXED_H_COL, FIXED_H_FULL), constrained_layout=True)
     ax.plot(Q, ys, color=COLORS["target"], linewidth=1.8, label="Target")
     ax.plot(Q, yq, color=COLORS["model"], linewidth=2.0, label="Model")
     ax.axhline(k, color=COLORS["gray"], linestyle=":", linewidth=1.2, label=f"Max ({k})")
@@ -574,7 +581,8 @@ def plot_holdout_unique_vs_Q_awesome(p_star, q, holdout_mask, outdir, fig_target
     ys = expected_unique_set(p_star, holdout_mask, Q)
     yq = expected_unique_set(q, holdout_mask, Q)
 
-    fig, ax = plt.subplots(figsize=fig_size(fig_target, 2.7, 3.4), constrained_layout=True)
+    # Use FIXED height
+    fig, ax = plt.subplots(figsize=fig_size(fig_target, FIXED_H_COL, FIXED_H_FULL), constrained_layout=True)
     ax.plot(Q, ys, color=COLORS["target"], linewidth=1.8, label=r"Target $U_H^*(Q)$", zorder=5)
     ax.plot(Q, yq, color=COLORS["model"], linewidth=2.2, label=r"Model $U_H(Q)$", zorder=6)
     ax.axhline(H, color=COLORS["gray"], linestyle="--", alpha=0.5, linewidth=1.0)
@@ -600,7 +608,8 @@ def plot_holdout_recovery_bars_sexy(p_star, q, holdout_mask, outdir, fig_target:
     x = onp.arange(len(Q))
     w = 0.36
 
-    fig, ax = plt.subplots(figsize=fig_size(fig_target, 2.4, 3.0), constrained_layout=True)
+    # Use FIXED height
+    fig, ax = plt.subplots(figsize=fig_size(fig_target, FIXED_H_COL, FIXED_H_FULL), constrained_layout=True)
     bs = ax.bar(x - w/2, Us, w, color="white", edgecolor="#333333", hatch="///",
                 alpha=0.9, label=r"Target $p^*$")
     bq = ax.bar(x + w/2, Uq, w, color=COLORS["model"], edgecolor="black",

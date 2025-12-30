@@ -482,7 +482,8 @@ def plot_architecture_D_and_fix(n: int, outdir: str):
             if include_singles:
                 ax.add_patch(Circle((pos[i,0], pos[i,1]), 0.105, facecolor="none", edgecolor=COLORS["model"], lw=2.0, zorder=2))
 
-        ax.set_title(title)
+        # NO TITLES (removed)
+        _ = title  # keep signature identical / unused
 
     draw(axes[0], include_singles=False, title="Hero D (baseline)\nNN + NNN + 4-body")
     draw(axes[1], include_singles=True, title="Hero D + Z-fields (fix)\nadds single-qubit RZ per layer")
@@ -511,7 +512,7 @@ def plot_parity_sanity(L_vals: List[int], q_even_means: List[float], q_even_stds
     ax.set_xticklabels([f"L={L}" for L in L_vals])
     ax.set_ylim(0, 1.1)
     ax.set_ylabel(r"$q(\mathcal{S}_\mathrm{even})$")
-    ax.set_title("Parity sanity check (random parameters)\nOriginal ansatz (ZZ + ZZZZ only)")
+    # NO TITLE (removed)
     plt.tight_layout()
     path = os.path.join(outdir, "01_parity_sanity.pdf")
     plt.savefig(path)
@@ -553,7 +554,7 @@ def plot_trainability_grid(results_by_L: Dict[int, Dict[str, Any]],
         ax.text(x[-1], y[-1], f"{y[-1]:.2f}", color=style(L)["color"], fontweight="bold", ha="right", va="bottom", fontsize=10)
     ax.set_xlabel("Training Steps")
     ax.set_ylabel(r"$D_{\mathrm{KL}}(p^*\Vert q_\theta)$")
-    ax.set_title("Accuracy (KL)")
+    # NO TITLE (removed)
     ax.grid(True, linestyle="--", alpha=0.15)
 
     # Panel 1: q(G)
@@ -570,7 +571,7 @@ def plot_trainability_grid(results_by_L: Dict[int, Dict[str, Any]],
     ax.set_xlabel("Training Steps")
     ax.set_ylabel(r"$q_\theta(G)$")
     ax.set_ylim(0, 1.1)
-    ax.set_title("Good-set mass")
+    # NO TITLE (removed)
     ax.grid(True, linestyle="--", alpha=0.15)
 
     # Panel 2: grad norm (log)
@@ -586,7 +587,7 @@ def plot_trainability_grid(results_by_L: Dict[int, Dict[str, Any]],
     ax.set_yscale("log")
     ax.set_xlabel("Training Steps")
     ax.set_ylabel(r"$\|\nabla_\theta \mathcal{L}\|_2$")
-    ax.set_title("Trainability (gradient signal)")
+    # NO TITLE (removed)
     ax.grid(True, linestyle="--", alpha=0.15)
 
     # Panel 3: q(even)
@@ -602,7 +603,7 @@ def plot_trainability_grid(results_by_L: Dict[int, Dict[str, Any]],
     ax.set_xlabel("Training Steps")
     ax.set_ylabel(r"$q(\mathcal{S}_\mathrm{even})$")
     ax.set_ylim(0, 1.1)
-    ax.set_title("Parity support mass")
+    # NO TITLE (removed)
     ax.grid(True, linestyle="--", alpha=0.15)
 
     # Legend (deduplicate)
@@ -614,7 +615,9 @@ def plot_trainability_grid(results_by_L: Dict[int, Dict[str, Any]],
                 handles.append(hh)
                 labels.append(ll)
     fig.legend(handles, labels, loc="upper center", ncol=4, frameon=True, framealpha=0.95, edgecolor="white")
-    fig.suptitle(title, y=1.02, fontsize=14)
+
+    # NO SUPTITLE (removed)
+    _ = title  # keep signature identical / unused
 
     plt.tight_layout()
     path = os.path.join(outdir, fname)
@@ -636,18 +639,19 @@ def plot_sweep_final_metric(xvals, metric_means, metric_stds, xlabel, ylabel, ti
         ax.set_xscale("log")
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    ax.set_title(title)
+    # NO TITLE (removed)
+    _ = title  # keep signature identical / unused
     ax.grid(True, linestyle="--", alpha=0.15)
     plt.tight_layout()
     plt.savefig(outpath)
     plt.close()
     print(f"[Saved] {outpath}")
-
 def plot_final_summary_bars(baseline_by_L: Dict[int, Dict[str, Any]],
                             fixed_by_L: Dict[int, Dict[str, Any]],
                             outdir: str):
     """
     1x3 panel bar chart: KL, q(G), q(even), baseline vs fixed for L=1/2/3.
+    Legend is placed BELOW the panels. Value labels are placed above errorbar caps.
     """
     Ls = sorted(baseline_by_L.keys())
     x = onp.arange(len(Ls))
@@ -674,32 +678,409 @@ def plot_final_summary_bars(baseline_by_L: Dict[int, Dict[str, Any]],
                     color="white", edgecolor="#333333", hatch="///", alpha=0.9, label="Baseline")
         bf = ax.bar(x + w/2, yf, w, yerr=yfs, capsize=4,
                     color=COLORS["model"], edgecolor="black", alpha=0.85, label="Fix (Z-fields + parity feature)")
+
         ax.set_xticks(x)
         ax.set_xticklabels([f"L={L}" for L in Ls])
         ax.set_ylabel(ylabel)
-        ax.set_title(title)
+
+        # NO TITLE (removed)
+        _ = title
+
         ax.grid(axis="y", linestyle=":", alpha=0.3)
         if ylim is not None:
             ax.set_ylim(*ylim)
-        for r in bb:
-            ax.text(r.get_x()+r.get_width()/2, r.get_height(), f"{r.get_height():.2f}" if ylabel=="KL" else f"{r.get_height():.3f}",
-                    ha="center", va="bottom", fontsize=9, color="#333333")
-        for r in bf:
-            ax.text(r.get_x()+r.get_width()/2, r.get_height(), f"{r.get_height():.2f}" if ylabel=="KL" else f"{r.get_height():.3f}",
-                    ha="center", va="bottom", fontsize=9, color="#800000", fontweight="bold")
 
-    barpanel(axes[0], kl_b, kl_bs, kl_f, kl_fs, ylabel="KL", title=r"$D_{\mathrm{KL}}(p^*\Vert q_\theta)$", ylim=(0, max(kl_b.max(), kl_f.max())*1.25))
+        # --- Value labels: place above (bar height + errorbar + padding) ---
+        y0, y1 = ax.get_ylim()
+        yr = y1 - y0
+        pad = 0.03 * yr  # increase to 0.04 if you want even more spacing
+
+        for i, r in enumerate(bb):
+            h = float(r.get_height())
+            err = float(ybs[i]) if ybs is not None else 0.0
+            y_text = h + err + pad
+            y_text = min(y_text, y1 - 0.01 * yr)  # keep inside axis
+            ax.text(
+                r.get_x() + r.get_width()/2,
+                y_text,
+                f"{h:.2f}" if ylabel == "KL" else f"{h:.3f}",
+                ha="center",
+                va="bottom",
+                fontsize=9,
+                color="#333333",
+                clip_on=False,
+            )
+
+        for i, r in enumerate(bf):
+            h = float(r.get_height())
+            err = float(yfs[i]) if yfs is not None else 0.0
+            y_text = h + err + pad
+            y_text = min(y_text, y1 - 0.01 * yr)  # keep inside axis
+            ax.text(
+                r.get_x() + r.get_width()/2,
+                y_text,
+                f"{h:.2f}" if ylabel == "KL" else f"{h:.3f}",
+                ha="center",
+                va="bottom",
+                fontsize=9,
+                color="#800000",
+                fontweight="bold",
+                clip_on=False,
+            )
+
+    barpanel(
+        axes[0], kl_b, kl_bs, kl_f, kl_fs,
+        ylabel="KL",
+        title=r"$D_{\mathrm{KL}}(p^*\Vert q_\theta)$",
+        ylim=(0, max(float(kl_b.max()), float(kl_f.max()))*1.25 if max(float(kl_b.max()), float(kl_f.max())) > 0 else 1.0),
+    )
     barpanel(axes[1], qg_b, qg_bs, qg_f, qg_fs, ylabel=r"$q_\theta(G)$", title="Good-set mass", ylim=(0, 1.1))
     barpanel(axes[2], qe_b, qe_bs, qe_f, qe_fs, ylabel=r"$q(\mathcal{S}_\mathrm{even})$", title="Parity support mass", ylim=(0, 1.1))
 
     handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="upper center", ncol=2, frameon=True, framealpha=0.95, edgecolor="white")
 
-    plt.tight_layout()
+    # Legend BELOW
+    plt.tight_layout(rect=[0, 0.12, 1, 1])
+    fig.legend(
+        handles, labels,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.055),
+        ncol=2,
+        frameon=True,
+        framealpha=0.95,
+        edgecolor="white",
+    )
+
     path = os.path.join(outdir, "07_final_summary_bars.pdf")
     plt.savefig(path)
     plt.close()
     print(f"[Saved] {path}")
+
+
+
+# ------------------------------------------------------------------------------
+# 7b) EXTRA: also save every multi-panel plot as individual single-panel PDFs
+# (Everything else remains identical; original combined PDFs are still produced.)
+# Titles are removed here as well.
+# ------------------------------------------------------------------------------
+
+def plot_architecture_D_single(n: int, outdir: str, include_singles: bool, title: str, fname: str):
+    """
+    Same drawing as in plot_architecture_D_and_fix(), but saved as a single-panel PDF.
+    """
+    fig, ax = plt.subplots(figsize=(6, 5))
+    ax.set_aspect("equal")
+    ax.axis("off")
+
+    angles = onp.linspace(0, 2*onp.pi, n, endpoint=False)
+    pos = onp.stack([onp.cos(angles), onp.sin(angles)], axis=1)
+
+    for i in range(n):
+        quad = [(i)%n, (i+1)%n, (i+2)%n, (i+3)%n]
+        pts = pos[quad]
+        poly = Polygon(pts, closed=True, facecolor=COLORS["light"], edgecolor="none", alpha=0.25, zorder=0)
+        ax.add_patch(poly)
+
+    for i in range(n):
+        j = (i+1)%n
+        ax.plot([pos[i,0], pos[j,0]], [pos[i,1], pos[j,1]], color=COLORS["target"], lw=2.2, zorder=1)
+    for i in range(n):
+        j = (i+2)%n
+        ax.plot([pos[i,0], pos[j,0]], [pos[i,1], pos[j,1]], color=COLORS["gray"], lw=1.8, ls="--", alpha=0.9, zorder=1)
+
+    for i in range(n):
+        ax.add_patch(Circle((pos[i,0], pos[i,1]), 0.08, facecolor="white", edgecolor="black", lw=1.2, zorder=3))
+        ax.text(pos[i,0], pos[i,1], str(i), ha="center", va="center", fontsize=10, zorder=4)
+        if include_singles:
+            ax.add_patch(Circle((pos[i,0], pos[i,1]), 0.105, facecolor="none", edgecolor=COLORS["model"], lw=2.0, zorder=2))
+
+    # NO TITLE (removed)
+    _ = title
+
+    legend_items = [
+        Line2D([0],[0], color=COLORS["target"], lw=2.2, label="NN ZZ"),
+        Line2D([0],[0], color=COLORS["gray"], lw=1.8, ls="--", label="NNN ZZ"),
+        Patch(facecolor=COLORS["light"], edgecolor="none", alpha=0.25, label="local 4-body ZZZZ"),
+        Line2D([0],[0], color=COLORS["model"], lw=2.0, label="Z-field (RZ)"),
+    ]
+    fig.legend(handles=legend_items, loc="upper center", ncol=4, frameon=True, framealpha=0.95, edgecolor="white")
+
+    plt.tight_layout()
+    path = os.path.join(outdir, fname)
+    plt.savefig(path)
+    plt.close()
+    print(f"[Saved] {path}")
+
+def plot_trainability_panels_individual(results_by_L: Dict[int, Dict[str, Any]],
+                                        pstar_top5: float,
+                                        outdir: str,
+                                        fig_prefix_num: str,
+                                        fig_prefix_name: str,
+                                        suptitle: str):
+    """
+    Same content as plot_trainability_grid(), but saves each panel as its own PDF.
+    Outputs:
+      {fig_prefix_num}a_{fig_prefix_name}_KL.pdf
+      {fig_prefix_num}b_{fig_prefix_name}_qG.pdf
+      {fig_prefix_num}c_{fig_prefix_name}_grad.pdf
+      {fig_prefix_num}d_{fig_prefix_name}_qEven.pdf
+    """
+    def style(L):
+        if L == 1:
+            return dict(color=COLORS["target"], lw=2.8)
+        if L == 2:
+            return dict(color=COLORS["model"], lw=3.2)
+        return dict(color=COLORS["gray"], lw=2.8)
+
+    # Panel KL
+    fig, ax = plt.subplots(figsize=(6.25, 4.0))
+    for L in sorted(results_by_L.keys()):
+        agg = results_by_L[L]["agg"]
+        x = onp.array(agg["step"])
+        y = onp.array(agg["kl"]["mean"])
+        s = onp.array(agg["kl"]["std"])
+        ax.plot(x, y, label=f"L={L}", **style(L))
+        _shade(ax, x, y, s, color=style(L)["color"], alpha=0.15)
+        ax.text(x[-1], y[-1], f"{y[-1]:.2f}", color=style(L)["color"], fontweight="bold",
+                ha="right", va="bottom", fontsize=10)
+    ax.set_xlabel("Training Steps")
+    ax.set_ylabel(r"$D_{\mathrm{KL}}(p^*\Vert q_\theta)$")
+    # NO TITLE / NO SUPTITLE (removed)
+    _ = suptitle
+    ax.grid(True, linestyle="--", alpha=0.15)
+    h, l = ax.get_legend_handles_labels()
+    fig.legend(h, l, loc="upper center", ncol=4, frameon=True, framealpha=0.95, edgecolor="white")
+    plt.tight_layout()
+    path = os.path.join(outdir, f"{fig_prefix_num}a_{fig_prefix_name}_KL.pdf")
+    plt.savefig(path)
+    plt.close()
+    print(f"[Saved] {path}")
+
+    # Panel q(G)
+    fig, ax = plt.subplots(figsize=(6.25, 4.0))
+    for L in sorted(results_by_L.keys()):
+        agg = results_by_L[L]["agg"]
+        x = onp.array(agg["step"])
+        y = onp.array(agg["top5"]["mean"])
+        s = onp.array(agg["top5"]["std"])
+        ax.plot(x, y, label=f"L={L}", **style(L))
+        _shade(ax, x, y, s, color=style(L)["color"], alpha=0.15)
+        ax.text(x[-1], y[-1], f"{y[-1]:.3f}", color=style(L)["color"], fontweight="bold",
+                ha="right", va="bottom", fontsize=10)
+    ax.axhline(pstar_top5, color=COLORS["target"], linestyle=":", linewidth=2.0, alpha=0.85,
+               label=r"Target $p^*(G)$")
+    ax.set_xlabel("Training Steps")
+    ax.set_ylabel(r"$q_\theta(G)$")
+    ax.set_ylim(0, 1.1)
+    # NO TITLE / NO SUPTITLE (removed)
+    _ = suptitle
+    ax.grid(True, linestyle="--", alpha=0.15)
+    h, l = ax.get_legend_handles_labels()
+    fig.legend(h, l, loc="upper center", ncol=4, frameon=True, framealpha=0.95, edgecolor="white")
+    plt.tight_layout()
+    path = os.path.join(outdir, f"{fig_prefix_num}b_{fig_prefix_name}_qG.pdf")
+    plt.savefig(path)
+    plt.close()
+    print(f"[Saved] {path}")
+
+    # Panel grad norm (log)
+    fig, ax = plt.subplots(figsize=(6.25, 4.0))
+    for L in sorted(results_by_L.keys()):
+        agg = results_by_L[L]["agg"]
+        x = onp.array(agg["step"])
+        y = onp.array(agg["grad_norm"]["mean"])
+        s = onp.array(agg["grad_norm"]["std"])
+        ax.plot(x, y, label=f"L={L}", **style(L))
+        _shade(ax, x, y, s, color=style(L)["color"], alpha=0.12, logy=True)
+        ax.text(x[-1], y[-1], f"{y[-1]:.1e}", color=style(L)["color"], fontweight="bold",
+                ha="right", va="bottom", fontsize=10)
+    ax.set_yscale("log")
+    ax.set_xlabel("Training Steps")
+    ax.set_ylabel(r"$\|\nabla_\theta \mathcal{L}\|_2$")
+    # NO TITLE / NO SUPTITLE (removed)
+    _ = suptitle
+    ax.grid(True, linestyle="--", alpha=0.15)
+    h, l = ax.get_legend_handles_labels()
+    fig.legend(h, l, loc="upper center", ncol=4, frameon=True, framealpha=0.95, edgecolor="white")
+    plt.tight_layout()
+    path = os.path.join(outdir, f"{fig_prefix_num}c_{fig_prefix_name}_grad.pdf")
+    plt.savefig(path)
+    plt.close()
+    print(f"[Saved] {path}")
+
+    # Panel q(even)
+    fig, ax = plt.subplots(figsize=(6.25, 4.0))
+    for L in sorted(results_by_L.keys()):
+        agg = results_by_L[L]["agg"]
+        x = onp.array(agg["step"])
+        y = onp.array(agg["q_even"]["mean"])
+        s = onp.array(agg["q_even"]["std"])
+        ax.plot(x, y, label=f"L={L}", **style(L))
+        _shade(ax, x, y, s, color=style(L)["color"], alpha=0.15)
+        ax.text(x[-1], y[-1], f"{y[-1]:.3f}", color=style(L)["color"], fontweight="bold",
+                ha="right", va="bottom", fontsize=10)
+    ax.set_xlabel("Training Steps")
+    ax.set_ylabel(r"$q(\mathcal{S}_\mathrm{even})$")
+    ax.set_ylim(0, 1.1)
+    # NO TITLE / NO SUPTITLE (removed)
+    _ = suptitle
+    ax.grid(True, linestyle="--", alpha=0.15)
+    h, l = ax.get_legend_handles_labels()
+    fig.legend(h, l, loc="upper center", ncol=4, frameon=True, framealpha=0.95, edgecolor="white")
+    plt.tight_layout()
+    path = os.path.join(outdir, f"{fig_prefix_num}d_{fig_prefix_name}_qEven.pdf")
+    plt.savefig(path)
+    plt.close()
+    print(f"[Saved] {path}")
+
+def plot_final_summary_bars_individual(baseline_by_L: Dict[int, Dict[str, Any]],
+                                       fixed_by_L: Dict[int, Dict[str, Any]],
+                                       outdir: str):
+    """
+    Same content as plot_final_summary_bars(), but saves each of the 3 panels as its own PDF:
+      07a_final_summary_KL.pdf
+      07b_final_summary_qG.pdf
+      07c_final_summary_qEven.pdf
+
+    Legend is placed BELOW. Value labels are placed above errorbar caps.
+    """
+    Ls = sorted(baseline_by_L.keys())
+    x = onp.arange(len(Ls))
+    w = 0.35
+
+    def finals(res_by_L, key):
+        m = [res_by_L[L]["agg"][key]["final_mean"] for L in Ls]
+        s = [res_by_L[L]["agg"][key]["final_std"] for L in Ls]
+        return onp.array(m), onp.array(s)
+
+    kl_b, kl_bs = finals(baseline_by_L, "kl")
+    kl_f, kl_fs = finals(fixed_by_L, "kl")
+
+    qg_b, qg_bs = finals(baseline_by_L, "top5")
+    qg_f, qg_fs = finals(fixed_by_L, "top5")
+
+    qe_b, qe_bs = finals(baseline_by_L, "q_even")
+    qe_f, qe_fs = finals(fixed_by_L, "q_even")
+
+    def barpanel(ax, yb, ybs, yf, yfs, ylabel, title, ylim=None):
+        bb = ax.bar(x - w/2, yb, w, yerr=ybs, capsize=4,
+                    color="white", edgecolor="#333333", hatch="///", alpha=0.9, label="Baseline")
+        bf = ax.bar(x + w/2, yf, w, yerr=yfs, capsize=4,
+                    color=COLORS["model"], edgecolor="black", alpha=0.85, label="Fix (Z-fields + parity feature)")
+
+        ax.set_xticks(x)
+        ax.set_xticklabels([f"L={L}" for L in Ls])
+        ax.set_ylabel(ylabel)
+
+        # NO TITLE (removed)
+        _ = title
+
+        ax.grid(axis="y", linestyle=":", alpha=0.3)
+        if ylim is not None:
+            ax.set_ylim(*ylim)
+
+        # --- Value labels: place above (bar height + errorbar + padding) ---
+        y0, y1 = ax.get_ylim()
+        yr = y1 - y0
+        pad = 0.03 * yr  # increase to 0.04 if you want even more spacing
+
+        for i, r in enumerate(bb):
+            h = float(r.get_height())
+            err = float(ybs[i]) if ybs is not None else 0.0
+            y_text = h + err + pad
+            y_text = min(y_text, y1 - 0.01 * yr)
+            ax.text(
+                r.get_x() + r.get_width()/2,
+                y_text,
+                f"{h:.2f}" if ylabel == "KL" else f"{h:.3f}",
+                ha="center",
+                va="bottom",
+                fontsize=9,
+                color="#333333",
+                clip_on=False,
+            )
+
+        for i, r in enumerate(bf):
+            h = float(r.get_height())
+            err = float(yfs[i]) if yfs is not None else 0.0
+            y_text = h + err + pad
+            y_text = min(y_text, y1 - 0.01 * yr)
+            ax.text(
+                r.get_x() + r.get_width()/2,
+                y_text,
+                f"{h:.2f}" if ylabel == "KL" else f"{h:.3f}",
+                ha="center",
+                va="bottom",
+                fontsize=9,
+                color="#800000",
+                fontweight="bold",
+                clip_on=False,
+            )
+
+    # KL panel
+    fig, ax = plt.subplots(figsize=(5.0, 4.8))
+    barpanel(
+        ax, kl_b, kl_bs, kl_f, kl_fs,
+        ylabel="KL",
+        title=r"$D_{\mathrm{KL}}(p^*\Vert q_\theta)$",
+        ylim=(0, max(float(kl_b.max()), float(kl_f.max()))*1.25 if max(float(kl_b.max()), float(kl_f.max())) > 0 else 1.0),
+    )
+    handles, labels = ax.get_legend_handles_labels()
+    plt.tight_layout(rect=[0, 0.18, 1, 1])
+    fig.legend(
+        handles, labels,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.02),
+        ncol=2,
+        frameon=True,
+        framealpha=0.95,
+        edgecolor="white",
+    )
+    path = os.path.join(outdir, "07a_final_summary_KL.pdf")
+    plt.savefig(path)
+    plt.close()
+    print(f"[Saved] {path}")
+
+    # q(G) panel
+    fig, ax = plt.subplots(figsize=(5.0, 4.8))
+    barpanel(ax, qg_b, qg_bs, qg_f, qg_fs,
+             ylabel=r"$q_\theta(G)$", title="Good-set mass", ylim=(0, 1.1))
+    handles, labels = ax.get_legend_handles_labels()
+    plt.tight_layout(rect=[0, 0.18, 1, 1])
+    fig.legend(
+        handles, labels,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.02),
+        ncol=2,
+        frameon=True,
+        framealpha=0.95,
+        edgecolor="white",
+    )
+    path = os.path.join(outdir, "07b_final_summary_qG.pdf")
+    plt.savefig(path)
+    plt.close()
+    print(f"[Saved] {path}")
+
+    # q(even) panel
+    fig, ax = plt.subplots(figsize=(5.0, 4.8))
+    barpanel(ax, qe_b, qe_bs, qe_f, qe_fs,
+             ylabel=r"$q(\mathcal{S}_\mathrm{even})$", title="Parity support mass", ylim=(0, 1.1))
+    handles, labels = ax.get_legend_handles_labels()
+    plt.tight_layout(rect=[0, 0.18, 1, 1])
+    fig.legend(
+        handles, labels,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.02),
+        ncol=2,
+        frameon=True,
+        framealpha=0.95,
+        edgecolor="white",
+    )
+    path = os.path.join(outdir, "07c_final_summary_qEven.pdf")
+    plt.savefig(path)
+    plt.close()
+    print(f"[Saved] {path}")
+
 
 
 # ------------------------------------------------------------------------------
@@ -773,7 +1154,16 @@ def main():
     print(f"[Target] p*(G)={pstar_top5:.6f} | |G|={int(good_mask.sum())} | |S_even|={int(onp.sum(support))}")
 
     # Architecture diagram
-    plot_architecture_D_and_fix(n=min(cfg_base.n, 10), outdir=outdir)
+    n_arch = min(cfg_base.n, 10)
+    plot_architecture_D_and_fix(n=n_arch, outdir=outdir)
+
+    # EXTRA: architecture panels individually (no titles)
+    plot_architecture_D_single(n=n_arch, outdir=outdir, include_singles=False,
+                              title="Hero D (baseline)\nNN + NNN + 4-body",
+                              fname="00a_architecture_D_baseline.pdf")
+    plot_architecture_D_single(n=n_arch, outdir=outdir, include_singles=True,
+                              title="Hero D + Z-fields (fix)\nadds single-qubit RZ per layer",
+                              fname="00b_architecture_D_fix.pdf")
 
     # (A) Parity sanity check: random parameters (no training) for baseline ansatz
     print("\n[A] Parity sanity check (random parameters, no training) ...")
@@ -813,12 +1203,24 @@ def main():
         print(f"\n-> Baseline ensemble for L={L}")
         baseline_results[L] = ensemble_depth(cfg_base, L, p_star, support, good_mask, loss_objs_base, init_seeds)
     print_final_summary("BASELINE", baseline_results)
+
+    baseline_title = f"Baseline (ZZ + ZZZZ only) | arch={cfg_base.arch}, n={cfg_base.n}, beta={cfg_base.beta}"
     plot_trainability_grid(
         baseline_results,
         pstar_top5,
         outdir,
         fname="02_trainability_baseline_L123.pdf",
-        title=f"Baseline (ZZ + ZZZZ only) | arch={cfg_base.arch}, n={cfg_base.n}, beta={cfg_base.beta}"
+        title=baseline_title
+    )
+
+    # EXTRA: baseline panels individually (no titles)
+    plot_trainability_panels_individual(
+        baseline_results,
+        pstar_top5,
+        outdir,
+        fig_prefix_num="02",
+        fig_prefix_name="trainability_baseline",
+        suptitle=baseline_title
     )
 
     # (C) L=2 sweeps
@@ -897,16 +1299,30 @@ def main():
 
     print_final_summary("FIX (Z-fields + parity feature)", fixed_results)
 
+    fixed_title = f"FIX (Z-fields + forced parity feature) | arch={cfg_base.arch}, n={cfg_base.n}, beta={cfg_base.beta}"
     plot_trainability_grid(
         fixed_results,
         pstar_top5,
         outdir,
         fname="06_trainability_fixed_L123.pdf",
-        title=f"FIX (Z-fields + forced parity feature) | arch={cfg_base.arch}, n={cfg_base.n}, beta={cfg_base.beta}"
+        title=fixed_title
+    )
+
+    # EXTRA: FIX panels individually (no titles)
+    plot_trainability_panels_individual(
+        fixed_results,
+        pstar_top5,
+        outdir,
+        fig_prefix_num="06",
+        fig_prefix_name="trainability_fixed",
+        suptitle=fixed_title
     )
 
     # Summary bar chart baseline vs fix
     plot_final_summary_bars(baseline_results, fixed_results, outdir)
+
+    # EXTRA: summary panels individually (no titles)
+    plot_final_summary_bars_individual(baseline_results, fixed_results, outdir)
 
     # Save summary JSON
     summary = {

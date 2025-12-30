@@ -46,6 +46,7 @@ import numpy as onp
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
+from matplotlib.offsetbox import AnchoredOffsetbox, TextArea, VPacker
 
 import pennylane as qml
 from pennylane import numpy as np
@@ -478,7 +479,8 @@ def plot_holdout_recovery_curves(cfg: Config, agg: Dict[str, Any], outdir: str) 
     speed = agg["speed"]
 
     st_map = _arch_linestyle(cfg.fig_target)
-    fig, ax = plt.subplots(figsize=fig_size(cfg.fig_target, 2.9, 3.5), constrained_layout=True)
+    # Changed size to match budgets plot (3.1, 4.2)
+    fig, ax = plt.subplots(figsize=fig_size(cfg.fig_target, 3.1, 4.2), constrained_layout=True)
 
     # Target
     ax.plot(Q_grid, target_curve, color=COLORS["black"], lw=(1.8 if cfg.fig_target == "col" else 2.4),
@@ -503,23 +505,41 @@ def plot_holdout_recovery_curves(cfg: Config, agg: Dict[str, Any], outdir: str) 
     ax.set_ylim(0.0, 1.05)
     ax.set_xlabel(r"Sampling Budget $Q$ (log)")
     ax.set_ylabel(r"Holdout Recovery  $U_H(Q)/|H|$")
-    ax.set_title(f"Holdout Recovery Curves (|H|={agg['H']})", pad=10)
+    # Title removed per request
     ax.legend(loc="lower right")
 
-    # Speed text box
-    lines = [r"$Q_{80}$ (samples for 80% recovery)"]
-    lines.append(f"Target: {int(target_speed['Q80']) if onp.isfinite(target_speed['Q80']) else '∞'}")
+    # Speed text box constructed with VPacker to allow individual red line for Arch D
+    box_fs = max(7, int(plt.rcParams.get("font.size", 8) - 1))
+    
+    pack_children = []
+    # Header
+    pack_children.append(TextArea(r"$Q_{80}$ (samples for 80% recovery)", textprops=dict(color=COLORS["black"], fontsize=box_fs)))
+    
+    # Target
+    t_val = int(target_speed['Q80']) if onp.isfinite(target_speed['Q80']) else '∞'
+    pack_children.append(TextArea(f"Target: {t_val}", textprops=dict(color=COLORS["black"], fontsize=box_fs)))
+    
+    # Archs
     for arch in ARCH_ORDER:
         if arch not in speed: continue
         m80 = speed[arch]
         txt = f"{int(m80)}" if onp.isfinite(m80) else "∞"
         prefix = "Arch D: " if arch == "D" else f"Arch {arch}: "
-        lines.append(prefix + txt)
-
-    box_fs = max(7, int(plt.rcParams.get("font.size", 8) - 1))
-    ax.text(0.03, 0.97, "\n".join(lines), transform=ax.transAxes, ha="left", va="top",
-            bbox=dict(boxstyle="round", facecolor="white", alpha=0.92, edgecolor=COLORS["light"]),
-            fontsize=box_fs)
+        col = COLORS["hero"] if arch == "D" else COLORS["black"]
+        pack_children.append(TextArea(prefix + txt, textprops=dict(color=col, fontsize=box_fs)))
+        
+    # Stack vertically
+    box_packer = VPacker(children=pack_children, align="left", pad=0, sep=4)
+    
+    # Anchor to axes
+    anchored_box = AnchoredOffsetbox(loc='upper left', child=box_packer, pad=0.4, frameon=True,
+                                     bbox_to_anchor=(0.03, 0.97), bbox_transform=ax.transAxes, borderpad=0.0)
+    anchored_box.patch.set_boxstyle("round,pad=0.3")
+    anchored_box.patch.set_facecolor("white")
+    anchored_box.patch.set_alpha(0.92)
+    anchored_box.patch.set_edgecolor(COLORS["light"])
+    
+    ax.add_artist(anchored_box)
 
     path = os.path.join(outdir, "fig5_holdout_recovery_curves.pdf")
     fig.savefig(path)
@@ -530,7 +550,6 @@ def plot_holdout_recovery_curves(cfg: Config, agg: Dict[str, Any], outdir: str) 
 # ------------------------------------------------------------------------------
 # 7) Plot: Budgets (FINAL LAYOUT)
 # ------------------------------------------------------------------------------
-
 def plot_holdout_recovery_budgets(cfg: Config, agg: Dict[str, Any], outdir: str) -> None:
     bars = agg["bars"]
     target_bars = agg["target_bars"]
@@ -576,34 +595,42 @@ def plot_holdout_recovery_budgets(cfg: Config, agg: Dict[str, Any], outdir: str)
             fontsize=max(7, int(plt.rcParams.get("font.size", 8))), color=COLORS["gray"], style="italic",
             bbox=dict(boxstyle="round,pad=0.16", facecolor="white", edgecolor="none", alpha=0.90), zorder=25)
 
-    # Labels with FINAL spacing
+    # Percent labels (unchanged)
     _place_all_percent_labels_panelB(ax, group_items)
 
     ax.set_xticks(x)
     fs_xt = 10 if cfg.fig_target == "col" else 14
     ax.set_xticklabels([f"Q={int(Q):,}".replace(",", " ") for Q in Qs], fontsize=fs_xt)
     ax.set_xlim(x[0] - 1.10, x[-1] + 1.10)
-    ax.set_ylim(0.0, 2.00) # Increased headroom significantly
+
+    # ✅ Keep headroom so the plot stays "like before"
+    ax.set_ylim(0.0, 2.00)
+
+    # ✅ But "stop" the y-axis labeling at 1.0 (ticks only up to 1.0)
+    yt = onp.linspace(0.0, 1.0, 6)  # 0.0,0.2,...,1.0
+    ax.set_yticks(yt)
+    ax.set_yticklabels([f"{t:.1f}" for t in yt])
 
     ax.set_xlabel(r"Sampling Budget $Q$")
     ax.set_ylabel("Recovered fraction")
 
-    # Legend above
+    # Legend inside Top-Left (like your good-looking original)
     legend_handles = [Line2D([0], [0], marker="D", linestyle="None", markersize=7,
                              markerfacecolor=COLORS["black"], markeredgecolor=COLORS["black"], label=r"Target $p^*$")]
     for arch in active_archs:
         legend_handles.append(Patch(facecolor=COLORS["hero"] if arch=="D" else "white", 
                                     edgecolor=COLORS["black"], hatch=ARCH_HATCH.get(arch, "///"), 
                                     label=f"Arch {arch}"))
-
-    ax.legend(handles=legend_handles, loc="lower center", bbox_to_anchor=(0.5, 1.02),
-              ncol=3, columnspacing=1.5, frameon=True, borderaxespad=0.0)
+    
+    fs_legend = 7 if cfg.fig_target == "col" else 10
+    ax.legend(handles=legend_handles, loc="upper left", bbox_to_anchor=(0.02, 0.98),
+              ncol=2, columnspacing=1.2, frameon=True, borderaxespad=0.0,
+              fontsize=fs_legend)
 
     path = os.path.join(outdir, "fig5_holdout_recovery_budgets.pdf")
     plt.savefig(path)
     plt.close()
     print(f"[Saved] {path}")
-
 
 # ------------------------------------------------------------------------------
 # 8) Main & Aggregation

@@ -4,45 +4,17 @@
 Hero Spectral Holdout-Discovery Master Script
 =============================================
 
-This script produces *paper-grade* experiments & plots that support the thesis:
+This is the **working master script** with the **final visual fixes** from your
+"FINAL VISUAL FIXES - GRAY CURVES" version integrated:
 
-    "Matching global Parity/Fourier moments (Random Parity Features)
-     + a spectral/bandlimit inductive bias  =>  Holdout-Discovery"
-
-Key idea:
-  - Use the exact same Random Parity Features as in your IQP-QCBM appendix (Fourier characters).
-  - Train data is sampled from p_train = p*(· | x ∉ H) (holdout strings H removed).
-  - We only observe/match K random parity moments z = E_emp[χ_α(x)].
-  - Under a "bandlimited" reconstruction (truncated Walsh inversion + positivity projection),
-    the recovered distribution q places *nontrivial mass on H* and yields high recovery R(Q).
-
-What you get (default run):
-  1) A sweep over sigma (feature sparsity/bandwidth) and K (#features),
-     producing a CSV + two heatmaps + a prediction scatter plot.
-  2) A 2x2 "Killer Story" overview figure (story.pdf) combining:
-       - q(H)/uniform heatmap
-       - Q80 heatmap
-       - predicted vs measured Q80
-       - recovery curve for the best setting (with inset zoom)
-  3) An adversarial "spectrally visible vs invisible holdout" ablation:
-       same p*(H), same feature set, but wildly different recovery.
-
-Optional:
-  - If Pennylane is installed and --use-iqp 1 is set, also trains an IQP-QCBM
-    with fixed "Hero" architecture D and compares IQP vs Spectral recovery.
-
-Dependencies (spectral part):
-  pip install numpy matplotlib scipy
-
-Optional (IQP part):
-  pip install pennylane
-
-Example:
-  # spectral sweep + adversarial demo (recommended)
-  python hero_spectral_discovery_master.py --outdir hero_spectral --adversarial 1
-
-  # also run IQP-QCBM comparison (requires pennylane)
-  python hero_spectral_discovery_master.py --outdir hero_spectral_iqp --use-iqp 1
+Visual updates (as requested):
+  - Plot 2 (Q80 heatmap): **Red→Black** gradient colormap.
+  - Plot 6a (Curves): "Invisible" curve is **Dark Gray** with **dash-dot** style.
+  - Plot 6b (Bars): "Invisible" bars are **White** with **Karo/XX** hatch pattern.
+  - Overall style: compact, paper-grade (Times/Serif), column/full figure sizes,
+    lighter grid, embedded fonts in PDF.
+  - **UPDATE**: Single-column plots strictly match '2_heatmap_Q80' size (Height=2.6).
+  - **UPDATE**: Plot 6a Legend moved to "free space" (top-right area, but below the saturated curves).
 
 Outputs (<outdir>/):
   sweep_results.csv
@@ -53,11 +25,19 @@ Outputs (<outdir>/):
   3_Q80_pred_vs_meas.pdf
   4_recovery_best.pdf
   5_moment_mse_vs_qH.pdf
-  6_adversarial_visibility.pdf     (if --adversarial 1)
-  7_iqp_training_dynamics.pdf      (if --use-iqp 1 and pennylane available)
-  8_iqp_vs_spectral_recovery.pdf   (if --use-iqp 1)
+  6a_adversarial_curves.pdf      (if --adversarial 1)
+  6b_adversarial_bars.pdf        (if --adversarial 1)
+  7_iqp_training_dynamics.pdf    (if --use-iqp 1 and pennylane available)
+  8_iqp_vs_spectral_recovery.pdf (if --use-iqp 1)
+  9_column_triptych.pdf
 
-Author: (you) + ChatGPT helper
+Dependencies (spectral):
+  pip install numpy matplotlib scipy
+
+Optional (IQP):
+  pip install pennylane
+
+Author: you (+ ChatGPT helper)
 """
 
 import os
@@ -71,8 +51,9 @@ from typing import Dict, List, Tuple, Optional
 
 import numpy as onp
 import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
 
-# Optional: SciPy (used for robust numerical utilities; not strictly required)
+# Optional: SciPy
 try:
     import scipy  # noqa: F401
 except Exception:
@@ -89,36 +70,63 @@ except Exception:
 
 
 # ------------------------------------------------------------------------------
-# 1) Visual Style (match your master scripts)
+# 1) Visual Style (paper-grade, column/full widths)
 # ------------------------------------------------------------------------------
+
+COL_W = 3.37   # single-column width (inches)
+FULL_W = 6.95  # full width (two-column) (inches)
+
+# UNIFORM HEIGHT matching '2_heatmap_Q80' (2.6 inches)
+UNIFORM_FIG_HEIGHT = 2.6
 
 COLORS = {
     "target": "#222222",   # almost black
     "model":  "#D62728",   # deep red
     "gray":   "#666666",
-    "blue":   "#1F77B4",
+    "blue":   "#1F77B4",   # kept for IQP vs spectral plot
 }
 
-def set_style():
+def fig_size(mode: str, h: float = None) -> Tuple[float, float]:
+    """
+    Returns (width, height).
+    If h is not provided, defaults to UNIFORM_FIG_HEIGHT (2.6) for consistency.
+    """
+    if h is None:
+        h = UNIFORM_FIG_HEIGHT
+        
+    if mode not in ("col", "full"):
+        raise ValueError("mode must be 'col' or 'full'")
+    w = COL_W if mode == "col" else FULL_W
+    return (w, h)
+
+def set_style(base: int = 8) -> None:
+    """Compact serif style + embedded fonts in PDF."""
     plt.rcParams.update({
         "font.family": "serif",
-        "font.serif": ["DejaVu Serif", "Times New Roman"],
-        "font.size": 12,
-        "axes.labelsize": 14,
-        "axes.titlesize": 14,
-        "legend.fontsize": 11,
+        "font.serif": ["Times New Roman", "DejaVu Serif"],
+        "font.size": base,
+        "axes.labelsize": base + 1,
+        "axes.titlesize": base + 1,
+        "legend.fontsize": base - 1,
         "legend.frameon": False,
-        "xtick.direction": "in",
-        "ytick.direction": "in",
-        "xtick.top": True,
-        "ytick.right": True,
+        "xtick.labelsize": base,
+        "ytick.labelsize": base,
+        "lines.linewidth": 1.4,
+        "lines.markersize": 4.0,
+        "axes.linewidth": 0.8,
+        "xtick.direction": "out",
+        "ytick.direction": "out",
+        "xtick.top": False,
+        "ytick.right": False,
         "axes.grid": True,
-        "grid.alpha": 0.15,
+        "grid.alpha": 0.12,
         "grid.linestyle": "--",
-        "lines.linewidth": 2.5,
-        "figure.dpi": 220,
+        "grid.linewidth": 0.6,
         "savefig.bbox": "tight",
-        "savefig.pad_inches": 0.12,
+        "savefig.pad_inches": 0.02,
+        "pdf.fonttype": 42,
+        "ps.fonttype": 42,
+        "figure.dpi": 300,
         "axes.spines.top": False,
         "axes.spines.right": False,
     })
@@ -127,12 +135,17 @@ def ensure_outdir(path: str) -> str:
     os.makedirs(path, exist_ok=True)
     return path
 
-def _end_label(ax, x, y, txt, color, dy=0.0, fs=10):
-    ax.text(x, y + dy, txt, color=color, fontweight="bold", ha="right", va="bottom", fontsize=fs)
+def _end_label(ax, x, y, txt, color, dy: float = 0.0, fs: int = 8) -> None:
+    ax.text(x, y + dy, txt, color=color, fontweight="bold",
+            ha="right", va="bottom", fontsize=fs)
+
+def _panel_label(ax, lab: str) -> None:
+    ax.text(-0.15, 1.05, lab, transform=ax.transAxes,
+            ha="left", va="bottom", fontweight="bold")
 
 
 # ------------------------------------------------------------------------------
-# 2) Target distribution + utilities (same logic as your IQP scripts)
+# 2) Target distribution + utilities
 # ------------------------------------------------------------------------------
 
 def int2bits(k: int, n: int) -> onp.ndarray:
@@ -174,7 +187,7 @@ def build_target_distribution(n: int, beta: float):
     p_star = unnorm / unnorm.sum()
     return p_star.astype(onp.float64), support, scores.astype(onp.float64)
 
-def topk_mask(scores, support, frac=0.05):
+def topk_mask(scores: onp.ndarray, support: onp.ndarray, frac: float = 0.05) -> onp.ndarray:
     valid = onp.where(support)[0]
     k = max(1, int(onp.floor(frac * valid.size)))
     local_order = onp.argsort(-scores[valid])
@@ -183,12 +196,12 @@ def topk_mask(scores, support, frac=0.05):
     mask[top_indices] = True
     return mask
 
-def sample_indices(probs, m, seed=7):
+def sample_indices(probs: onp.ndarray, m: int, seed: int = 7) -> onp.ndarray:
     rng = onp.random.default_rng(seed)
     p = probs / probs.sum()
     return rng.choice(len(p), size=m, replace=True, p=p)
 
-def empirical_dist(idxs, N):
+def empirical_dist(idxs: onp.ndarray, N: int) -> onp.ndarray:
     c = onp.bincount(idxs, minlength=N)
     return (c / max(1, c.sum())).astype(onp.float64)
 
@@ -213,7 +226,7 @@ def select_holdout_smart(
     seed: int,
 ) -> onp.ndarray:
     """
-    Your 'smart' holdout: prefer higher p*(x) (but not ultra-rare),
+    'Smart' holdout: prefer higher p*(x) (but not ultra-rare),
     then spread out in Hamming distance.
     """
     if holdout_k <= 0:
@@ -264,7 +277,7 @@ def save_holdout_list(
     scores: onp.ndarray,
     outdir: str,
     name: str = "holdout_strings_smart.txt",
-):
+) -> None:
     idxs = onp.where(holdout_mask)[0]
     if idxs.size == 0:
         return
@@ -287,7 +300,6 @@ def save_holdout_list(
 # ------------------------------------------------------------------------------
 
 def p_sigma(sigma: float) -> float:
-    """Same mapping used in your IQP scripts."""
     return 0.5 * (1.0 - math.exp(-1.0 / (2.0 * sigma ** 2))) if sigma > 0 else 0.5
 
 def sample_alphas(n: int, sigma: float, K: int, seed: int) -> onp.ndarray:
@@ -297,7 +309,6 @@ def sample_alphas(n: int, sigma: float, K: int, seed: int) -> onp.ndarray:
 def build_parity_matrix(alphas: onp.ndarray, bits_table: onp.ndarray) -> onp.ndarray:
     """
     P[k, x] = χ_{α_k}(x) = (-1)^{α_k · x} in {+1,-1}.
-    Returns float64 matrix of shape (K, N).
     """
     A = alphas.astype(onp.int16)
     X = bits_table.astype(onp.int16).T  # n x N
@@ -306,7 +317,6 @@ def build_parity_matrix(alphas: onp.ndarray, bits_table: onp.ndarray) -> onp.nda
 
 def alpha_stats(alphas: onp.ndarray) -> Tuple[int, float]:
     """(K_unique, mean Hamming weight)."""
-    # Unique rows
     a_view = alphas.view([("", alphas.dtype)] * alphas.shape[1])
     K_unique = int(onp.unique(a_view).shape[0])
     mean_wt = float(onp.mean(onp.sum(alphas, axis=1)))
@@ -320,10 +330,6 @@ def alpha_stats(alphas: onp.ndarray) -> Tuple[int, float]:
 def reconstruct_bandlimited(P: onp.ndarray, z: onp.ndarray, alphas: onp.ndarray, n: int) -> onp.ndarray:
     """
     Truncated Walsh inversion on selected characters + positivity projection.
-
-    Correct constant term:
-      z_{0} = E[χ_0] = 1 for any distribution.
-    If α=0 is included among the sampled alphas, we remove it from the sum to avoid double-counting.
     """
     N = 2 ** n
     zero_rows = onp.all(alphas == 0, axis=1)
@@ -360,7 +366,7 @@ def find_Q_threshold(
     thr: float = 0.8,
     Qmax: int = 200000,
 ) -> float:
-    """Smallest integer Q such that expected_unique_fraction >= thr. Returns inf if not reached by Qmax."""
+    """Smallest integer Q such that expected_unique_fraction >= thr."""
     H = int(onp.sum(mask))
     if H == 0:
         return float("nan")
@@ -388,8 +394,7 @@ def find_Q_threshold(
 
 def Q80_prediction_from_qH(qH: float, H_size: int) -> float:
     """
-    Back-of-envelope prediction (assuming roughly uniform mass on H):
-      R(Q) ≈ 1 - (1 - q(H)/|H|)^Q  =>  Q80 ≈ |H|/q(H)*ln(5)
+    R(Q) ≈ 1 - (1 - q(H)/|H|)^Q  =>  Q80 ≈ |H|/q(H)*ln(5)
     """
     if H_size <= 0 or qH <= 0:
         return float("inf")
@@ -399,59 +404,50 @@ def moment_mse(P: onp.ndarray, q: onp.ndarray, z: onp.ndarray) -> float:
     r = (P @ q) - z
     return float(onp.mean(r ** 2))
 
-def tvd(p: onp.ndarray, q: onp.ndarray) -> float:
-    return float(0.5 * onp.sum(onp.abs(p - q)))
-
-def score_mass_spectrum(scores: onp.ndarray, support: onp.ndarray, probs: onp.ndarray) -> Tuple[List[int], List[float]]:
-    """Aggregate probability mass by integer score."""
-    s_int = scores.astype(int)
-    valid_scores = s_int[support]
-    unique_s = sorted(onp.unique(valid_scores).tolist())
-    masses = []
-    for s in unique_s:
-        mask = (s_int == s) & support
-        masses.append(float(probs[mask].sum()))
-    return unique_s, masses
-
 
 # ------------------------------------------------------------------------------
-# 6) Pretty plots (paper-grade, in your style)
+# 6) Plotting functions (FIXED SIZE = 2.6 inches)
 # ------------------------------------------------------------------------------
+
+def _safe_log10_for_heatmap(data: onp.ndarray, clip_min: float = 1e-12) -> onp.ndarray:
+    data = onp.array(data, dtype=onp.float64)
+    plot_data = onp.log10(onp.clip(data, clip_min, None))
+    finite = onp.isfinite(plot_data)
+    if finite.any():
+        vmax = float(onp.max(plot_data[finite]))
+        plot_data = plot_data.copy()
+        plot_data[~finite] = vmax + 1.0  # push inf to top color
+    else:
+        plot_data = onp.zeros_like(plot_data)
+    return plot_data
 
 def plot_heatmap(
-    mat: onp.ndarray,
-    row_labels: List[str],
-    col_labels: List[str],
-    title: str,
-    cbar_label: str,
-    outpath: str,
+    mat,
+    row_labels,
+    col_labels,
+    title,
+    cbar_label,
+    outpath,
     log10: bool = False,
     fmt: str = "{:.0f}",
-    cmap: str = "magma",
-    vmin: Optional[float] = None,
-    vmax: Optional[float] = None,
-    annotate: bool = True,
-    annotate_color: str = "white",
+    cmap="magma",
+    mode: str = "col",
 ):
-    """
-    Generic heatmap with annotations.
-    If log10=True, colors use log10(mat) while annotations show raw values.
-    """
+    # Enforce size: COL_W x 2.6
     data = onp.array(mat, dtype=onp.float64)
-    plot_data = onp.log10(onp.clip(data, 1e-12, None)) if log10 else data
+    plot_data = _safe_log10_for_heatmap(data) if log10 else data
 
-    fig, ax = plt.subplots(figsize=(8.2, 4.8))
-    im = ax.imshow(plot_data, aspect="auto", cmap=cmap, vmin=vmin, vmax=vmax)
+    fig, ax = plt.subplots(figsize=fig_size(mode), constrained_layout=True)
+    im = ax.imshow(plot_data, aspect="auto", cmap=cmap)
 
     ax.set_xticks(onp.arange(len(col_labels)))
     ax.set_yticks(onp.arange(len(row_labels)))
     ax.set_xticklabels(col_labels)
     ax.set_yticklabels(row_labels)
     ax.set_xlabel("K (number of parity features)")
-    ax.set_ylabel(r"$\sigma$ (feature sparsity / bandwidth)")
-    ax.set_title(title)
+    ax.set_ylabel(r"$\sigma$ (feature sparsity)")
 
-    # gridlines
+    # Subtle cell grid
     ax.set_xticks(onp.arange(-.5, len(col_labels), 1), minor=True)
     ax.set_yticks(onp.arange(-.5, len(row_labels), 1), minor=True)
     ax.grid(which="minor", color="white", linestyle="-", linewidth=0.8, alpha=0.18)
@@ -460,91 +456,71 @@ def plot_heatmap(
     cbar = fig.colorbar(im, ax=ax, fraction=0.045, pad=0.02)
     cbar.set_label(cbar_label)
 
-    if annotate:
-        for i in range(data.shape[0]):
-            for j in range(data.shape[1]):
-                val = data[i, j]
-                if onp.isinf(val):
-                    txt = r"$\infty$"
-                else:
-                    txt = fmt.format(val)
-                ax.text(j, i, txt, ha="center", va="center", color=annotate_color, fontsize=10, fontweight="bold")
+    n_cells = data.shape[0] * data.shape[1]
+    fs = 7 if n_cells > 12 else 8
 
-    plt.tight_layout()
-    plt.savefig(outpath)
-    plt.close()
+    max_pd = float(onp.max(plot_data[onp.isfinite(plot_data)])) if onp.isfinite(plot_data).any() else 1.0
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            val = data[i, j]
+            txt = r"$\infty$" if onp.isinf(val) else fmt.format(val)
+
+            text_col = "white"
+            # Adjust text color for readability
+            if isinstance(cmap, str) and cmap in ("Reds", "YlOrRd", "Oranges", "Greys"):
+                 if plot_data[i, j] < max_pd * 0.5:
+                     text_col = "black"
+            if not isinstance(cmap, str):
+                pass
+
+            ax.text(j, i, txt, ha="center", va="center",
+                    color=text_col, fontsize=fs, fontweight="bold")
+
+    fig.savefig(outpath)
+    plt.close(fig)
     print(f"[Saved] {outpath}")
 
-def plot_prediction_scatter(
-    Q80_meas: List[float],
-    Q80_pred: List[float],
-    labels: List[str],
-    title: str,
-    outpath: str,
-):
-    """
-    Scatter: predicted vs measured Q80, both log-scaled, with y=x line.
-    """
+def plot_prediction_scatter(Q80_meas, Q80_pred, labels, title, outpath, mode: str = "col"):
     x = onp.array(Q80_pred, dtype=onp.float64)
     y = onp.array(Q80_meas, dtype=onp.float64)
-
-    # filter finite
     m = onp.isfinite(x) & onp.isfinite(y) & (x > 0) & (y > 0)
     xf, yf = x[m], y[m]
+    if xf.size == 0:
+        return
 
-    fig, ax = plt.subplots(figsize=(6.4, 5.2))
-    ax.scatter(xf, yf, s=70, facecolors="white", edgecolors=COLORS["model"], linewidths=2.0, alpha=0.9, zorder=3)
+    # Enforce size: COL_W x 2.6
+    fig, ax = plt.subplots(figsize=fig_size(mode), constrained_layout=True)
+    ax.scatter(xf, yf, s=45, facecolors="white",
+               edgecolors=COLORS["model"], linewidths=1.6, alpha=0.9, zorder=3)
 
-    # y=x
     lo = float(min(onp.min(xf), onp.min(yf)))
     hi = float(max(onp.max(xf), onp.max(yf)))
     xs = onp.logspace(onp.log10(lo), onp.log10(hi), 100)
-    ax.plot(xs, xs, color=COLORS["target"], linestyle="--", linewidth=2.0, alpha=0.7, label=r"$y=x$")
+    ax.plot(xs, xs, color=COLORS["target"], linestyle="--", linewidth=1.6, alpha=0.7, label=r"$y=x$")
 
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlabel(r"Predicted $Q_{80} \approx \frac{|H|}{q(H)}\ln 5$")
-    ax.set_ylabel(r"Measured $Q_{80}$ (from $U_H(Q)$)")
-    ax.set_title(title)
+    ax.set_ylabel(r"Measured $Q_{80}$")
 
-    # R^2 on log10
     lx = onp.log10(xf)
     ly = onp.log10(yf)
     if lx.size >= 2:
         r = onp.corrcoef(lx, ly)[0, 1]
-        ax.text(0.05, 0.95, f"log-corr = {r:.3f}", transform=ax.transAxes,
-                va="top", ha="left",
+        ax.text(0.05, 0.95, f"log-corr = {r:.3f}",
+                transform=ax.transAxes, va="top", ha="left",
                 bbox=dict(boxstyle="round", facecolor="white", alpha=0.9, edgecolor="#cccccc"))
 
     ax.legend(loc="lower right")
-    ax.grid(True, which="both", linestyle="--", alpha=0.15)
-
-    plt.tight_layout()
-    plt.savefig(outpath)
-    plt.close()
+    fig.savefig(outpath)
+    plt.close(fig)
     print(f"[Saved] {outpath}")
 
-def plot_recovery_curve(
-    p_star: onp.ndarray,
-    q_model: onp.ndarray,
-    holdout_mask: onp.ndarray,
-    outpath: str,
-    title: str,
-    Qmax: int = 10000,
-    add_uniform: bool = True,
-):
-    """
-    Paper-style recovery curve with inset zoom.
-    Plots expected unique fraction U_H(Q)/|H| for:
-      - Target p*
-      - Model q
-      - Uniform baseline (optional)
-    """
+def plot_recovery_curve(p_star, q_model, holdout_mask, outpath, title, Qmax: int = 10000, add_uniform: bool = True, mode: str = "col"):
     H = int(onp.sum(holdout_mask))
     if H == 0:
         return
 
-    # Dense Q for early region + linear tail
     Q = onp.unique(onp.concatenate([
         onp.unique(onp.logspace(0, 3.5, 120).astype(int)),
         onp.linspace(1000, Qmax, 160).astype(int),
@@ -554,97 +530,96 @@ def plot_recovery_curve(
     y_star = expected_unique_fraction(p_star, holdout_mask, Q)
     y_mod = expected_unique_fraction(q_model, holdout_mask, Q)
 
-    fig, ax = plt.subplots(figsize=(7.0, 5.2))
-    ax.plot(Q, y_star, color=COLORS["target"], linewidth=2.6, label=r"Target $p^*$", zorder=4)
-    ax.plot(Q, y_mod, color=COLORS["model"], linewidth=3.0, label=r"Reconstruction $q$", zorder=5)
+    # Enforce size: COL_W x 2.6
+    fig, ax = plt.subplots(figsize=fig_size(mode), constrained_layout=True)
+    ax.plot(Q, y_star, color=COLORS["target"], linewidth=1.9, label=r"Target $p^*$", zorder=4)
+    ax.plot(Q, y_mod,  color=COLORS["model"],  linewidth=2.2, label=r"Reconstruction $q$", zorder=5)
 
     if add_uniform:
         N = p_star.size
         u = onp.ones(N, dtype=onp.float64) / N
         y_u = expected_unique_fraction(u, holdout_mask, Q)
-        ax.plot(Q, y_u, color=COLORS["gray"], linewidth=2.2, linestyle="--", alpha=0.9, label="Uniform", zorder=3)
+        ax.plot(Q, y_u, color=COLORS["gray"], linewidth=1.6, linestyle="--",
+                alpha=0.9, label="Uniform", zorder=3)
 
     ax.axhline(1.0, color=COLORS["gray"], linestyle=":", alpha=0.7)
     ax.set_xlabel(r"$Q$ samples from model")
-    ax.set_ylabel(r"Recovery $R(Q)=U_H(Q)/|H|$")
+    ax.set_ylabel(r"Recovery $R(Q)$")
     ax.set_ylim(-0.02, 1.05)
-    ax.set_title(title)
-    ax.legend(loc="lower right", frameon=True, framealpha=0.95, edgecolor="white")
-    ax.grid(True, linestyle="--", alpha=0.15)
+    ax.legend(loc="lower right", frameon=False)
 
-    plt.tight_layout()
-    plt.savefig(outpath)
-    plt.close()
+    fig.savefig(outpath)
+    plt.close(fig)
     print(f"[Saved] {outpath}")
 
-def plot_moment_mse_vs_qH(results: List[Dict], outpath: str, title: str):
+def plot_moment_mse_vs_qH(results, outpath, title, mode: str = "col"):
     xs = onp.array([r["moment_mse"] for r in results], dtype=onp.float64)
     ys = onp.array([r["qH_ratio"] for r in results], dtype=onp.float64)
 
-    fig, ax = plt.subplots(figsize=(6.4, 5.0))
-    ax.scatter(xs, ys, s=70, facecolors="white", edgecolors=COLORS["model"], linewidths=2.0, alpha=0.9)
-    ax.set_xscale("log")
-    ax.set_xlabel("Moment MSE after positivity projection")
-    ax.set_ylabel(r"$q(H) / q_{\mathrm{unif}}(H)$")
-    ax.set_title(title)
-    ax.grid(True, which="both", linestyle="--", alpha=0.15)
+    # Enforce size: COL_W x 2.6
+    fig, ax = plt.subplots(figsize=fig_size(mode), constrained_layout=True)
+    ax.scatter(xs, ys, s=45, facecolors="white",
+               edgecolors=COLORS["model"], linewidths=1.6, alpha=0.9)
 
-    # highlight best few points (largest qH_ratio)
+    ax.set_xscale("log")
+    ax.set_xlabel("Moment MSE")
+    ax.set_ylabel(r"$q(H) / q_{\mathrm{unif}}(H)$")
+
     top = onp.argsort(-ys)[:3]
     for i in top:
-        ax.annotate(results[int(i)]["label"], (xs[int(i)], ys[int(i)]),
-                    textcoords="offset points", xytext=(6, 6), fontsize=9, color=COLORS["target"])
+        ax.annotate(results[int(i)]["label"],
+                    (xs[int(i)], ys[int(i)]),
+                    textcoords="offset points", xytext=(6, 6),
+                    fontsize=7, color=COLORS["target"])
 
-    plt.tight_layout()
-    plt.savefig(outpath)
-    plt.close()
+    fig.savefig(outpath)
+    plt.close(fig)
     print(f"[Saved] {outpath}")
 
 def plot_story_overview(
-    qH_ratio_mat: onp.ndarray,
-    Q80_mat: onp.ndarray,
-    sigmas: List[float],
-    Ks: List[int],
-    Q80_meas: List[float],
-    Q80_pred: List[float],
-    best_title: str,
-    p_star: onp.ndarray,
-    q_best: onp.ndarray,
-    holdout_mask: onp.ndarray,
-    outpath: str,
+    qH_ratio_mat,
+    Q80_mat,
+    sigmas,
+    Ks,
+    Q80_meas,
+    Q80_pred,
+    best_title,
+    p_star,
+    q_best,
+    holdout_mask,
+    outpath,
+    cmap_custom,
 ):
-    """
-    2x2 "killer story" paper figure.
-    """
-    fig, axes = plt.subplots(2, 2, figsize=(13.8, 9.0))
+    # Full width figure (kept at 4.8 as before)
+    fig, axes = plt.subplots(2, 2, figsize=fig_size("full", 4.8), constrained_layout=True)
 
-    # (1) qH ratio heatmap
+    # (1) qH ratio heatmap (Reds)
     ax = axes[0, 0]
     im = ax.imshow(qH_ratio_mat, aspect="auto", cmap="Reds", vmin=0.0)
     ax.set_xticks(onp.arange(len(Ks)))
     ax.set_xticklabels([str(k) for k in Ks])
     ax.set_yticks(onp.arange(len(sigmas)))
     ax.set_yticklabels([str(s) for s in sigmas])
-    ax.set_title(r"Discovery Signal: $q(H)/q_{\mathrm{unif}}(H)$")
     ax.set_xlabel("K")
     ax.set_ylabel(r"$\sigma$")
     cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.02)
     cbar.set_label(r"$q(H)/q_{\mathrm{unif}}(H)$")
+    mmax = float(onp.max(qH_ratio_mat)) if onp.isfinite(qH_ratio_mat).any() else 1.0
     for i in range(qH_ratio_mat.shape[0]):
         for j in range(qH_ratio_mat.shape[1]):
-            ax.text(j, i, f"{qH_ratio_mat[i,j]:.1f}", ha="center", va="center",
-                    color="white", fontsize=10, fontweight="bold")
+            tcol = "black" if qH_ratio_mat[i, j] < mmax * 0.5 else "white"
+            ax.text(j, i, f"{qH_ratio_mat[i, j]:.1f}",
+                    ha="center", va="center", color=tcol,
+                    fontsize=7, fontweight="bold")
 
-    # (2) Q80 heatmap (log color)
+    # (2) Q80 heatmap (Custom Red-Black, log-color)
     ax = axes[0, 1]
-    # log10 for color
-    plot_data = onp.log10(onp.clip(Q80_mat, 1e-9, None))
-    im = ax.imshow(plot_data, aspect="auto", cmap="magma")
+    plot_data = _safe_log10_for_heatmap(Q80_mat, clip_min=1e-9)
+    im = ax.imshow(plot_data, aspect="auto", cmap=cmap_custom)
     ax.set_xticks(onp.arange(len(Ks)))
     ax.set_xticklabels([str(k) for k in Ks])
     ax.set_yticks(onp.arange(len(sigmas)))
     ax.set_yticklabels([str(s) for s in sigmas])
-    ax.set_title(r"Sample Complexity: measured $Q_{80}$")
     ax.set_xlabel("K")
     ax.set_ylabel(r"$\sigma$")
     cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.02)
@@ -654,160 +629,212 @@ def plot_story_overview(
             v = Q80_mat[i, j]
             txt = r"$\infty$" if onp.isinf(v) else f"{int(v):d}"
             ax.text(j, i, txt, ha="center", va="center",
-                    color="white", fontsize=10, fontweight="bold")
+                    color="white", fontsize=7, fontweight="bold")
 
-    # (3) prediction scatter
+    # (3) Scatter (pred vs meas)
     ax = axes[1, 0]
     x = onp.array(Q80_pred, dtype=onp.float64)
     y = onp.array(Q80_meas, dtype=onp.float64)
     m = onp.isfinite(x) & onp.isfinite(y) & (x > 0) & (y > 0)
     xf, yf = x[m], y[m]
-    ax.scatter(xf, yf, s=65, facecolors="white", edgecolors=COLORS["model"], linewidths=2.0, alpha=0.9)
-    lo = float(min(onp.min(xf), onp.min(yf)))
-    hi = float(max(onp.max(xf), onp.max(yf)))
-    xs = onp.logspace(onp.log10(lo), onp.log10(hi), 100)
-    ax.plot(xs, xs, color=COLORS["target"], linestyle="--", linewidth=2.0, alpha=0.7)
-    ax.set_xscale("log")
-    ax.set_yscale("log")
-    ax.set_xlabel(r"Predicted $Q_{80}$")
-    ax.set_ylabel(r"Measured $Q_{80}$")
-    ax.set_title(r"Predictability: $Q_{80}$ from $q(H)$")
-    lx = onp.log10(xf); ly = onp.log10(yf)
-    if lx.size >= 2:
-        r = onp.corrcoef(lx, ly)[0, 1]
-        ax.text(0.05, 0.95, f"log-corr = {r:.3f}", transform=ax.transAxes,
-                va="top", ha="left",
-                bbox=dict(boxstyle="round", facecolor="white", alpha=0.9, edgecolor="#cccccc"))
-    ax.grid(True, which="both", linestyle="--", alpha=0.15)
+    if xf.size > 0:
+        ax.scatter(xf, yf, s=38, facecolors="white",
+                   edgecolors=COLORS["model"], linewidths=1.4, alpha=0.9)
+        lo = float(min(onp.min(xf), onp.min(yf)))
+        hi = float(max(onp.max(xf), onp.max(yf)))
+        xs = onp.logspace(onp.log10(lo), onp.log10(hi), 100)
+        ax.plot(xs, xs, color=COLORS["target"], linestyle="--", linewidth=1.6, alpha=0.7)
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        lx = onp.log10(xf)
+        ly = onp.log10(yf)
+        if lx.size >= 2:
+            r = onp.corrcoef(lx, ly)[0, 1]
+            ax.text(0.05, 0.95, f"log-corr = {r:.3f}",
+                    transform=ax.transAxes, va="top", ha="left",
+                    bbox=dict(boxstyle="round", facecolor="white", alpha=0.9, edgecolor="#cccccc"))
+    ax.set_xlabel("Predicted $Q_{80}$")
+    ax.set_ylabel("Measured $Q_{80}$")
 
-    # (4) recovery curve for best setting
+    # (4) Recovery curve (best)
     ax = axes[1, 1]
     H = int(onp.sum(holdout_mask))
+    if H > 0:
+        Q = onp.unique(onp.concatenate([
+            onp.unique(onp.logspace(0, 3.5, 110).astype(int)),
+            onp.linspace(1000, 10000, 120).astype(int),
+        ]))
+        Q = Q[Q <= 10000]
+        y_star = expected_unique_fraction(p_star, holdout_mask, Q)
+        y_best = expected_unique_fraction(q_best, holdout_mask, Q)
+        u = onp.ones_like(p_star) / p_star.size
+        y_u = expected_unique_fraction(u, holdout_mask, Q)
+        ax.plot(Q, y_star, color=COLORS["target"], linewidth=1.8, label=r"$p^*$")
+        ax.plot(Q, y_best, color=COLORS["model"], linewidth=2.1, label=r"best $q$")
+        ax.plot(Q, y_u, color=COLORS["gray"], linestyle="--", linewidth=1.5, label="uniform")
+        ax.axhline(1.0, color=COLORS["gray"], linestyle=":", alpha=0.7)
+        ax.set_ylim(-0.02, 1.05)
+        ax.set_xlabel(r"$Q$")
+        ax.set_ylabel(r"$R(Q)$")
+        ax.legend(loc="lower right", frameon=False)
+
+    fig.savefig(outpath)
+    plt.close(fig)
+    print(f"[Saved] {outpath}")
+
+def plot_column_triptych(results, p_star, q_best, holdout_mask, best_label, outpath):
+    fig, axs = plt.subplots(1, 3, figsize=fig_size("full", 2.5), constrained_layout=True)
+
+    # (a) Scatter
+    ax = axs[0]
+    _panel_label(ax, "(a)")
+    x = onp.array([r["Q80_pred"] for r in results])
+    y = onp.array([r["Q80"] for r in results])
+    m = onp.isfinite(x) & onp.isfinite(y) & (x > 0) & (y > 0)
+    xf, yf = x[m], y[m]
+    if xf.size > 0:
+        ax.scatter(xf, yf, s=38, facecolors="white", edgecolors=COLORS["model"], linewidths=1.4, alpha=0.9)
+        lo = float(min(onp.min(xf), onp.min(yf)))
+        hi = float(max(onp.max(xf), onp.max(yf)))
+        xs = onp.logspace(onp.log10(lo), onp.log10(hi), 100)
+        ax.plot(xs, xs, color=COLORS["target"], linestyle="--", linewidth=1.4, alpha=0.7)
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        lx = onp.log10(xf)
+        ly = onp.log10(yf)
+        if lx.size >= 2:
+            r = onp.corrcoef(lx, ly)[0, 1]
+            ax.text(0.05, 0.95, f"log-corr = {r:.3f}",
+                    transform=ax.transAxes, va="top", ha="left",
+                    bbox=dict(boxstyle="round", facecolor="white", alpha=0.9, edgecolor="#cccccc"))
+    ax.set_xlabel("Predicted $Q_{80}$")
+    ax.set_ylabel("Measured $Q_{80}$")
+
+    # (b) MSE vs qH
+    ax = axs[1]
+    _panel_label(ax, "(b)")
+    xs = onp.array([r["moment_mse"] for r in results])
+    ys = onp.array([r["qH_ratio"] for r in results])
+    ax.scatter(xs, ys, s=38, facecolors="white", edgecolors=COLORS["model"], linewidths=1.4, alpha=0.9)
+    ax.set_xscale("log")
+    ax.set_xlabel("Moment MSE")
+    ax.set_ylabel(r"$q(H)/q_{\mathrm{unif}}(H)$")
+
+    # (c) Recovery curve
+    ax = axs[2]
+    _panel_label(ax, "(c)")
     Q = onp.unique(onp.concatenate([
-        onp.unique(onp.logspace(0, 3.5, 110).astype(int)),
-        onp.linspace(1000, 10000, 120).astype(int),
+        onp.unique(onp.logspace(0, 3.5, 120).astype(int)),
+        onp.linspace(1000, 10000, 160).astype(int),
     ]))
     Q = Q[Q <= 10000]
-
     y_star = expected_unique_fraction(p_star, holdout_mask, Q)
     y_best = expected_unique_fraction(q_best, holdout_mask, Q)
     u = onp.ones_like(p_star) / p_star.size
     y_u = expected_unique_fraction(u, holdout_mask, Q)
-
-    ax.plot(Q, y_star, color=COLORS["target"], linewidth=2.6, label=r"Target $p^*$")
-    ax.plot(Q, y_best, color=COLORS["model"], linewidth=3.0, label=r"Best $q$")
-    ax.plot(Q, y_u, color=COLORS["gray"], linestyle="--", linewidth=2.0, label="Uniform")
+    ax.plot(Q, y_star, color=COLORS["target"], linewidth=1.9, label=r"$p^*$")
+    ax.plot(Q, y_best, color=COLORS["model"], linewidth=2.2, label="best $q$")
+    ax.plot(Q, y_u, color=COLORS["gray"], linestyle="--", linewidth=1.5, label="uniform")
     ax.axhline(1.0, color=COLORS["gray"], linestyle=":", alpha=0.7)
     ax.set_ylim(-0.02, 1.05)
     ax.set_xlabel(r"$Q$")
     ax.set_ylabel(r"$R(Q)$")
-    ax.set_title(best_title)
-    ax.legend(loc="lower right", frameon=True, framealpha=0.95, edgecolor="white")
-    ax.grid(True, linestyle="--", alpha=0.15)
+    ax.legend(loc="lower right", frameon=False)
 
-    fig.suptitle("Holdout-Discovery ⇔ Spectral Constraints (bandlimited reconstruction)", y=0.995, fontsize=15)
-    plt.tight_layout()
-    plt.savefig(outpath)
-    plt.close()
+    fig.savefig(outpath)
+    plt.close(fig)
     print(f"[Saved] {outpath}")
 
-def plot_adversarial_visibility(
-    p_star: onp.ndarray,
-    holdout_visible: onp.ndarray,
-    holdout_invisible: onp.ndarray,
-    q_vis: onp.ndarray,
-    q_inv: onp.ndarray,
-    outpath: str,
-    title: str,
-):
-    """
-    One killer ablation figure:
-      - Recovery curves for H_visible vs H_invisible (same |H| and same p*(H)).
-      - Bar comparison at Q=1e3 and 1e4.
-    """
+def plot_adversarial_visibility_split(p_star, holdout_visible, holdout_invisible, q_vis, q_inv, outdir):
+    """Two separate panels (6a curves, 6b bars) with the requested final styling."""
     H = int(onp.sum(holdout_visible))
     assert H == int(onp.sum(holdout_invisible)), "Holdout sizes must match."
 
+    # --- Plot 6a: Curves ---
     Q = onp.unique(onp.concatenate([
         onp.unique(onp.logspace(0, 3.5, 110).astype(int)),
         onp.linspace(1000, 10000, 120).astype(int),
     ]))
     Q = Q[Q <= 10000]
 
-    # curves
-    y_star_vis = expected_unique_fraction(p_star, holdout_visible, Q)
-    y_star_inv = expected_unique_fraction(p_star, holdout_invisible, Q)
+    y_star = expected_unique_fraction(p_star, holdout_visible, Q)
     y_vis = expected_unique_fraction(q_vis, holdout_visible, Q)
     y_inv = expected_unique_fraction(q_inv, holdout_invisible, Q)
+
     u = onp.ones_like(p_star) / p_star.size
-    y_u_vis = expected_unique_fraction(u, holdout_visible, Q)
-    y_u_inv = expected_unique_fraction(u, holdout_invisible, Q)
+    y_u = expected_unique_fraction(u, holdout_visible, Q)
 
-    # bar points
-    Qbars = onp.array([1000, 10000], dtype=int)
-    b_star = onp.array([
-        expected_unique_fraction(p_star, holdout_visible, Qbars),
-        expected_unique_fraction(p_star, holdout_invisible, Qbars),
-    ])
-    b_vis = expected_unique_fraction(q_vis, holdout_visible, Qbars)
-    b_inv = expected_unique_fraction(q_inv, holdout_invisible, Qbars)
-    b_u_vis = expected_unique_fraction(u, holdout_visible, Qbars)
-    b_u_inv = expected_unique_fraction(u, holdout_invisible, Qbars)
+    # Enforce size: COL_W x 2.6
+    fig, ax = plt.subplots(figsize=fig_size("col"), constrained_layout=True)
+    ax.plot(Q, y_star, color=COLORS["target"], linewidth=1.9, label=r"Target $p^*$", zorder=4)
+    ax.plot(Q, y_vis,  color=COLORS["model"],  linewidth=2.2, label=r"Visible $H_{\mathrm{vis}}$", zorder=6)
 
-    fig = plt.figure(figsize=(13.2, 5.3))
-    gs = fig.add_gridspec(1, 2, width_ratios=[1.6, 1.0])
+    # CHANGED: Invisible curve is dark gray + dash-dot
+    ax.plot(Q, y_inv,  color="#555555", linestyle="-.", linewidth=1.9,
+            label=r"Invisible $H_{\mathrm{inv}}$", zorder=5)
 
-    ax = fig.add_subplot(gs[0, 0])
-    ax.plot(Q, y_star_vis, color=COLORS["target"], linewidth=2.6, label=r"Target $p^*$", zorder=4)
-    ax.plot(Q, y_vis, color=COLORS["model"], linewidth=3.0, label=r"Visible holdout $H_{\mathrm{vis}}$", zorder=6)
-    ax.plot(Q, y_inv, color=COLORS["blue"], linewidth=2.6, label=r"Invisible holdout $H_{\mathrm{inv}}$", zorder=5)
-    ax.plot(Q, y_u_vis, color=COLORS["gray"], linestyle="--", linewidth=2.0, label="Uniform", zorder=3)
-
+    ax.plot(Q, y_u, color=COLORS["gray"], linestyle="--", linewidth=1.5, label="Uniform", zorder=3)
     ax.axhline(1.0, color=COLORS["gray"], linestyle=":", alpha=0.7)
     ax.set_ylim(-0.02, 1.05)
     ax.set_xlabel(r"$Q$")
-    ax.set_ylabel(r"Recovery $R(Q)$")
-    ax.set_title("Recovery curves (same |H| and same p*(H))")
-    ax.legend(loc="lower right", frameon=True, framealpha=0.95, edgecolor="white")
-    ax.grid(True, linestyle="--", alpha=0.15)
+    ax.set_ylabel(r"$R(Q)$")
+    
+    # MODIFIED LEGEND LOCATION
+    # "oben rechts sein aber nicht ganz oben rechts sondern das es im freien space ist"
+    # This places the top-right corner of the legend at y=0.78, putting the legend body in the gap
+    ax.legend(loc="upper right", bbox_to_anchor=(1.0, 0.78), frameon=False)
 
-    axb = fig.add_subplot(gs[0, 1])
+    outpath_a = os.path.join(outdir, "6a_adversarial_curves.pdf")
+    fig.savefig(outpath_a)
+    plt.close(fig)
+    print(f"[Saved] {outpath_a}")
+
+    # --- Plot 6b: Bars ---
+    Qbars = onp.array([1000, 10000], dtype=int)
+    b_star = expected_unique_fraction(p_star, holdout_visible, Qbars)
+    b_vis = expected_unique_fraction(q_vis, holdout_visible, Qbars)
+    b_inv = expected_unique_fraction(q_inv, holdout_invisible, Qbars)
+    b_u = expected_unique_fraction(u, holdout_visible, Qbars)
+
+    # Enforce size: COL_W x 2.6
+    fig, ax = plt.subplots(figsize=fig_size("col"), constrained_layout=True)
     x = onp.arange(len(Qbars))
     w = 0.23
 
-    # Target (hatched)
-    axb.bar(x - w, b_star[0], w, color="white", edgecolor="#333333", hatch="///", alpha=0.9, label=r"Target $p^*$")
-    # Visible (red)
-    axb.bar(x, b_vis, w, color=COLORS["model"], edgecolor="black", alpha=0.85, label=r"$H_{\mathrm{vis}}$")
-    # Invisible (blue)
-    axb.bar(x + w, b_inv, w, color=COLORS["blue"], edgecolor="black", alpha=0.85, label=r"$H_{\mathrm{inv}}$")
+    # Target: White with diagonal hatch
+    ax.bar(x - w, b_star, w, color="white", edgecolor="#333333", hatch="///",
+           alpha=0.9, label=r"Target $p^*$")
+    # Visible: Red
+    ax.bar(x, b_vis, w, color=COLORS["model"], edgecolor="black",
+           alpha=0.85, label=r"$H_{\mathrm{vis}}$")
+    # Invisible: White with Karo (XX)
+    ax.bar(x + w, b_inv, w, color="white", edgecolor="black", hatch="XX",
+           alpha=1.0, label=r"$H_{\mathrm{inv}}$")
 
-    # Uniform line
-    axb.axhline(float(b_u_vis[1]), color=COLORS["gray"], linestyle="--", alpha=0.6)
-    axb.text(1.05, float(b_u_vis[1]) + 0.03, "Uniform", color=COLORS["gray"], va="bottom", ha="left", fontsize=9)
+    # Uniform line at Q=10k baseline (same for both holdouts since |H| matches)
+    ax.axhline(float(b_u[1]), color=COLORS["gray"], linestyle="--", alpha=0.6)
+    ax.text(1.05, float(b_u[1]) + 0.03, "Uniform", color=COLORS["gray"],
+            va="bottom", ha="left", fontsize=7)
 
     def _lbl(xpos, val, color):
-        axb.text(xpos, float(val) + 0.03, f"{100*float(val):.0f}%", ha="center", va="bottom",
-                 fontsize=10, fontweight="bold", color=color)
+        ax.text(xpos, float(val) + 0.03, f"{100*float(val):.0f}%",
+                ha="center", va="bottom", fontsize=8, fontweight="bold", color=color)
 
     for i in range(len(Qbars)):
-        _lbl(x[i] - w, b_star[0, i], "#333333")
-        _lbl(x[i],     b_vis[i],     "#800000")
-        _lbl(x[i] + w, b_inv[i],     "#0d2a6b")
+        _lbl(x[i] - w, b_star[i], "#333333")
+        _lbl(x[i],     b_vis[i],  "#800000")
+        _lbl(x[i] + w, b_inv[i],  "black")
 
-    axb.set_xticks(x)
-    axb.set_xticklabels([f"Q={int(q)}" for q in Qbars])
-    axb.set_ylim(0, 1.15)
-    axb.set_ylabel("Recovered fraction")
-    axb.set_title("Recovery snapshot")
-    axb.legend(loc="upper left", frameon=True, framealpha=0.95, edgecolor="white")
-    axb.grid(True, axis="y", linestyle="--", alpha=0.15)
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"Q={int(q)}" for q in Qbars])
+    ax.set_ylim(0, 1.15)
+    ax.set_ylabel("Recovered fraction")
+    ax.legend(loc="upper left", frameon=False)
 
-    fig.suptitle(title, y=0.995, fontsize=15)
-    plt.tight_layout()
-    plt.savefig(outpath)
-    plt.close()
-    print(f"[Saved] {outpath}")
+    outpath_b = os.path.join(outdir, "6b_adversarial_bars.pdf")
+    fig.savefig(outpath_b)
+    plt.close(fig)
+    print(f"[Saved] {outpath_b}")
 
 
 # ------------------------------------------------------------------------------
@@ -815,9 +842,10 @@ def plot_adversarial_visibility(
 # ------------------------------------------------------------------------------
 
 def get_iqp_topology(n: int, arch: str = "D"):
-    """Same topology logic as your master script. arch=D is the Hero default."""
     pairs, quads = [], []
-    def clean(l): return sorted(list(set(l)))
+
+    def clean(l): 
+        return sorted(list(set(l)))
 
     if arch in ["A", "B", "C", "D"]:
         pairs.extend([tuple(sorted((i, (i + 1) % n))) for i in range(n)])
@@ -829,7 +857,7 @@ def get_iqp_topology(n: int, arch: str = "D"):
         pairs = list(itertools.combinations(range(n), 2))
     return clean(pairs), clean(quads)
 
-def iqp_circuit(W, wires, pairs, quads, layers=1):
+def iqp_circuit(W, wires, pairs, quads, layers: int = 1):
     idx = 0
     for w in wires:
         qml.Hadamard(wires=w)
@@ -855,8 +883,7 @@ def train_iqp_qcbm(
     eval_every: int,
 ) -> Tuple[onp.ndarray, Dict[str, List[float]]]:
     """
-    Train an IQP-QCBM to match parity moments (MMD loss in feature space).
-    Returns final q_theta and training history.
+    Train an IQP-QCBM to match parity moments (MSE loss in feature space).
     """
     if not HAS_PENNYLANE:
         raise RuntimeError("Pennylane is not installed. Run `pip install pennylane` or disable --use-iqp.")
@@ -877,7 +904,7 @@ def train_iqp_qcbm(
     W = np.array(0.01 * rng.standard_normal(num_params), requires_grad=True)
 
     opt = qml.AdamOptimizer(lr)
-    hist = {"step": [], "loss": []}
+    hist: Dict[str, List[float]] = {"step": [], "loss": []}
 
     def loss_fn(w):
         q = circuit(w)
@@ -900,17 +927,15 @@ def plot_iqp_training_dynamics(hist: Dict[str, List[float]], outpath: str, title
     st = onp.array(hist["step"], dtype=int)
     loss = onp.array(hist["loss"], dtype=onp.float64)
 
-    fig, ax = plt.subplots(figsize=(7.0, 5.0))
-    ax.plot(st, loss, color=COLORS["target"], linewidth=3.0, label="MMD loss")
+    # Enforce size: COL_W x 2.6
+    fig, ax = plt.subplots(figsize=fig_size("col"), constrained_layout=True)
+    ax.plot(st, loss, color=COLORS["target"], linewidth=2.1, label="MMD loss")
     ax.set_yscale("log")
     ax.set_xlabel("Training steps")
     ax.set_ylabel("Loss")
-    ax.set_title(title)
-    ax.grid(True, linestyle="--", alpha=0.15)
-    _end_label(ax, st[-1], loss[-1], f"{loss[-1]:.2e}", COLORS["target"], dy=0.05*loss[-1])
-    plt.tight_layout()
-    plt.savefig(outpath)
-    plt.close()
+    _end_label(ax, st[-1], loss[-1], f"{loss[-1]:.2e}", COLORS["target"], dy=0.05 * loss[-1], fs=8)
+    fig.savefig(outpath)
+    plt.close(fig)
     print(f"[Saved] {outpath}")
 
 
@@ -936,7 +961,7 @@ class Config:
 
     # Adversarial demo
     adversarial: bool = True
-    adv_score_level: int = 7       # pick holdouts from one score level for equal p*(x)
+    adv_score_level: int = 7
     adv_sigma: float = 1.0
     adv_K: int = 512
 
@@ -946,23 +971,22 @@ class Config:
     iqp_lr: float = 0.05
     iqp_eval_every: int = 50
     iqp_layers: int = 1
-    iqp_arch: str = "D"            # fixed Hero architecture by default
+    iqp_arch: str = "D"
 
     outdir: str = "hero_spectral_discovery"
-
 
 def run_sweep(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.ndarray, good_mask: onp.ndarray, bits_table: onp.ndarray) -> List[Dict]:
     """Sweep over sigma and K. Returns list of result dicts."""
     N = p_star.size
     H_size = int(onp.sum(holdout_mask))
 
-    # Build training distribution (holdout removed)
+    # Training distribution (holdout removed)
     p_train = p_star.copy()
     if H_size > 0:
         p_train[holdout_mask] = 0.0
         p_train /= p_train.sum()
 
-    # Fixed training dataset (same across sweep)
+    # Fixed training dataset
     idxs_train = sample_indices(p_train, cfg.train_m, seed=cfg.seed + 7)
     emp = empirical_dist(idxs_train, N)
 
@@ -976,7 +1000,7 @@ def run_sweep(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.ndarray, good_
     for si, sigma in enumerate(cfg.sigmas):
         # sample a superset of alphas for nesting across K
         alphas_sup = sample_alphas(cfg.n, float(sigma), maxK, seed=cfg.seed + 222 + 13 * si)
-        P_sup = build_parity_matrix(alphas_sup, bits_table)  # (maxK, N)
+        P_sup = build_parity_matrix(alphas_sup, bits_table)
 
         for K in cfg.Ks:
             alphas = alphas_sup[:K]
@@ -1056,10 +1080,7 @@ def rerun_single_setting(
     sigma: float,
     K: int,
 ) -> Tuple[onp.ndarray, onp.ndarray, onp.ndarray]:
-    """
-    For plotting the 'best' setting: rebuild nested alphas deterministically
-    and return (alphas, P, q_recon).
-    """
+    """Rebuild nested alphas deterministically and return (alphas, P, q_recon)."""
     N = p_star.size
     H_size = int(onp.sum(holdout_mask))
 
@@ -1071,8 +1092,6 @@ def rerun_single_setting(
     idxs_train = sample_indices(p_train, cfg.train_m, seed=cfg.seed + 7)
     emp = empirical_dist(idxs_train, N)
 
-    # Rebuild alphas superset for deterministic consistency with sweep:
-    # Find sigma index
     si = [i for i, s in enumerate(cfg.sigmas) if float(s) == float(sigma)][0]
     maxK = int(max(cfg.Ks))
     alphas_sup = sample_alphas(cfg.n, float(sigma), maxK, seed=cfg.seed + 222 + 13 * si)
@@ -1095,16 +1114,15 @@ def run_adversarial_demo(
 ):
     """
     Adversarial: pick H_vis vs H_inv with same p*(H) by choosing within one score level.
-    Visibility is defined by a *bandlimited approximation* of p* under the same (sigma,K) features.
+    Visibility is defined by a bandlimited approximation of p* under the same (sigma,K) features.
     """
     N = p_star.size
     s_int = scores.astype(int)
 
-    # Candidate pool: pick within ONE score level => identical p*(x) per state.
-    # If the requested score level is too small, we auto-fallback to the most frequent viable score.
     from collections import Counter
     score_counts = Counter(s_int[good_mask].tolist())
     preferred = int(cfg.adv_score_level)
+
     if score_counts.get(preferred, 0) < cfg.holdout_k:
         viable = [(s, c) for (s, c) in score_counts.items() if c >= cfg.holdout_k]
         if not viable:
@@ -1117,6 +1135,7 @@ def run_adversarial_demo(
               f"using score={preferred} (count={score_counts[preferred]}).")
     else:
         print(f"[Adv] using score level {preferred} (count={score_counts[preferred]}).")
+
     cand = onp.where(good_mask & (s_int == preferred))[0]
 
     # Build feature set once
@@ -1133,36 +1152,31 @@ def run_adversarial_demo(
     H_inv_idxs = cand[order[:cfg.holdout_k]]
     H_vis_idxs = cand[order[-cfg.holdout_k:]]
 
-    holdout_inv = onp.zeros(N, dtype=bool); holdout_inv[H_inv_idxs] = True
-    holdout_vis = onp.zeros(N, dtype=bool); holdout_vis[H_vis_idxs] = True
+    holdout_inv = onp.zeros(N, dtype=bool)
+    holdout_inv[H_inv_idxs] = True
+    holdout_vis = onp.zeros(N, dtype=bool)
+    holdout_vis[H_vis_idxs] = True
 
-    # Sanity: p*(H) must match closely (it will, by construction)
     pH_vis = float(p_star[holdout_vis].sum())
     pH_inv = float(p_star[holdout_inv].sum())
     print(f"[Adv] p*(H_vis)={pH_vis:.6f}, p*(H_inv)={pH_inv:.6f} (should match)")
 
-    # Run the actual holdout training->reconstruction pipeline for each H
-    def train_and_reconstruct(holdout_mask: onp.ndarray, seed_offset: int) -> onp.ndarray:
+    def train_and_reconstruct(holdout_mask_local: onp.ndarray, seed_offset: int) -> onp.ndarray:
         p_train = p_star.copy()
-        p_train[holdout_mask] = 0.0
+        p_train[holdout_mask_local] = 0.0
         p_train /= p_train.sum()
         idxs_train = sample_indices(p_train, cfg.train_m, seed=cfg.seed + 7 + seed_offset)
         emp = empirical_dist(idxs_train, N)
         z = P @ emp
-        q = reconstruct_bandlimited(P, z, alphas, cfg.n)
-        return q
+        return reconstruct_bandlimited(P, z, alphas, cfg.n)
 
     q_vis = train_and_reconstruct(holdout_vis, seed_offset=0)
     q_inv = train_and_reconstruct(holdout_inv, seed_offset=123)
 
-    # Save holdout lists
     save_holdout_list(holdout_vis, bits_table, p_star, scores, outdir, name="holdout_strings_visible.txt")
     save_holdout_list(holdout_inv, bits_table, p_star, scores, outdir, name="holdout_strings_invisible.txt")
 
-    # Plot
-    outpath = os.path.join(outdir, "6_adversarial_visibility.pdf")
-    title = f"Adversarial ablation: spectral visibility controls discovery (sigma={cfg.adv_sigma:g}, K={cfg.adv_K})"
-    plot_adversarial_visibility(p_star, holdout_vis, holdout_inv, q_vis, q_inv, outpath, title)
+    plot_adversarial_visibility_split(p_star, holdout_vis, holdout_inv, q_vis, q_inv, outdir)
 
 def maybe_run_iqp_comparison(
     cfg: Config,
@@ -1179,7 +1193,6 @@ def maybe_run_iqp_comparison(
     if not HAS_PENNYLANE:
         raise RuntimeError("You set --use-iqp 1 but pennylane is not installed. Run `pip install pennylane`.")
 
-    # Build training data (fixed)
     N = p_star.size
     p_train = p_star.copy()
     if onp.any(holdout_mask):
@@ -1189,12 +1202,11 @@ def maybe_run_iqp_comparison(
     emp = empirical_dist(idxs_train, N)
 
     # Build parity features for (best_sigma, best_K)
-    # (use deterministic seed so it matches your narrative)
     alphas = sample_alphas(cfg.n, float(best_sigma), int(best_K), seed=cfg.seed + 2024)
     P = build_parity_matrix(alphas, bits_table)
     z = P @ emp
 
-    # Train IQP-QCBM (Hero arch D)
+    # Train IQP-QCBM
     q_iqp, hist = train_iqp_qcbm(
         n=cfg.n,
         layers=cfg.iqp_layers,
@@ -1207,19 +1219,16 @@ def maybe_run_iqp_comparison(
         eval_every=cfg.iqp_eval_every,
     )
 
-    # Plot training dynamics
     plot_iqp_training_dynamics(
         hist,
         outpath=os.path.join(outdir, "7_iqp_training_dynamics.pdf"),
         title=f"IQP-QCBM training dynamics (Hero arch={cfg.iqp_arch}, L={cfg.iqp_layers})",
     )
 
-    # Compare recovery curves: IQP vs spectral
-    # spectral reconstruction for the same (sigma,K) and same training set
-    z_emp = z
-    q_spec = reconstruct_bandlimited(P, z_emp, alphas, cfg.n)
+    # Spectral reconstruction for same (sigma,K) and same training set
+    q_spec = reconstruct_bandlimited(P, z, alphas, cfg.n)
 
-    # Combined comparison plot
+    # Combined comparison plot (keep blue for spectral here)
     Q = onp.unique(onp.concatenate([
         onp.unique(onp.logspace(0, 3.5, 120).astype(int)),
         onp.linspace(1000, cfg.Qmax, 180).astype(int),
@@ -1232,24 +1241,22 @@ def maybe_run_iqp_comparison(
     u = onp.ones_like(p_star) / p_star.size
     y_u = expected_unique_fraction(u, holdout_mask, Q)
 
-    fig, ax = plt.subplots(figsize=(7.2, 5.2))
-    ax.plot(Q, y_star, color=COLORS["target"], linewidth=2.6, label=r"Target $p^*$")
-    ax.plot(Q, y_iqp, color=COLORS["model"], linewidth=3.0, label=r"IQP-QCBM $q_\theta$")
-    ax.plot(Q, y_spec, color=COLORS["blue"], linewidth=2.6, label=r"Spectral recon $q$")
-    ax.plot(Q, y_u, color=COLORS["gray"], linestyle="--", linewidth=2.0, label="Uniform")
+    # Enforce size: COL_W x 2.6
+    fig, ax = plt.subplots(figsize=fig_size("col"), constrained_layout=True)
+    ax.plot(Q, y_star, color=COLORS["target"], linewidth=1.9, label=r"Target $p^*$")
+    ax.plot(Q, y_iqp,  color=COLORS["model"],  linewidth=2.2, label=r"IQP-QCBM $q_\theta$")
+    ax.plot(Q, y_spec, color="#555555", linestyle="-.", linewidth=1.9, label=r"Spectral recon $q$")
+    ax.plot(Q, y_u, color=COLORS["gray"], linestyle="--", linewidth=1.5, label="Uniform")
     ax.axhline(1.0, color=COLORS["gray"], linestyle=":", alpha=0.7)
 
     ax.set_ylim(-0.02, 1.05)
     ax.set_xlabel(r"$Q$")
     ax.set_ylabel(r"Recovery $R(Q)$")
-    ax.set_title(f"IQP vs Spectral Holdout-Discovery (sigma={best_sigma:g}, K={best_K})")
-    ax.legend(loc="lower right", frameon=True, framealpha=0.95, edgecolor="white")
-    ax.grid(True, linestyle="--", alpha=0.15)
+    ax.legend(loc="lower right", frameon=False)
 
-    plt.tight_layout()
     outpath = os.path.join(outdir, "8_iqp_vs_spectral_recovery.pdf")
-    plt.savefig(outpath)
-    plt.close()
+    fig.savefig(outpath)
+    plt.close(fig)
     print(f"[Saved] {outpath}")
 
 
@@ -1267,7 +1274,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--outdir", type=str, default="hero_spectral_discovery")
 
-    parser.add_argument("--n", type=int, default=14)
+    parser.add_argument("--n", type=int, default=16)
     parser.add_argument("--beta", type=float, default=0.9)
     parser.add_argument("--train-m", type=int, default=1000)
 
@@ -1292,11 +1299,11 @@ def main():
     parser.add_argument("--iqp-lr", type=float, default=0.05)
     parser.add_argument("--iqp-eval-every", type=int, default=50)
     parser.add_argument("--iqp-layers", type=int, default=1)
-    parser.add_argument("--iqp-arch", type=str, default="D", choices=["A","B","C","D","E"])
+    parser.add_argument("--iqp-arch", type=str, default="D", choices=["A", "B", "C", "D", "E"])
 
     args = parser.parse_args()
 
-    set_style()
+    set_style(base=8)
     outdir = ensure_outdir(args.outdir)
 
     cfg = Config(
@@ -1324,7 +1331,7 @@ def main():
         outdir=outdir,
     )
 
-    # Save config for reproducibility
+    # Save config
     with open(os.path.join(outdir, "config.json"), "w", encoding="utf-8") as f:
         json.dump(cfg.__dict__, f, indent=2)
 
@@ -1337,7 +1344,7 @@ def main():
 
     print(f"[Target] |G|={int(onp.sum(good_mask))} | p*(G)={float(p_star[good_mask].sum()):.6f}")
 
-    # Smart holdout (paper-like)
+    # Smart holdout
     holdout_mask = select_holdout_smart(
         p_star=p_star,
         good_mask=good_mask,
@@ -1357,68 +1364,77 @@ def main():
     csv_path = os.path.join(outdir, "sweep_results.csv")
     save_results_csv(results, csv_path)
 
-    # Matrices for heatmaps
+    # Matrices
     qH_ratio_mat, Q80_mat = build_result_matrices(results, cfg.sigmas, cfg.Ks)
 
-    # Individual plots
+    # Custom red-black colormap for Q80 heatmap
+    cmap_rb = LinearSegmentedColormap.from_list("RedBlack", ["#FF0000", "#000000"])
+
+    # PLOT 1: qH ratio (Reds)
     plot_heatmap(
         qH_ratio_mat,
         row_labels=[str(s) for s in cfg.sigmas],
         col_labels=[str(k) for k in cfg.Ks],
-        title=r"Holdout discovery signal: $q(H)/q_{\mathrm{unif}}(H)$",
+        title="qH ratio",
         cbar_label=r"$q(H)/q_{\mathrm{unif}}(H)$",
         outpath=os.path.join(outdir, "1_heatmap_qH_ratio.pdf"),
         log10=False,
         fmt="{:.1f}",
         cmap="Reds",
-        annotate=True,
-        annotate_color="white",
+        mode="col",
     )
 
+    # PLOT 2: Q80 (Red→Black)
     plot_heatmap(
         Q80_mat,
         row_labels=[str(s) for s in cfg.sigmas],
         col_labels=[str(k) for k in cfg.Ks],
-        title=r"Measured sample complexity: $Q_{80}$",
-        cbar_label=r"$\log_{10} Q_{80}$ (color)",
+        title="Q80",
+        cbar_label=r"$\log_{10} Q_{80}$",
         outpath=os.path.join(outdir, "2_heatmap_Q80.pdf"),
         log10=True,
         fmt="{:.0f}",
-        cmap="magma",
-        annotate=True,
-        annotate_color="white",
+        cmap=cmap_rb,
+        mode="col",
     )
 
+    # PLOT 3: predicted vs measured
     plot_prediction_scatter(
-        Q80_meas=[r["Q80"] for r in results],
-        Q80_pred=[r["Q80_pred"] for r in results],
-        labels=[r["label"] for r in results],
-        title=r"Predicting $Q_{80}$ from holdout mass $q(H)$",
-        outpath=os.path.join(outdir, "3_Q80_pred_vs_meas.pdf"),
+        [r["Q80"] for r in results],
+        [r["Q80_pred"] for r in results],
+        [r["label"] for r in results],
+        "Pred vs Meas",
+        os.path.join(outdir, "3_Q80_pred_vs_meas.pdf"),
+        mode="col",
     )
 
+    # PLOT 5: MSE vs qH
     plot_moment_mse_vs_qH(
         results,
-        outpath=os.path.join(outdir, "5_moment_mse_vs_qH.pdf"),
-        title="Discovery vs constraint satisfaction (after positivity projection)",
+        os.path.join(outdir, "5_moment_mse_vs_qH.pdf"),
+        "MSE vs qH",
+        mode="col",
     )
 
-    # Best setting recovery plot + story overview
+    # Best setting
     best = pick_best_setting(results)
     best_sigma = float(best["sigma"])
     best_K = int(best["K"])
-    alphas_best, P_best, q_best = rerun_single_setting(cfg, p_star, holdout_mask, good_mask, bits_table, best_sigma, best_K)
+    _, _, q_best = rerun_single_setting(cfg, p_star, holdout_mask, good_mask, bits_table, best_sigma, best_K)
 
+    # PLOT 4: recovery curve
     plot_recovery_curve(
         p_star,
         q_best,
         holdout_mask,
-        outpath=os.path.join(outdir, "4_recovery_best.pdf"),
-        title=f"Best setting: sigma={best_sigma:g}, K={best_K} | Q80≈{best['Q80']:.0f}",
+        os.path.join(outdir, "4_recovery_best.pdf"),
+        "Best Recovery",
         Qmax=cfg.Qmax,
         add_uniform=True,
+        mode="col",
     )
 
+    # PLOT 0: story overview
     plot_story_overview(
         qH_ratio_mat=qH_ratio_mat,
         Q80_mat=Q80_mat,
@@ -1426,18 +1442,29 @@ def main():
         Ks=cfg.Ks,
         Q80_meas=[r["Q80"] for r in results],
         Q80_pred=[r["Q80_pred"] for r in results],
-        best_title=f"Best recovery curve (sigma={best_sigma:g}, K={best_K})",
+        best_title="Best",
         p_star=p_star,
         q_best=q_best,
         holdout_mask=holdout_mask,
         outpath=os.path.join(outdir, "0_story_overview.pdf"),
+        cmap_custom=cmap_rb,
+    )
+
+    # PLOT 9: column triptych
+    plot_column_triptych(
+        results,
+        p_star,
+        q_best,
+        holdout_mask,
+        "Best",
+        os.path.join(outdir, "9_column_triptych.pdf"),
     )
 
     # --- Adversarial visibility demo ---
     if cfg.adversarial:
         run_adversarial_demo(cfg, p_star, support, scores, good_mask, bits_table, outdir)
 
-    # --- Optional IQP comparison (Hero architecture) ---
+    # --- Optional IQP comparison ---
     maybe_run_iqp_comparison(cfg, p_star, holdout_mask, good_mask, bits_table, best_sigma, best_K, outdir)
 
     print(f"Done. Results in ./{outdir}/")
