@@ -1,1 +1,13 @@
 .DS_Store
+ablation_holdout/
+ablation_out/
+ablation_results/
+beta_sweep_out/
+heroD_parity_analysis/
+hero_spectral/
+hero_spectral_discovery/
+hero_spectral_iqp/
+jonas_exploration/
+results_baseline/
+results_holdout/
+results_maxcut/
