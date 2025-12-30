@@ -8,23 +8,33 @@ import itertools
 # ------------------------------------------------------------------------------
 # 1) Topologie-Logik
 # ------------------------------------------------------------------------------
+def _clean_tuples(items):
+    return sorted({tuple(sorted(item)) for item in items})
+
+def get_ring_topology(n=8):
+    pairs_nn = [tuple(sorted((i, (i+1)%n))) for i in range(n)]
+    pairs_nnn = [tuple(sorted((i, (i+2)%n))) for i in range(n)]
+    quads = [tuple(sorted((i, (i+1)%n, (i+2)%n, (i+3)%n))) for i in range(n)]
+    return _clean_tuples(pairs_nn), _clean_tuples(pairs_nnn), _clean_tuples(quads)
+
 def get_iqp_topology(n, arch):
     pairs, quads = [], []
-    def clean(l): return sorted(list(set(l)))
+    pairs_nn, pairs_nnn, ring_quads = get_ring_topology(n)
 
     if arch in ["A","B","C","D"]:
-        pairs.extend([tuple(sorted((i, (i+1)%n))) for i in range(n)])
+        pairs.extend(pairs_nn)
     
     if arch in ["C","D"]:
-        pairs.extend([tuple(sorted((i, (i+2)%n))) for i in range(n)])
+        pairs.extend(pairs_nnn)
     
     if arch in ["B","D"]:
-        quads.extend([tuple(sorted((i, (i+1)%n, (i+2)%n, (i+3)%n))) for i in range(n)])
+        quads.extend(ring_quads)
     
     if arch == "E":
         pairs = list(itertools.combinations(range(n), 2))
+        quads = []
 
-    return clean(pairs), clean(quads)
+    return _clean_tuples(pairs), _clean_tuples(quads)
 
 # ------------------------------------------------------------------------------
 # 2) Visualisierung (Finaler Stil)
@@ -117,5 +127,77 @@ def plot_architectures_final(n=8):
     plt.savefig("arch_final_style.pdf", bbox_inches="tight")
     plt.show()
 
+# ------------------------------------------------------------------------------
+# 3) Topology + RZ Comparison
+# ------------------------------------------------------------------------------
+def plot_topology_and_rz(n=8):
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5), constrained_layout=True)
+    
+    # Koordinaten (Start oben, im Uhrzeigersinn)
+    angles = np.linspace(np.pi/2, np.pi/2 - 2*np.pi, n, endpoint=False)
+    pos = np.stack([np.cos(angles), np.sin(angles)], axis=1)
+
+    pairs_nn, pairs_nnn, quads = get_ring_topology(n)
+
+    STYLE = {
+        "nn":       {"color": "black", "lw": 2.0, "ls": "-"},
+        "nnn":      {"color": "#444444", "lw": 1.5, "ls": "--"},
+        "quad":     {
+                     "facecolor": "none",
+                     "edgecolor": "#AAAAAA",
+                     "linestyle": ":",
+                     "linewidth": 2.0
+                    }, 
+        "node":     {"facecolor": "white", "edgecolor": "black", "lw": 1.5, "radius": 0.12},
+        "rz_ring":  {"edgecolor": "#D62728", "facecolor": "none", "lw": 2.5, "radius": 0.18}
+    }
+
+    for ax_idx, ax in enumerate(axes):
+        ax.set_aspect("equal")
+        ax.axis("off")
+        
+        for q in quads:
+            points = pos[list(q)]
+            poly = Polygon(points, closed=True, zorder=1, **STYLE["quad"])
+            ax.add_patch(poly)
+
+        for (i, j) in pairs_nnn:
+            p1, p2 = pos[i], pos[j]
+            ax.plot([p1[0], p2[0]], [p1[1], p2[1]], zorder=2, **STYLE["nnn"])
+
+        for (i, j) in pairs_nn:
+            p1, p2 = pos[i], pos[j]
+            ax.plot([p1[0], p2[0]], [p1[1], p2[1]], zorder=3, **STYLE["nn"])
+
+        if ax_idx == 1:
+            for i in range(n):
+                ring = Circle(pos[i], zorder=3.5, **STYLE["rz_ring"])
+                ax.add_patch(ring)
+
+        for i in range(n):
+            circle = Circle(pos[i], zorder=4, **STYLE["node"])
+            ax.add_patch(circle)
+            
+            txt = ax.text(pos[i,0], pos[i,1], str(i), 
+                          ha="center", va="center", 
+                          fontsize=11, fontweight="bold", zorder=5)
+            txt.set_path_effects([pe.withStroke(linewidth=2, foreground="white")])
+
+    legend_elements = [
+        Line2D([0], [0], color=STYLE["nn"]["color"], lw=2, label='NN ZZ'),
+        Line2D([0], [0], color=STYLE["nnn"]["color"], lw=1.5, ls='--', label='NNN ZZ'),
+        Patch(facecolor="none", edgecolor=STYLE["quad"]["edgecolor"], 
+              linestyle=":", linewidth=2, label='local 4-body ZZZZ'),
+        Line2D([0], [0], marker='o', color='w', markeredgecolor='#D62728', 
+               markeredgewidth=2, markersize=10, label='Z-field (RZ)')
+    ]
+
+    fig.legend(handles=legend_elements, loc='lower center', 
+               ncol=4, frameon=False, bbox_to_anchor=(0.5, -0.02), fontsize=10)
+    
+    plt.savefig("topology_comparison_lines.pdf", bbox_inches="tight")
+    plt.show()
+
 if __name__ == "__main__":
     plot_architectures_final(n=8)
+    plot_topology_and_rz(n=8)
