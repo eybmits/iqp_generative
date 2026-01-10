@@ -3,7 +3,7 @@
 
 """
 IQP-QCBM (Parity-MMD): Jonas Pareto Navigator
-(Publishable Plots: Clean Scatter + Perfectly Attached Heatmap Colorbar)
+(Publishable Plots: Fixed Margins for Y-Labels)
 
 ================================================================
 
@@ -24,10 +24,10 @@ Visualization Style Changes:
       * External legend.
       * K -> Hatch Patterns.
       * Sigma -> Marker Shapes.
+      * INCREASED LEFT MARGIN (Fix for Y-Label clipping).
   - Heatmap:
       * 1:1 Aspect Ratio (Square).
-      * Colorbar uses 'make_axes_locatable' to attach perfectly to the plot.
-      * No whitespace gap between plot and legend.
+      * Colorbar uses 'make_axes_locatable' to attach perfectly.
 
 Outputs (outdir/)
 -----------------
@@ -63,7 +63,7 @@ from matplotlib import gridspec
 import matplotlib.ticker as ticker
 import matplotlib.cm as cm
 import matplotlib.colors as mcolors
-from mpl_toolkits.axes_grid1 import make_axes_locatable  # <--- CRITICAL FIX
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 try:
     import pennylane as qml
@@ -380,17 +380,20 @@ def _pad_limits(vmin: float, vmax: float, pad_frac: float = 0.18) -> Tuple[float
     return vmin - pad_frac * r, vmax + pad_frac * r
 
 def _make_fig_layout_scatter(fig_target: str):
-    """Layout for SCATTER Plots: Wide legend panel."""
+    """Layout for SCATTER Plots: Wide legend panel + FIXED MARGINS."""
     fig = plt.figure(figsize=fig_size(fig_target))
     gs = gridspec.GridSpec(1, 2, width_ratios=[3.3, 1.25], wspace=0.08, figure=fig)
     ax = fig.add_subplot(gs[0, 0])
     axl = fig.add_subplot(gs[0, 1])
     axl.axis("off")
     
+    # --- FIX for clipped Y-Labels ---
+    # increased left margin from 0.10/0.18 to 0.14/0.24
     if fig_target == "full":
-        fig.subplots_adjust(left=0.10, right=0.96, bottom=0.22, top=0.92)
+        fig.subplots_adjust(left=0.14, right=0.96, bottom=0.22, top=0.92)
     else:
-        fig.subplots_adjust(left=0.18, right=0.96, bottom=0.28, top=0.92)
+        fig.subplots_adjust(left=0.24, right=0.96, bottom=0.28, top=0.92)
+        
     return fig, ax, axl
 
 def _draw_legend_panel(axl, sigma_list, K_list, marker_map, hatch_map, fig_target):
