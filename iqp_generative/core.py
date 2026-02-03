@@ -65,10 +65,10 @@ Pennylane is required if --use-iqp 1 or --use-classical 1:
 
 Run examples:
   # Paper target (Appendix-A distribution)
-  python3 hero_full_validation_iqp_nn_nnn_hardtarget_classical.py --outdir out_paper --target-family paper
+  python3 -m iqp_generative.core --outdir outputs/exp00_full_validation_paper --target-family paper
 
   # IQP-native target (hardness-aligned)
-  python3 hero_full_validation_iqp_nn_nnn_hardtarget_classical.py --outdir out_iqp_target --target-family iqp_hard --n 12 --target-iqp-seed 123
+  python3 -m iqp_generative.core --outdir outputs/exp00_full_validation_iqp --target-family iqp_hard --n 12 --target-iqp-seed 123
 
 Notes:
   - Full sweeps with n=16, K up to 512, steps=600 are computationally heavy.
@@ -84,6 +84,7 @@ import csv
 import argparse
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional
+from pathlib import Path
 
 import numpy as onp
 import matplotlib.pyplot as plt
@@ -109,6 +110,9 @@ except Exception:
 # 1) Visual Style (paper-grade, column/full widths)
 # ------------------------------------------------------------------------------
 
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_OUTDIR = str(ROOT / "outputs" / "exp00_full_validation")
+
 COL_W = 3.37   # single-column width (inches)
 FULL_W = 6.95  # full width (two-column) (inches)
 
@@ -118,9 +122,31 @@ UNIFORM_FIG_HEIGHT = 2.6
 COLORS = {
     "target": "#222222",   # almost black
     "model":  "#D62728",   # deep red (IQP)
+    "model_xent": "#FF7F0E",  # orange (IQP xent)
+    "model_prob_mse": "#2CA02C",  # green (IQP prob MSE)
     "gray":   "#666666",
     "blue":   "#1F77B4",   # classical baseline (blue)
 }
+
+def _iqp_loss_label(loss: str) -> str:
+    name = str(loss).lower()
+    if name == "parity_mse":
+        return "IQP-QCBM (parity MSE)"
+    if name == "xent":
+        return "IQP-QCBM (xent)"
+    if name == "prob_mse":
+        return "IQP-QCBM (prob MSE)"
+    return f"IQP-QCBM ({name})"
+
+def _iqp_loss_color(loss: str) -> str:
+    name = str(loss).lower()
+    if name == "parity_mse":
+        return COLORS["model"]
+    if name == "xent":
+        return COLORS["model_xent"]
+    if name == "prob_mse":
+        return COLORS["model_prob_mse"]
+    return COLORS["model"]
 
 def fig_size(mode: str, h: float = None) -> Tuple[float, float]:
     """Returns (width, height)."""
@@ -825,6 +851,65 @@ def plot_recovery_best_comparison(
     plt.close(fig)
     print(f"[Saved] {outpath}")
 
+def plot_recovery_iqp_loss_compare(
+    p_star: onp.ndarray,
+    q_iqp_parity: Optional[onp.ndarray],
+    q_iqp_xent: Optional[onp.ndarray],
+    q_spec: onp.ndarray,
+    holdout_mask: onp.ndarray,
+    outpath: str,
+    Qmax: int = 10000,
+    mode: str = "col",
+    label_a: str = "IQP-QCBM (parity MSE)",
+    label_b: str = "IQP-QCBM (xent)",
+    color_a: str = COLORS["model"],
+    color_b: str = COLORS["model_xent"],
+):
+    """Recovery comparison: Target, two IQP losses, Spectral completion, Uniform."""
+    H = int(onp.sum(holdout_mask))
+    if H == 0:
+        return
+
+    Q = onp.unique(onp.concatenate([
+        onp.unique(onp.logspace(0, 3.5, 120).astype(int)),
+        onp.linspace(1000, Qmax, 160).astype(int),
+    ]))
+    Q = Q[Q <= Qmax]
+
+    y_star = expected_unique_fraction(p_star, holdout_mask, Q)
+    y_spec = expected_unique_fraction(q_spec, holdout_mask, Q)
+
+    fig, ax = plt.subplots(figsize=fig_size(mode), constrained_layout=True)
+    ax.plot(Q, y_star, color=COLORS["target"], linewidth=1.9, label=r"Target $p^*$", zorder=6)
+
+    if q_iqp_parity is not None:
+        y_iqp_p = expected_unique_fraction(q_iqp_parity, holdout_mask, Q)
+        ax.plot(Q, y_iqp_p, color=color_a, linewidth=2.2,
+                label=label_a, zorder=7)
+
+    if q_iqp_xent is not None:
+        y_iqp_x = expected_unique_fraction(q_iqp_xent, holdout_mask, Q)
+        ax.plot(Q, y_iqp_x, color=color_b, linewidth=2.1,
+                label=label_b, zorder=6)
+
+    ax.plot(Q, y_spec, color="#555555", linestyle="-.", linewidth=1.9,
+            label=r"Spectral completion $\~q$", zorder=4)
+
+    u = onp.ones_like(p_star) / p_star.size
+    y_u = expected_unique_fraction(u, holdout_mask, Q)
+    ax.plot(Q, y_u, color=COLORS["gray"], linewidth=1.6, linestyle="--", alpha=0.9,
+            label="Uniform", zorder=3)
+
+    ax.axhline(1.0, color=COLORS["gray"], linestyle=":", alpha=0.7)
+    ax.set_xlabel(r"$Q$ samples from model")
+    ax.set_ylabel(r"Recovery $R(Q)$")
+    ax.set_ylim(-0.02, 1.05)
+    ax.legend(loc="lower right", frameon=False)
+
+    fig.savefig(outpath)
+    plt.close(fig)
+    print(f"[Saved] {outpath}")
+
 def plot_story_overview(
     qH_ratio_mat_iqp,
     Q80_mat_iqp,
@@ -1127,13 +1212,16 @@ def train_iqp_qcbm(
     layers: int,
     steps: int,
     lr: float,
-    P: onp.ndarray,
-    z_data: onp.ndarray,
+    P: Optional[onp.ndarray],
+    z_data: Optional[onp.ndarray],
     seed_init: int,
     eval_every: int = 50,
     return_hist: bool = False,
+    loss_mode: str = "parity_mse",
+    xent_emp: Optional[onp.ndarray] = None,
+    xent_eps: float = 1e-12,
 ):
-    """Train IQP-QCBM to match parity moments (moment MSE loss)."""
+    """Train IQP-QCBM with parity-moment MSE, prob-MSE, or sample cross-entropy loss."""
     if not HAS_PENNYLANE:
         raise RuntimeError("Pennylane is not installed. Install with `pip install pennylane` or set --use-iqp 0.")
 
@@ -1145,8 +1233,24 @@ def train_iqp_qcbm(
         iqp_circuit_zz_only(W, range(n), pairs, layers=layers)
         return qml.probs(wires=range(n))
 
-    P_t = np.array(P, requires_grad=False)
-    z_t = np.array(z_data, requires_grad=False)
+    loss_mode = str(loss_mode).lower()
+    if loss_mode == "parity_mse":
+        if P is None or z_data is None:
+            raise ValueError("parity_mse loss requires P and z_data.")
+        P_t = np.array(P, requires_grad=False)
+        z_t = np.array(z_data, requires_grad=False)
+    elif loss_mode == "prob_mse":
+        if xent_emp is None:
+            raise ValueError("prob_mse loss requires xent_emp (empirical distribution).")
+        emp_t = np.array(xent_emp, requires_grad=False)
+        emp_t = emp_t / np.sum(emp_t)
+    elif loss_mode == "xent":
+        if xent_emp is None:
+            raise ValueError("xent loss requires xent_emp (empirical distribution).")
+        emp_t = np.array(xent_emp, requires_grad=False)
+        emp_t = emp_t / np.sum(emp_t)
+    else:
+        raise ValueError("loss_mode must be 'parity_mse', 'prob_mse', or 'xent'.")
 
     num_params = len(pairs) * layers
     rng = onp.random.default_rng(seed_init)
@@ -1157,7 +1261,12 @@ def train_iqp_qcbm(
 
     def loss_fn(w):
         q = circuit(w)
-        return np.mean((z_t - P_t @ q) ** 2)
+        if loss_mode == "parity_mse":
+            return np.mean((z_t - P_t @ q) ** 2)
+        if loss_mode == "prob_mse":
+            return np.mean((q - emp_t) ** 2)
+        q_clip = np.clip(q, xent_eps, 1.0)
+        return -np.sum(emp_t * np.log(q_clip))
 
     loss_val = None
     for t in range(1, steps + 1):
@@ -1290,11 +1399,12 @@ class Config:
     iqp_lr: float = 0.05
     iqp_eval_every: int = 50
     iqp_layers: int = 1
+    iqp_loss: str = "parity_mse"  # "parity_mse", "prob_mse", or "xent"
 
     # Classical baseline (same budget)
     use_classical: bool = True
 
-    outdir: str = "hero_validated"
+    outdir: str = DEFAULT_OUTDIR
 
 def compute_metrics_for_q(q: onp.ndarray, holdout_mask: onp.ndarray, qH_unif: float, H_size: int,
                           Q80_thr: float, Q80_search_max: int) -> Dict[str, float]:
@@ -1376,6 +1486,8 @@ def run_sweep(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.ndarray, good_
                     seed_init=seed_init,
                     eval_every=cfg.iqp_eval_every,
                     return_hist=False,
+                    loss_mode=cfg.iqp_loss,
+                    xent_emp=emp,
                 )
                 iqp_metrics = compute_metrics_for_q(q_iqp, holdout_mask, qH_unif, H_size, cfg.Q80_thr, cfg.Q80_search_max)
                 prop1_viol_iqp = check_prop1_curve_bound(q_iqp, holdout_mask)
@@ -1411,6 +1523,7 @@ def run_sweep(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.ndarray, good_
                 mean_alpha_wt=float(mean_wt),
 
                 # IQP (Result 1)
+                iqp_loss_mode=str(cfg.iqp_loss),
                 qH_iqp=float(iqp_metrics["qH"]),
                 qH_ratio_iqp=float(iqp_metrics["qH_ratio"]),
                 R_iqp_Q1000=float(iqp_metrics["R_Q1000"]),
@@ -1505,7 +1618,7 @@ def pick_best_setting(results: List[Dict], prefer: str = "iqp") -> Dict:
     return results[0]
 
 def rerun_single_setting(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.ndarray, bits_table: onp.ndarray,
-                        sigma: float, K: int, return_hist: bool = True) -> Dict[str, object]:
+                        sigma: float, K: int, return_hist: bool = True, iqp_loss: Optional[str] = None) -> Dict[str, object]:
     """Rebuild P,z and return q_spec, q_iqp, q_class plus optional training histories."""
     if (cfg.use_iqp or cfg.use_classical) and not HAS_PENNYLANE:
         raise RuntimeError("Pennylane required. Install or disable IQP/classical baselines.")
@@ -1540,9 +1653,11 @@ def rerun_single_setting(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.nda
 
     q_iqp, loss_iqp, hist_iqp = (None, float("nan"), None)
     if cfg.use_iqp:
+        loss_mode = cfg.iqp_loss if iqp_loss is None else str(iqp_loss)
         q_iqp, loss_iqp, hist_iqp = train_iqp_qcbm(
             n=cfg.n, layers=cfg.iqp_layers, steps=cfg.iqp_steps, lr=cfg.iqp_lr,
-            P=P, z_data=z, seed_init=seed_init, eval_every=cfg.iqp_eval_every, return_hist=return_hist
+            P=P, z_data=z, seed_init=seed_init, eval_every=cfg.iqp_eval_every, return_hist=return_hist,
+            loss_mode=loss_mode, xent_emp=emp
         )
 
     q_class, loss_class, hist_class = (None, float("nan"), None)
@@ -1648,7 +1763,7 @@ def _parse_list_ints(s: str) -> List[int]:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--outdir", type=str, default="hero_validated")
+    parser.add_argument("--outdir", type=str, default=DEFAULT_OUTDIR)
 
     parser.add_argument("--n", type=int, default=12)
     parser.add_argument("--beta", type=float, default=0.9)
@@ -1688,6 +1803,14 @@ def main():
     parser.add_argument("--iqp-lr", type=float, default=0.05)
     parser.add_argument("--iqp-eval-every", type=int, default=50)
     parser.add_argument("--iqp-layers", type=int, default=1)
+    parser.add_argument("--iqp-loss", type=str, default="parity_mse", choices=["parity_mse", "prob_mse", "xent"])
+    parser.add_argument("--compare-iqp-losses", type=int, default=0)
+    parser.add_argument("--compare-sigma", type=float, default=None)
+    parser.add_argument("--compare-K", type=int, default=None)
+    parser.add_argument("--compare-loss-a", type=str, default="parity_mse",
+                        choices=["parity_mse", "prob_mse", "xent"])
+    parser.add_argument("--compare-loss-b", type=str, default="xent",
+                        choices=["parity_mse", "prob_mse", "xent"])
 
     args = parser.parse_args()
 
@@ -1726,6 +1849,7 @@ def main():
         iqp_lr=args.iqp_lr,
         iqp_eval_every=args.iqp_eval_every,
         iqp_layers=args.iqp_layers,
+        iqp_loss=args.iqp_loss,
 
         outdir=outdir,
     )
@@ -1883,8 +2007,14 @@ def main():
 
     # Training dynamics plots (best)
     if cfg.use_iqp and hist_iqp is not None:
+        if cfg.iqp_loss == "parity_mse":
+            iqp_ylab = "Moment MSE loss"
+        elif cfg.iqp_loss == "prob_mse":
+            iqp_ylab = "Prob MSE loss"
+        else:
+            iqp_ylab = "NLL loss"
         plot_training_dynamics_generic(hist_iqp, os.path.join(outdir, "7_iqp_training_dynamics.pdf"),
-                                       color=COLORS["model"], ylab="Moment MSE loss")
+                                       color=COLORS["model"], ylab=iqp_ylab)
     if cfg.use_classical and hist_class is not None:
         plot_training_dynamics_generic(hist_class, os.path.join(outdir, "7b_classical_training_dynamics.pdf"),
                                        color=COLORS["blue"], ylab="Moment MSE loss")
@@ -1900,6 +2030,61 @@ def main():
         Qmax=cfg.Qmax,
         mode="col",
     )
+
+    # Optional: compare IQP losses (parity MSE vs xent) at a single (sigma, K)
+    if bool(args.compare_iqp_losses):
+        if not cfg.use_iqp:
+            print("[Compare] Skipping IQP loss comparison because --use-iqp 0.")
+        else:
+            sigma_cmp = float(args.compare_sigma) if args.compare_sigma is not None else best_sigma
+            K_cmp = int(args.compare_K) if args.compare_K is not None else best_K
+            loss_a = args.compare_loss_a
+            loss_b = args.compare_loss_b
+            print(f"[Compare] IQP losses at sigma={sigma_cmp:g}, K={K_cmp:d} | {loss_a} vs {loss_b}")
+
+            art_a = rerun_single_setting(cfg, p_star, holdout_mask, bits_table, sigma_cmp, K_cmp,
+                                         return_hist=True, iqp_loss=loss_a)
+            art_b = rerun_single_setting(cfg, p_star, holdout_mask, bits_table, sigma_cmp, K_cmp,
+                                         return_hist=True, iqp_loss=loss_b)
+
+            q_spec_cmp = art_a["q_spec"]  # type: ignore
+            q_iqp_a = art_a["q_iqp"]  # type: ignore
+            q_iqp_b = art_b["q_iqp"]  # type: ignore
+
+            plot_recovery_iqp_loss_compare(
+                p_star=p_star,
+                q_iqp_parity=q_iqp_a,
+                q_iqp_xent=q_iqp_b,
+                q_spec=q_spec_cmp,
+                holdout_mask=holdout_mask,
+                outpath=os.path.join(outdir, "8_iqp_loss_compare_recovery.pdf"),
+                Qmax=cfg.Qmax,
+                mode="col",
+                label_a=_iqp_loss_label(loss_a),
+                label_b=_iqp_loss_label(loss_b),
+                color_a=_iqp_loss_color(loss_a),
+                color_b=_iqp_loss_color(loss_b),
+            )
+
+            # Save quick metrics snapshot
+            N = p_star.size
+            H_size = int(onp.sum(holdout_mask))
+            q_unif = onp.ones(N, dtype=onp.float64) / N
+            qH_unif = float(q_unif[holdout_mask].sum()) if H_size > 0 else 1.0
+            metrics_a = compute_metrics_for_q(q_iqp_a, holdout_mask, qH_unif, H_size,
+                                              cfg.Q80_thr, cfg.Q80_search_max) if q_iqp_a is not None else {}
+            metrics_b = compute_metrics_for_q(q_iqp_b, holdout_mask, qH_unif, H_size,
+                                              cfg.Q80_thr, cfg.Q80_search_max) if q_iqp_b is not None else {}
+            compare_out = {
+                "sigma": sigma_cmp,
+                "K": K_cmp,
+                "loss_a": loss_a,
+                "loss_b": loss_b,
+                loss_a: metrics_a,
+                loss_b: metrics_b,
+            }
+            with open(os.path.join(outdir, "8_iqp_loss_compare_metrics.json"), "w", encoding="utf-8") as f:
+                json.dump(compare_out, f, indent=2)
 
     # PLOT 0: story overview (IQP panels + recovery includes classical)
     plot_story_overview(

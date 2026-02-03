@@ -28,11 +28,11 @@ Outputs
 Usage
 -----
   # Paper-like n=12 (auto sigma-grid will kick in unless you set --sigma-grid explicitly):
-  python adversarial_visibility_minvis.py --outdir out_minvis --n 12 --beta 0.9 \
+  python experiments/exp03_visibility_minvis.py --outdir outputs/exp03_visibility_minvis --n 12 --beta 0.9 \
       --holdout-k 20 --train-m 1000 --K 512 --score-level 7
 
   # Force a specific sigma:
-  python adversarial_visibility_minvis.py --outdir out_minvis --n 12 --sigma-grid 1.0
+  python experiments/exp03_visibility_minvis.py --outdir outputs/exp03_visibility_minvis --n 12 --sigma-grid 1.0
 
 Optional:
   - choose sigma from a grid to make cancellation easier:
@@ -107,6 +107,9 @@ def set_style(base: int = 8) -> None:
         "axes.spines.top": False,
         "axes.spines.right": False,
     })
+
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def ensure_outdir(path: str) -> Path:
@@ -413,7 +416,7 @@ def plot_adversarial_curves(
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=str, default="out_minvis")
+    ap.add_argument("--outdir", type=str, default=str(ROOT / "outputs" / "exp03_visibility_minvis"))
 
     ap.add_argument("--n", type=int, default=12)
     ap.add_argument("--beta", type=float, default=0.9)

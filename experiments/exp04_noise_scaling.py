@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""hero_finite_shot_recovery_noise_scaling_styled.py
+"""Experiment 4: Finite-shot recovery + noise scaling (styled)
 
 Finite-shot recovery curves (with CI) + simple hardware-noise simulation + scaling.
 
@@ -21,16 +21,16 @@ Requires:
 
 Examples:
   # Default: run n in {10,12,14}, highlight n=12 in red, others grayscale
-  python3 hero_finite_shot_recovery_noise_scaling_styled.py --outdir demo_out
+  python3 experiments/exp04_noise_scaling.py --outdir outputs/exp04_noise_scaling
 
   # Run a custom list of sizes
-  python3 hero_finite_shot_recovery_noise_scaling_styled.py --n 8 --n 10 --n 12 --n 14 --outdir demo_out
+  python3 experiments/exp04_noise_scaling.py --n 8 --n 10 --n 12 --n 14 --outdir outputs/exp04_noise_scaling
 
   # Choose which n is highlighted (red)
-  python3 hero_finite_shot_recovery_noise_scaling_styled.py --n 10 --n 12 --n 14 --highlight-n 14
+  python3 experiments/exp04_noise_scaling.py --n 10 --n 12 --n 14 --highlight-n 14
 
-  # Select which n is used for the noise plot (default: max(n))
-  python3 hero_finite_shot_recovery_noise_scaling_styled.py --n 10 --n 12 --n 14 --noise-n 12
+  # Select which n is used for the noise plot (default: highlight-n if present)
+  python3 experiments/exp04_noise_scaling.py --n 10 --n 12 --n 14 --noise-n 12
 """
 
 from __future__ import annotations
@@ -41,6 +41,9 @@ import math
 import argparse
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -752,7 +755,7 @@ def plot_scaling_finite_shot(
     ax.set_xlabel(r"Normalized budget $Q / Q_{80}^{\mathrm{exp}}$")
     ax.set_ylabel(r"Recovery $\hat R(Q)$")
     ax.set_ylim(-0.02, 1.05)
-    ax.legend(loc="center left", handlelength=2.0)
+    ax.legend(loc="center left", bbox_to_anchor=(0.0, 0.46), handlelength=2.0)
 
     fig.savefig(outpath)
     plt.close(fig)
@@ -840,7 +843,7 @@ def plot_noise_finite_shot(
 def main() -> None:
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--outdir", type=str, default="hero_finite_shot_PRA")
+    parser.add_argument("--outdir", type=str, default=str(ROOT / "outputs" / "exp04_noise_scaling"))
 
     # System sizes: repeatable --n
     parser.add_argument(
@@ -860,7 +863,7 @@ def main() -> None:
         "--noise-n",
         type=int,
         default=None,
-        help="Which n to use for the noise plot (default: max(n)).",
+        help="Which n to use for the noise plot (default: highlight-n if present, else max(n)).",
     )
 
     # Paper-like target
@@ -910,7 +913,11 @@ def main() -> None:
         n_list = [10, 12, 14]
 
     # Choose which n is used for noise plot
-    noise_n = int(args.noise_n) if args.noise_n is not None else int(max(n_list))
+    if args.noise_n is not None:
+        noise_n = int(args.noise_n)
+    else:
+        highlight_n = int(args.highlight_n)
+        noise_n = highlight_n if highlight_n in n_list else int(max(n_list))
     if noise_n not in n_list:
         n_list = _dedupe_keep_order(n_list + [noise_n])
 

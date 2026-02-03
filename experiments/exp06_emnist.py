@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Experiment_1_emnist.py
+"""Experiment 6: EMNIST (real data) holdout-recovery
 
 Experiment_1-style plots on a **real dataset**: **EMNIST** (handwriting),
 preprocessed to **n=16** binary variables via 28x28 -> 4x4 average pooling +
@@ -29,10 +29,10 @@ Notes:
     all models on the SAME fixed H.
 
 Run (paper-like defaults):
-  python3 Experiment_1_emnist.py --split byclass --include-test --even-parity-only --include-fields
+  python3 experiments/exp06_emnist.py --split byclass --include-test --even-parity-only --include-fields
 
 Run a single setting (convenience aliases):
-  python3 Experiment_1_emnist.py --sigma 1.0 --K 512 --split byclass --include-test --even-parity-only --include-fields
+  python3 experiments/exp06_emnist.py --sigma 1.0 --K 512 --split byclass --include-test --even-parity-only --include-fields
 """
 
 from __future__ import annotations
@@ -50,6 +50,7 @@ import sys
 import time
 import urllib.request
 import zipfile
+from pathlib import Path
 from dataclasses import dataclass
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
@@ -66,6 +67,8 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+ROOT = Path(__file__).resolve().parents[1]
 
 # -----------------------------------------------------------------------------
 # Utilities
@@ -1323,8 +1326,10 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="EMNIST (real data) holdout-recovery experiment with Experiment_1-style plots")
 
     # Data / build
-    ap.add_argument("--data-root", type=str, default="./data_emnist", help="Where to download/cache EMNIST")
-    ap.add_argument("--cache-dir", type=str, default="./data_emnist/cache", help="Cache directory for counts")
+    ap.add_argument("--data-root", type=str, default=str(ROOT / "data" / "emnist"),
+                    help="Where to download/cache EMNIST")
+    ap.add_argument("--cache-dir", type=str, default=str(ROOT / "data" / "emnist" / "cache"),
+                    help="Cache directory for counts")
     ap.add_argument(
         "--split",
         type=str,
@@ -1386,7 +1391,7 @@ def main() -> None:
     ap.add_argument("--Q80-max", type=int, default=200000)
 
     # Output
-    ap.add_argument("--outdir", type=str, default="experiment_emnist_outputs")
+    ap.add_argument("--outdir", type=str, default=str(ROOT / "outputs" / "exp06_emnist"))
 
     # Skip flags
     ap.add_argument("--no-iqp", action="store_true")

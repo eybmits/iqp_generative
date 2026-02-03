@@ -5,3 +5,14 @@
 __pycache__/
 *.pyc
 *.pyo
+
+# Outputs / generated artifacts
+outputs/
+
+# Data downloads / caches
+data/
+data_emnist/
+
+# Misc
+.pytest_cache/
+.mypy_cache/

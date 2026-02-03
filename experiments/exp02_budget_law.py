@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Experiment_1.py
+Experiment 2: Budget-law scatter + main plots
 
 Recovery overlays (for BOTH targets):
   - fig1_recovery_paper_overlay.pdf
@@ -14,29 +14,40 @@ Each overlay plot shows:
   - Many Ising controls (blue -> white) across the (sigma,K) grid
   - Uniform (gray dashed)
 
+NEW: Budget-law scatter plots (both targets):
+  - fig2b_paper_budgetlaw_scatter.pdf
+  - fig2b_iqp_hard_budgetlaw_scatter.pdf
+
+Each scatter plot shows:
+  - x-axis: best-case bound Q80^lb inferred from holdout mass q(H) (Prop. 1)
+  - y-axis: measured Q80
+  - IQP sweep points (red)
+  - Ising-control sweep points (blue), typically deviating above the best-case line
+
 Heatmaps (paper target):
-  - fig2a_paper_qH_ratio_iqp.pdf      [RED]
-  - fig2a_paper_qH_ratio_class.pdf    [BLUE]
-  - fig2c_paper_Q80_iqp.pdf           [RED]
-  - fig2c_paper_Q80_class.pdf         [BLUE]
+  - fig2a_paper_qH_ratio_iqp.pdf       [RED]
+  - fig2a_paper_qH_ratio_class.pdf     [BLUE]
+  - fig2c_paper_Q80_iqp.pdf            [RED]
+  - fig2c_paper_Q80_class.pdf          [BLUE]
 
 Heatmaps (iqp_hard target):
-  - fig2a_iqp_hard_qH_ratio_iqp.pdf   [RED]
-  - fig2a_iqp_hard_qH_ratio_class.pdf [BLUE]
-  - fig2c_iqp_hard_Q80_iqp.pdf        [RED]
-  - fig2c_iqp_hard_Q80_class.pdf      [BLUE]
+  - fig2a_iqp_hard_qH_ratio_iqp.pdf    [RED]
+  - fig2a_iqp_hard_qH_ratio_class.pdf  [BLUE]
+  - fig2c_iqp_hard_Q80_iqp.pdf         [RED]
+  - fig2c_iqp_hard_Q80_class.pdf       [BLUE]
 
 ONLY CHANGE vs previous:
   - Overlay legend: lightly white-backed AND placed at lower right.
+  - NEW: scatter plot with blue Ising-control points vs the budget-law bound.
+  - NO TITLES in any plot.
 
 Run:
-  python3 Experiment_1.py
+  python3 experiments/exp02_budget_law.py
 """
 
 from __future__ import annotations
 
 import os
-import importlib.util
 from dataclasses import replace
 from typing import List, Dict, Tuple
 
@@ -45,28 +56,14 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.lines import Line2D
 
+from pathlib import Path
+import sys
 
-# -----------------------------------------------------------------------------
-# Load the master implementation as a module
-# -----------------------------------------------------------------------------
-def _load_master_module():
-    here = os.path.dirname(os.path.abspath(__file__))
-    candidate_paths = [
-        os.path.join(here, "hero_full_validation_iqp_nn_nnn_hardtarget_classical.py"),
-        os.path.join(os.getcwd(), "hero_full_validation_iqp_nn_nnn_hardtarget_classical.py"),
-    ]
-    for path in candidate_paths:
-        if os.path.exists(path):
-            spec = importlib.util.spec_from_file_location("hero_full_validation", path)
-            assert spec and spec.loader
-            mod = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(mod)
-            return mod, path
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
-    raise FileNotFoundError(
-        "Could not find 'hero_full_validation_iqp_nn_nnn_hardtarget_classical.py'.\n"
-        "Put Experiment_1.py in the same folder as that script (or run from that folder)."
-    )
+from iqp_generative import core as hv  # noqa: E402
 
 
 def _q_grid(Qmax: int = 10000) -> np.ndarray:
@@ -96,22 +93,43 @@ def _ising_color(rank: int, m: int):
     return color, alpha
 
 
+def _best_case_Q80_from_qH_ratio(qH_ratio: float, N: int, thr: float = 0.8) -> float:
+    """
+    Best-case *lower bound* from Proposition-1 uniformity bound.
+
+    In the paper notation:
+      mu = q(H)
+      R(Q) <= 1 - (1 - mu/|H|)^Q
+      => Q80^lb = ln(1-0.8)/ln(1 - mu/|H|).
+
+    Here we have qH_ratio = q(H) / q_unif(H), with q_unif(H) = |H|/N.
+    Therefore:
+      mu = q(H) = qH_ratio * (|H|/N)
+      mu/|H| = qH_ratio / N.
+
+    So Q80^lb depends only on qH_ratio and N.
+    """
+    if not np.isfinite(qH_ratio) or qH_ratio <= 0:
+        return float("nan")
+    p = float(qH_ratio) / float(N)  # = mu/|H|
+    if not (0.0 < p < 1.0):
+        return float("nan")
+    return float(np.log(1.0 - thr) / np.log(1.0 - p))
+
+
 # -----------------------------------------------------------------------------
 # Main
 # -----------------------------------------------------------------------------
 def main() -> None:
-    hv, hv_path = _load_master_module()
-
     if not getattr(hv, "HAS_PENNYLANE", False):
         raise RuntimeError(
             "Pennylane is required for this experiment (IQP model + Ising control).\n"
-            "Install with: pip install pennylane\n"
-            f"(Loaded master code from: {hv_path})"
+            "Install with: pip install pennylane"
         )
 
     # Paper-grade style
     hv.set_style(base=8)
-    outdir = hv.ensure_outdir("experiment1_outputs")
+    outdir = hv.ensure_outdir(os.path.join(ROOT, "outputs", "exp02_budget_law"))
 
     # Colormaps for heatmaps:
     cmap_redblack = LinearSegmentedColormap.from_list("RedBlack", ["#FF0000", "#000000"])
@@ -130,6 +148,20 @@ def main() -> None:
         facecolor="white",
         edgecolor="none",
         handlelength=1.6,
+        labelspacing=0.25,
+        borderpad=0.25,
+        handletextpad=0.5,
+        borderaxespad=0.2,
+    )
+
+    # Legend style for scatter
+    LEGEND_STYLE_SCATTER = dict(
+        loc="lower right",
+        fontsize=7.0,
+        frameon=True,
+        framealpha=0.90,
+        facecolor="white",
+        edgecolor="none",
         labelspacing=0.25,
         borderpad=0.25,
         handletextpad=0.5,
@@ -225,6 +257,163 @@ def main() -> None:
         )
 
         return results
+
+    # -------------------------------------------------------------------------
+    # NEW: Budget-law scatter: measured Q80 vs best-case bound inferred from q(H)
+    # (NO TITLES)
+    # -------------------------------------------------------------------------
+    def plot_budgetlaw_scatter(
+        outpath: str,
+        cfg,
+        p_star: np.ndarray,
+        holdout_mask: np.ndarray,
+        results: List[Dict],
+    ) -> None:
+        N = int(p_star.size)
+        thr = float(getattr(cfg, "Q80_thr", 0.8))
+        cap = float(getattr(cfg, "Q80_search_max", 200000))
+
+        H_size = int(np.sum(holdout_mask))
+        if H_size <= 0:
+            raise ValueError("holdout_mask is empty; cannot plot budget-law scatter.")
+
+        iqp_xy: List[Tuple[float, float]] = []
+        iqp_xy_cap: List[Tuple[float, float]] = []
+        cl_xy: List[Tuple[float, float]] = []
+        cl_xy_cap: List[Tuple[float, float]] = []
+
+        for r in results:
+            # IQP
+            qHr_iqp = float(r.get("qH_ratio_iqp", np.nan))
+            Q80_iqp = float(r.get("Q80_iqp", np.nan))
+            x_iqp = _best_case_Q80_from_qH_ratio(qHr_iqp, N=N, thr=thr)
+            if np.isfinite(x_iqp) and x_iqp > 0:
+                if np.isfinite(Q80_iqp) and Q80_iqp > 0:
+                    iqp_xy.append((x_iqp, Q80_iqp))
+                elif np.isfinite(cap) and cap > 0:
+                    iqp_xy_cap.append((x_iqp, cap))
+
+            # Classical / Ising control
+            qHr_cl = float(r.get("qH_ratio_class", np.nan))
+            Q80_cl = float(r.get("Q80_class", np.nan))
+            x_cl = _best_case_Q80_from_qH_ratio(qHr_cl, N=N, thr=thr)
+            if np.isfinite(x_cl) and x_cl > 0:
+                if np.isfinite(Q80_cl) and Q80_cl > 0:
+                    cl_xy.append((x_cl, Q80_cl))
+                elif np.isfinite(cap) and cap > 0:
+                    cl_xy_cap.append((x_cl, cap))
+
+        if len(iqp_xy) + len(iqp_xy_cap) + len(cl_xy) + len(cl_xy_cap) == 0:
+            print(f"[Skip] No finite points for budget-law scatter: {outpath}")
+            return
+
+        fig, ax = plt.subplots(figsize=hv.fig_size("col", 2.6), constrained_layout=True)
+
+        IQP_COLOR = hv.COLORS["model"]
+        ISING_COLOR = "#1F77B4"
+
+        if iqp_xy:
+            ax.scatter(
+                [x for x, y in iqp_xy],
+                [y for x, y in iqp_xy],
+                s=26,
+                c=IQP_COLOR,
+                marker="o",
+                edgecolors="white",
+                linewidths=0.4,
+                alpha=0.90,
+                zorder=3,
+            )
+        if cl_xy:
+            ax.scatter(
+                [x for x, y in cl_xy],
+                [y for x, y in cl_xy],
+                s=26,
+                c=ISING_COLOR,
+                marker="o",
+                edgecolors="white",
+                linewidths=0.4,
+                alpha=0.90,
+                zorder=3,
+            )
+
+        cap_label_added = False
+        if iqp_xy_cap:
+            ax.scatter(
+                [x for x, y in iqp_xy_cap],
+                [y for x, y in iqp_xy_cap],
+                s=34,
+                c=IQP_COLOR,
+                marker="^",
+                edgecolors="white",
+                linewidths=0.4,
+                alpha=0.95,
+                zorder=3,
+            )
+            cap_label_added = True
+        if cl_xy_cap:
+            ax.scatter(
+                [x for x, y in cl_xy_cap],
+                [y for x, y in cl_xy_cap],
+                s=34,
+                c=ISING_COLOR,
+                marker="^",
+                edgecolors="white",
+                linewidths=0.4,
+                alpha=0.95,
+                zorder=3,
+            )
+            cap_label_added = True
+
+        all_vals: List[float] = []
+        for pts in (iqp_xy, iqp_xy_cap, cl_xy, cl_xy_cap):
+            for x, y in pts:
+                if np.isfinite(x) and x > 0:
+                    all_vals.append(x)
+                if np.isfinite(y) and y > 0:
+                    all_vals.append(y)
+
+        lo = max(min(all_vals) * 0.8, 1e-6)
+        hi = max(all_vals) * 1.25
+
+        xx = np.logspace(np.log10(lo), np.log10(hi), 200)
+        ax.plot(xx, xx, color=hv.COLORS["gray"], linestyle=":", linewidth=1.2, alpha=0.9, zorder=1)
+        ax.plot(xx, 2.0 * xx, color=hv.COLORS["gray"], linestyle="--", linewidth=1.2, alpha=0.9, zorder=1)
+        ax.plot(xx, 5.0 * xx, color=hv.COLORS["gray"], linestyle="-.", linewidth=1.2, alpha=0.9, zorder=1)
+
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        ax.set_xlim(lo, hi)
+        ax.set_ylim(lo, hi)
+
+        ax.set_xlabel(r"Best-case bound $Q_{80}^{\mathrm{lb}}$ from $q(H)$")
+        ax.set_ylabel(r"Measured $Q_{80}$")
+
+        ax.grid(True, which="both", linestyle=":", linewidth=0.6, alpha=0.45)
+
+        legend_handles = [
+            Line2D([0], [0], marker="o", color="none", markerfacecolor=IQP_COLOR,
+                   markeredgecolor="white", markeredgewidth=0.4, markersize=5.5, label="IQP-QCBM"),
+            Line2D([0], [0], marker="o", color="none", markerfacecolor=ISING_COLOR,
+                   markeredgecolor="white", markeredgewidth=0.4, markersize=5.5, label="Ising control"),
+        ]
+        if cap_label_added:
+            legend_handles.append(
+                Line2D([0], [0], marker="^", color="none", markerfacecolor="#888888",
+                       markeredgecolor="white", markeredgewidth=0.4, markersize=6.0,
+                       label=f"capped at {int(cap)}"),
+            )
+        legend_handles += [
+            Line2D([0], [0], color=hv.COLORS["gray"], lw=1.2, ls=":", label=r"$y=x$"),
+            Line2D([0], [0], color=hv.COLORS["gray"], lw=1.2, ls="--", label=r"$y=2x$"),
+            Line2D([0], [0], color=hv.COLORS["gray"], lw=1.2, ls="-.", label=r"$y=5x$"),
+        ]
+
+        ax.legend(handles=legend_handles, **LEGEND_STYLE_SCATTER)
+
+        fig.savefig(outpath)
+        plt.close(fig)
+        print(f"[Saved] {outpath}")
 
     # -------------------------------------------------------------------------
     # Overlay plot: best IQP (red) vs spectral completion (gray) vs ALL Ising (blue->white)
@@ -338,6 +527,15 @@ def main() -> None:
     )
 
     results_paper = heatmaps_bundle("paper", cfg_paper, p_star_paper, holdout_paper, good_paper)
+
+    plot_budgetlaw_scatter(
+        outpath=os.path.join(outdir, "fig2b_paper_budgetlaw_scatter.pdf"),
+        cfg=cfg_paper,
+        p_star=p_star_paper,
+        holdout_mask=holdout_paper,
+        results=results_paper,
+    )
+
     plot_best_iqp_vs_all_ising_with_spec(
         outpath=os.path.join(outdir, "fig1_recovery_paper_overlay.pdf"),
         cfg=cfg_paper,
@@ -380,6 +578,15 @@ def main() -> None:
     )
 
     results_hard = heatmaps_bundle("iqp_hard", cfg_hard, p_star_hard, holdout_hard, good_hard)
+
+    plot_budgetlaw_scatter(
+        outpath=os.path.join(outdir, "fig2b_iqp_hard_budgetlaw_scatter.pdf"),
+        cfg=cfg_hard,
+        p_star=p_star_hard,
+        holdout_mask=holdout_hard,
+        results=results_hard,
+    )
+
     plot_best_iqp_vs_all_ising_with_spec(
         outpath=os.path.join(outdir, "fig1_recovery_iqp_hard_overlay.pdf"),
         cfg=cfg_hard,
