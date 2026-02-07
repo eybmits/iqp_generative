@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Hero Spectral Holdout-Discovery Master Script (FULL VALIDATION + CLASSICAL BASELINE + IQP-HARD TARGET)
-====================================================================================================
+Hero Spectral Holdout-Discovery Master Script (FULL VALIDATION + CLASSICAL BASELINE)
+====================================================================================
 
 This script is a **paper-faithful** implementation to validate **Result 1** and **Result 2**
 from the provided paper, while keeping your **paper-grade plotting style** and output naming.
@@ -14,11 +14,9 @@ In addition, it includes:
         - Classical Ising/Boltzmann model on the **same NN + NNN ring topology**.
         - Optimizes the same parity-moment MSE loss:  mean((z_data - P @ q)^2).
 
-  (B) An optional **hardness-aligned target family**:
-        - Target distribution p*(x) is the exact Born distribution of a **random IQP circuit**
-          with the same NN+NNN ZZ-only ring topology (Hadamards between diagonal layers).
-        - This provides a direct test of your “IQP-native target” hypothesis in the context
-          of your holdout discovery metrics (q(H), Q80, recovery curves).
+  (B) Two score-tilted target families for controlled comparison:
+        - `paper_even`: even-parity support + score tilt.
+        - `paper_nonparity`: full support + same score tilt.
 
 Core validated math (paper mapping):
   - Result 1:
@@ -64,11 +62,11 @@ Pennylane is required if --use-iqp 1 or --use-classical 1:
   pip install pennylane
 
 Run examples:
-  # Paper target (Appendix-A distribution)
-  python3 -m iqp_generative.core --outdir outputs/exp00_full_validation_paper --target-family paper
+  # Paper-even target (Appendix-A style)
+  python3 -m iqp_generative.core --outdir outputs/exp00_full_validation_paper_even --target-family paper_even
 
-  # IQP-native target (hardness-aligned)
-  python3 -m iqp_generative.core --outdir outputs/exp00_full_validation_iqp --target-family iqp_hard --n 12 --target-iqp-seed 123
+  # Paper-nonparity companion target
+  python3 -m iqp_generative.core --outdir outputs/exp00_full_validation_paper_nonparity --target-family paper_nonparity
 
 Notes:
   - Full sweeps with n=16, K up to 512, steps=600 are computationally heavy.
@@ -221,7 +219,7 @@ def make_bits_table(n: int) -> onp.ndarray:
 
 
 # ------------------------------------------------------------------------------
-# 3) Paper target distribution (Appendix A style)
+# 3) Score-tilted target distributions (paper-style family)
 # ------------------------------------------------------------------------------
 
 def longest_zero_run_between_ones(bits: onp.ndarray) -> int:
@@ -231,29 +229,54 @@ def longest_zero_run_between_ones(bits: onp.ndarray) -> int:
     gaps = [idx[i + 1] - idx[i] - 1 for i in range(len(idx) - 1)]
     return max(gaps) if gaps else 0
 
-def build_target_distribution_paper(n: int, beta: float):
+def build_target_distribution_score_tilt(
+    n: int,
+    beta: float,
+    even_parity_only: bool,
+) -> Tuple[onp.ndarray, onp.ndarray, onp.ndarray]:
     """
-    Paper target p*:
-      - support is even parity only (paper Eq. (1))
-      - score: s(x)=1+longest zero-run between ones (Appendix A)
-      - exponential tilt: p*(x) ∝ exp(beta * s(x)) on even parity (paper Eq. (2))
+    Shared score-tilted target family:
+      - score: s(x)=1+longest zero-run between ones
+      - p*(x) ∝ exp(beta * s(x)) on selected support
+      - support is either full space (non-parity) or even-parity sector
     """
     N = 2 ** n
-    scores = onp.full(N, -100.0, dtype=onp.float64)
     support = onp.zeros(N, dtype=bool)
+    scores = onp.zeros(N, dtype=onp.float64)
+
     for k in range(N):
         b = int2bits(k, n)
-        if parity_even(b):
+        if (not even_parity_only) or parity_even(b):
             support[k] = True
             scores[k] = 1.0 + float(longest_zero_run_between_ones(b))
 
+    if not support.any():
+        raise RuntimeError("Target support is empty.")
+
     logits = onp.full(N, -onp.inf, dtype=onp.float64)
     logits[support] = beta * scores[support]
-    m = onp.max(logits[support])
+    m = float(onp.max(logits[support]))
     unnorm = onp.zeros(N, dtype=onp.float64)
     unnorm[support] = onp.exp(logits[support] - m)
-    p_star = unnorm / unnorm.sum()
+    z = float(unnorm.sum())
+    if z <= 0:
+        raise RuntimeError("Failed to normalize target distribution.")
+    p_star = unnorm / z
     return p_star.astype(onp.float64), support, scores.astype(onp.float64)
+
+def build_target_distribution_paper(n: int, beta: float):
+    """
+    Legacy paper target alias:
+      even-parity support + score tilt.
+    """
+    return build_target_distribution_score_tilt(n=n, beta=beta, even_parity_only=True)
+
+def build_target_distribution_paper_nonparity(n: int, beta: float):
+    """
+    Non-parity companion target:
+      same score tilt as paper target, but full support.
+    """
+    return build_target_distribution_score_tilt(n=n, beta=beta, even_parity_only=False)
 
 
 # ------------------------------------------------------------------------------
@@ -1380,12 +1403,7 @@ class Config:
     Q80_search_max: int = 200000
 
     # target family
-    target_family: str = "paper"  # "paper" or "iqp_hard"
-    target_iqp_depth: int = 1
-    target_iqp_seed: int = 0
-    target_iqp_scale: float = 1.0
-    target_iqp_temperature: float = 1.0
-    target_iqp_even_parity: bool = False
+    target_family: str = "paper_even"  # "paper_even" or "paper_nonparity"
 
     # Adversarial demo (paper-target only)
     adversarial: bool = True
@@ -1473,7 +1491,9 @@ def run_sweep(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.ndarray, good_
             loss_iqp = float("nan")
             prop1_viol_iqp = float("nan")
 
-            seed_init = cfg.seed + 10000 + 97 * si + 7 * int(K)
+            loss_mode = str(cfg.iqp_loss).lower()
+            seed_term_k = 7 * int(K) if loss_mode == "parity_mse" else 0
+            seed_init = cfg.seed + 10000 + 97 * si + seed_term_k
 
             if cfg.use_iqp:
                 q_iqp, loss_iqp, _ = train_iqp_qcbm(
@@ -1486,7 +1506,7 @@ def run_sweep(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.ndarray, good_
                     seed_init=seed_init,
                     eval_every=cfg.iqp_eval_every,
                     return_hist=False,
-                    loss_mode=cfg.iqp_loss,
+                    loss_mode=loss_mode,
                     xent_emp=emp,
                 )
                 iqp_metrics = compute_metrics_for_q(q_iqp, holdout_mask, qH_unif, H_size, cfg.Q80_thr, cfg.Q80_search_max)
@@ -1649,11 +1669,13 @@ def rerun_single_setting(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.nda
     if lemma["abs_err"] > 1e-9:
         raise RuntimeError(f"Lemma 1 check failed at rerun (abs_err={lemma['abs_err']:.3e}).")
 
-    seed_init = cfg.seed + 10000 + 97 * si + 7 * int(K)
+    loss_mode = cfg.iqp_loss if iqp_loss is None else str(iqp_loss)
+    loss_mode = str(loss_mode).lower()
+    seed_term_k = 7 * int(K) if loss_mode == "parity_mse" else 0
+    seed_init = cfg.seed + 10000 + 97 * si + seed_term_k
 
     q_iqp, loss_iqp, hist_iqp = (None, float("nan"), None)
     if cfg.use_iqp:
-        loss_mode = cfg.iqp_loss if iqp_loss is None else str(iqp_loss)
         q_iqp, loss_iqp, hist_iqp = train_iqp_qcbm(
             n=cfg.n, layers=cfg.iqp_layers, steps=cfg.iqp_steps, lr=cfg.iqp_lr,
             P=P, z_data=z, seed_init=seed_init, eval_every=cfg.iqp_eval_every, return_hist=return_hist,
@@ -1783,14 +1805,14 @@ def main():
     parser.add_argument("--Q80-search-max", type=int, default=200000)
 
     # Target family selection
-    parser.add_argument("--target-family", type=str, default="paper", choices=["paper", "iqp_hard"])
-    parser.add_argument("--target-iqp-depth", type=int, default=1)
-    parser.add_argument("--target-iqp-seed", type=int, default=0)
-    parser.add_argument("--target-iqp-scale", type=float, default=1.0)
-    parser.add_argument("--target-iqp-temperature", type=float, default=1.0)
-    parser.add_argument("--target-iqp-even-parity", type=int, default=0)
+    parser.add_argument(
+        "--target-family",
+        type=str,
+        default="paper_even",
+        choices=["paper_even", "paper_nonparity", "paper"],
+    )
 
-    # Adversarial (paper target only)
+    # Adversarial (paper_even target only)
     parser.add_argument("--adversarial", type=int, default=1)
     parser.add_argument("--adv-score-level", type=int, default=7)
     parser.add_argument("--adv-sigma", type=float, default=1.0)
@@ -1814,6 +1836,11 @@ def main():
 
     args = parser.parse_args()
 
+    target_family = str(args.target_family).strip().lower()
+    # Backward-compatible alias used in older configs/scripts.
+    if target_family == "paper":
+        target_family = "paper_even"
+
     set_style(base=8)
     outdir = ensure_outdir(args.outdir)
 
@@ -1831,12 +1858,7 @@ def main():
         Q80_thr=args.Q80_thr,
         Q80_search_max=args.Q80_search_max,
 
-        target_family=args.target_family,
-        target_iqp_depth=args.target_iqp_depth,
-        target_iqp_seed=args.target_iqp_seed,
-        target_iqp_scale=args.target_iqp_scale,
-        target_iqp_temperature=args.target_iqp_temperature,
-        target_iqp_even_parity=bool(args.target_iqp_even_parity),
+        target_family=target_family,
 
         adversarial=bool(args.adversarial),
         adv_score_level=args.adv_score_level,
@@ -1863,20 +1885,12 @@ def main():
     bits_table = make_bits_table(cfg.n)
 
     # --- Build target distribution ---
-    if cfg.target_family == "paper":
+    if cfg.target_family == "paper_even":
         p_star, support, scores = build_target_distribution_paper(cfg.n, cfg.beta)
-        print("[Target] family=paper (even parity + score tilt)")
-    elif cfg.target_family == "iqp_hard":
-        p_star, support, scores = build_target_distribution_iqp_hard(
-            n=cfg.n,
-            depth=cfg.target_iqp_depth,
-            seed=cfg.target_iqp_seed,
-            scale=cfg.target_iqp_scale,
-            temperature=cfg.target_iqp_temperature,
-            even_parity_only=cfg.target_iqp_even_parity,
-            outdir=outdir,
-        )
-        print("[Target] family=iqp_hard (IQP-born probs)")
+        print("[Target] family=paper_even (even parity + score tilt)")
+    elif cfg.target_family == "paper_nonparity":
+        p_star, support, scores = build_target_distribution_paper_nonparity(cfg.n, cfg.beta)
+        print("[Target] family=paper_nonparity (full support + score tilt)")
     else:
         raise ValueError("Unknown target family.")
 
@@ -2116,8 +2130,8 @@ def main():
 
     # --- Adversarial visibility demo (paper-target only) ---
     if cfg.adversarial:
-        if cfg.target_family != "paper":
-            print("[Adv] Skipping adversarial demo: it is defined for the paper target with discrete score levels.")
+        if cfg.target_family != "paper_even":
+            print("[Adv] Skipping adversarial demo: it is defined for the paper_even target with discrete score levels.")
         else:
             run_adversarial_demo_paper_target(cfg, p_star, scores, good_mask, bits_table, outdir)
 

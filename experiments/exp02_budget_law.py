@@ -5,7 +5,7 @@ Experiment 2: Budget-law scatter + main plots
 
 Recovery overlays (for BOTH targets):
   - fig1_recovery_paper_overlay.pdf
-  - fig1_recovery_iqp_hard_overlay.pdf
+  - fig1_recovery_paper_nonparity_overlay.pdf
 
 Each overlay plot shows:
   - Target p* (black)
@@ -16,7 +16,7 @@ Each overlay plot shows:
 
 NEW: Budget-law scatter plots (both targets):
   - fig2b_paper_budgetlaw_scatter.pdf
-  - fig2b_iqp_hard_budgetlaw_scatter.pdf
+  - fig2b_paper_nonparity_budgetlaw_scatter.pdf
 
 Each scatter plot shows:
   - x-axis: best-case bound Q80^lb inferred from holdout mass q(H) (Prop. 1)
@@ -30,11 +30,11 @@ Heatmaps (paper target):
   - fig2c_paper_Q80_iqp.pdf            [RED]
   - fig2c_paper_Q80_class.pdf          [BLUE]
 
-Heatmaps (iqp_hard target):
-  - fig2a_iqp_hard_qH_ratio_iqp.pdf    [RED]
-  - fig2a_iqp_hard_qH_ratio_class.pdf  [BLUE]
-  - fig2c_iqp_hard_Q80_iqp.pdf         [RED]
-  - fig2c_iqp_hard_Q80_class.pdf       [BLUE]
+Heatmaps (paper_nonparity target):
+  - fig2a_paper_nonparity_qH_ratio_iqp    [RED]
+  - fig2a_paper_nonparity_qH_ratio_class  [BLUE]
+  - fig2c_paper_nonparity_Q80_iqp         [RED]
+  - fig2c_paper_nonparity_Q80_class       [BLUE]
 
 ONLY CHANGE vs previous:
   - Overlay legend: lightly white-backed AND placed at lower right.
@@ -512,7 +512,7 @@ def main() -> None:
     # =========================================================================
     # PAPER target
     # =========================================================================
-    cfg_paper = replace(base_cfg, target_family="paper")
+    cfg_paper = replace(base_cfg, target_family="paper_even")
 
     p_star_paper, support_paper, scores_paper = hv.build_target_distribution_paper(cfg_paper.n, cfg_paper.beta)
     good_paper = hv.topk_mask_by_scores(scores_paper, support_paper, frac=cfg_paper.good_frac)
@@ -545,54 +545,47 @@ def main() -> None:
     )
 
     # =========================================================================
-    # IQP-HARD target
+    # PAPER-NONPARITY target
     # =========================================================================
-    cfg_hard = replace(
-        base_cfg,
-        target_family="iqp_hard",
-        target_iqp_depth=1,
-        target_iqp_seed=0,
-        target_iqp_scale=1.0,
-        target_iqp_temperature=1.0,
-        target_iqp_even_parity=False,
-    )
+    cfg_nonparity = replace(base_cfg, target_family="paper_nonparity")
 
-    p_star_hard, support_hard, scores_hard = hv.build_target_distribution_iqp_hard(
-        n=cfg_hard.n,
-        depth=cfg_hard.target_iqp_depth,
-        seed=cfg_hard.target_iqp_seed,
-        scale=cfg_hard.target_iqp_scale,
-        temperature=cfg_hard.target_iqp_temperature,
-        even_parity_only=cfg_hard.target_iqp_even_parity,
-        outdir=outdir,
+    p_star_nonparity, support_nonparity, scores_nonparity = hv.build_target_distribution_paper_nonparity(
+        cfg_nonparity.n,
+        cfg_nonparity.beta,
     )
-    good_hard = hv.topk_mask_by_scores(scores_hard, support_hard, frac=cfg_hard.good_frac)
-    holdout_hard = hv.select_holdout_smart(
-        p_star=p_star_hard,
-        good_mask=good_hard,
+    good_nonparity = hv.topk_mask_by_scores(scores_nonparity, support_nonparity, frac=cfg_nonparity.good_frac)
+    holdout_nonparity = hv.select_holdout_smart(
+        p_star=p_star_nonparity,
+        good_mask=good_nonparity,
         bits_table=bits_table,
-        m_train=cfg_hard.train_m,
-        holdout_k=cfg_hard.holdout_k,
-        pool_size=cfg_hard.holdout_pool,
-        seed=cfg_hard.seed + 111,
+        m_train=cfg_nonparity.train_m,
+        holdout_k=cfg_nonparity.holdout_k,
+        pool_size=cfg_nonparity.holdout_pool,
+        seed=cfg_nonparity.seed + 111,
     )
 
-    results_hard = heatmaps_bundle("iqp_hard", cfg_hard, p_star_hard, holdout_hard, good_hard)
+    results_nonparity = heatmaps_bundle(
+        "paper_nonparity",
+        cfg_nonparity,
+        p_star_nonparity,
+        holdout_nonparity,
+        good_nonparity,
+    )
 
     plot_budgetlaw_scatter(
-        outpath=os.path.join(outdir, "fig2b_iqp_hard_budgetlaw_scatter.pdf"),
-        cfg=cfg_hard,
-        p_star=p_star_hard,
-        holdout_mask=holdout_hard,
-        results=results_hard,
+        outpath=os.path.join(outdir, "fig2b_paper_nonparity_budgetlaw_scatter.pdf"),
+        cfg=cfg_nonparity,
+        p_star=p_star_nonparity,
+        holdout_mask=holdout_nonparity,
+        results=results_nonparity,
     )
 
     plot_best_iqp_vs_all_ising_with_spec(
-        outpath=os.path.join(outdir, "fig1_recovery_iqp_hard_overlay.pdf"),
-        cfg=cfg_hard,
-        p_star=p_star_hard,
-        holdout_mask=holdout_hard,
-        results=results_hard,
+        outpath=os.path.join(outdir, "fig1_recovery_paper_nonparity_overlay.pdf"),
+        cfg=cfg_nonparity,
+        p_star=p_star_nonparity,
+        holdout_mask=holdout_nonparity,
+        results=results_nonparity,
     )
 
 
