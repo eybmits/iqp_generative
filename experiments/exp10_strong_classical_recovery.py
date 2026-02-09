@@ -309,7 +309,10 @@ def _train_classical_boltzmann(
     emp_t = emp_t / anp.sum(emp_t)
 
     rng = np.random.default_rng(seed_init)
-    theta = anp.array(0.01 * rng.standard_normal(num_features * layers), requires_grad=True)
+    # No fake multi-layer multiplication: an Ising model has no meaningful
+    # depth (summing coupling constants across layers is equivalent to a
+    # single layer).  Use num_features parameters directly.
+    theta = anp.array(0.01 * rng.standard_normal(num_features), requires_grad=True)
     opt = qml.AdamOptimizer(lr)
 
     def _softmax(logits):
@@ -318,9 +321,7 @@ def _train_classical_boltzmann(
         return ex / anp.sum(ex)
 
     def _q_from_theta(theta_flat):
-        t_mat = anp.reshape(theta_flat, (layers, num_features))
-        t_eff = anp.sum(t_mat, axis=0)
-        logits = anp.dot(t_eff, F_t)
+        logits = anp.dot(theta_flat, F_t)
         return _softmax(logits)
 
     loss_name = str(loss_mode).lower()
@@ -795,14 +796,6 @@ def main() -> None:
                 "lw": 2.0,
             },
             {
-                "key": "classical_matched_nnn",
-                "label": "Ising match (NN+NNN)",
-                "q": q_class,
-                "color": hv.COLORS["blue"],
-                "ls": ":",
-                "lw": 2.0,
-            },
-            {
                 "key": "classical_nnn_fields_parity",
                 "label": "Ising+fields (NN+NNN)",
                 "q": q_nnn_fields_parity,
@@ -895,7 +888,6 @@ def main() -> None:
                 "fit_metrics_csv": str(fit_csv_path),
             },
             "selected_classical_baselines": [
-                "classical_matched_nnn",
                 "classical_nnn_fields_parity",
                 "classical_dense_fields_xent",
                 "classical_transformer_mle",

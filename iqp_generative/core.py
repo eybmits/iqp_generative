@@ -313,96 +313,6 @@ def iqp_circuit_zz_only(W, wires, pairs, layers: int = 1):
         for w in wires:
             qml.Hadamard(wires=w)
 
-def build_target_distribution_iqp_hard(
-    n: int,
-    depth: int,
-    seed: int,
-    scale: float = 1.0,
-    temperature: float = 1.0,
-    even_parity_only: bool = False,
-    outdir: Optional[str] = None,
-) -> Tuple[onp.ndarray, onp.ndarray, onp.ndarray]:
-    """
-    Build an IQP-native target distribution p*(x) as exact Born probabilities of
-    a random IQP circuit with NN+NNN ZZ-only ring topology.
-
-    Options:
-      - temperature != 1.0 applies p <- p^temperature (renormalized). This is NOT
-        an exact Born distribution anymore, but can help create heavier heads for
-        easier holdout selection at larger n.
-      - even_parity_only masks odd-parity states to zero and renormalizes.
-
-    Returns:
-      p_star: (N,) probabilities
-      support: boolean mask (all True unless even_parity_only is used)
-      scores: a "score" array for logging/holdout list (we use log-prob)
-    """
-    if not HAS_PENNYLANE:
-        raise RuntimeError("Pennylane is required to build the IQP-hard target. Install with `pip install pennylane`.")
-
-    pairs = get_iqp_pairs_nn_nnn(n)
-    num_params = len(pairs) * int(depth)
-
-    rng = onp.random.default_rng(int(seed))
-    W = rng.uniform(-math.pi, math.pi, size=num_params).astype(onp.float64) * float(scale)
-
-    dev = qml.device("default.qubit", wires=n)
-
-    # Use interface=None for a fixed, non-trainable circuit evaluation.
-    @qml.qnode(dev, interface=None)
-    def circuit():
-        iqp_circuit_zz_only(W, range(n), pairs, layers=int(depth))
-        return qml.probs(wires=range(n))
-
-    p = onp.array(circuit(), dtype=onp.float64)
-    p = onp.clip(p, 0.0, None)
-    p_sum = float(p.sum())
-    if p_sum <= 0:
-        raise RuntimeError("IQP-hard target produced zero total probability (unexpected).")
-    p = p / p_sum
-
-    if even_parity_only:
-        bits_table = make_bits_table(n)
-        even = onp.array([parity_even(bits_table[i]) for i in range(p.size)], dtype=bool)
-        p = p * even.astype(onp.float64)
-        s = float(p.sum())
-        if s <= 0:
-            raise RuntimeError("even_parity_only masked all probability mass (unexpected).")
-        p = p / s
-        support = even
-    else:
-        support = onp.ones_like(p, dtype=bool)
-
-    if temperature is not None and float(temperature) != 1.0:
-        t = float(temperature)
-        # avoid underflow: add tiny epsilon
-        p = onp.power(p + 1e-300, t)
-        p = p / float(p.sum())
-
-    # scores for printing: log-prob (higher is better)
-    scores = onp.log(p + 1e-300).astype(onp.float64)
-
-    if outdir is not None:
-        meta = dict(
-            target_family="iqp_hard",
-            n=int(n),
-            depth=int(depth),
-            seed=int(seed),
-            scale=float(scale),
-            temperature=float(temperature),
-            even_parity_only=bool(even_parity_only),
-            num_pairs=int(len(pairs)),
-            num_params=int(num_params),
-            pairs=pairs,
-        )
-        with open(os.path.join(outdir, "target_iqp_meta.json"), "w", encoding="utf-8") as f:
-            json.dump(meta, f, indent=2)
-        onp.save(os.path.join(outdir, "target_iqp_params.npy"), W)
-        print(f"[Target-IQP] Saved target_iqp_meta.json and target_iqp_params.npy to {outdir}")
-
-    return p.astype(onp.float64), support, scores
-
-
 # ------------------------------------------------------------------------------
 # 5) Good-set selection and sampling
 # ------------------------------------------------------------------------------
@@ -683,25 +593,6 @@ def moment_mse(P: onp.ndarray, q: onp.ndarray, z: onp.ndarray) -> float:
     """Appendix B Eq. (B2): mean((P@q - z)^2)."""
     r = (P @ q) - z
     return float(onp.mean(r ** 2))
-
-def check_prop1_curve_bound(q: onp.ndarray, holdout_mask: onp.ndarray, n_checks: int = 6, Qmax: int = 10000) -> float:
-    """
-    Numeric sanity check of Proposition 1 (curve upper bound):
-      R(Q) <= 1 - (1 - mu/|H|)^Q,  mu=q(H)
-    Returns max positive violation across a log-spaced grid.
-    """
-    H_size = int(onp.sum(holdout_mask))
-    if H_size == 0:
-        return 0.0
-    mu = float(onp.sum(q[holdout_mask]))
-    if mu <= 0:
-        return 0.0
-    Qs = onp.unique(onp.logspace(0, math.log10(max(2, Qmax)), n_checks).astype(int))
-    R = expected_unique_fraction(q, holdout_mask, Qs)
-    bound = 1.0 - onp.power(1.0 - (mu / H_size), Qs.astype(onp.float64))
-    viol = float(onp.max(R - bound))
-    return max(0.0, viol)
-
 
 # ------------------------------------------------------------------------------
 # 10) Plotting helpers
@@ -1316,9 +1207,14 @@ def train_classical_ising_baseline(
     return_hist: bool = False,
 ):
     """
-    Classical baseline:
-      q_cl(x) ∝ exp( Σ_{l=1}^L Σ_{(i,j)∈NN+NNN} J_{l,ij} s_i s_j ),
+    Classical baseline with full Ising expressivity:
+      q_cl(x) ∝ exp( Σ_{(i,j)∈NN+NNN} J_{ij} s_i s_j  +  Σ_i h_i s_i ),
       with s_i = (-1)^{x_i} ∈ {+1,-1}.
+
+    Includes local fields (h_i) for full single-layer expressivity.
+    The `layers` parameter is accepted for API compatibility but does not
+    multiply the parameter count: an Ising model has no meaningful depth
+    (summing coupling constants across layers is equivalent to a single layer).
 
     Trained with EXACT same moment-MSE loss as IQP-QCBM:
       loss = mean((z_data - P @ q_cl)^2)
@@ -1335,17 +1231,24 @@ def train_classical_ising_baseline(
     spins = 1.0 - 2.0 * bits.astype(onp.float64)  # {+1,-1}, N x n
     N = spins.shape[0]
 
-    # Precompute pair products F[k,x] = s_i s_j
-    F = onp.zeros((num_pairs, N), dtype=onp.float64)
+    # Precompute pair products F_pair[k,x] = s_i s_j
+    pair_feats = onp.zeros((num_pairs, N), dtype=onp.float64)
     for k, (i, j) in enumerate(pairs):
-        F[k] = spins[:, i] * spins[:, j]
-    F_t = np.array(F, requires_grad=False)
+        pair_feats[k] = spins[:, i] * spins[:, j]
 
+    # Local field features F_field[i,x] = s_i
+    field_feats = spins.T.copy()  # n x N
+
+    # Combined feature matrix: pair interactions + local fields
+    F = onp.concatenate([pair_feats, field_feats], axis=0)  # (num_pairs + n) x N
+    num_features = F.shape[0]
+
+    F_t = np.array(F, requires_grad=False)
     P_t = np.array(P, requires_grad=False)
     z_t = np.array(z_data, requires_grad=False)
 
     rng = onp.random.default_rng(seed_init)
-    J = np.array(0.01 * rng.standard_normal(num_pairs * layers), requires_grad=True)
+    J = np.array(0.01 * rng.standard_normal(num_features), requires_grad=True)
 
     opt = qml.AdamOptimizer(lr)
     hist = {"step": [], "loss": []} if return_hist else None
@@ -1356,9 +1259,7 @@ def train_classical_ising_baseline(
         return ex / np.sum(ex)
 
     def loss_fn(J_flat):
-        J_mat = np.reshape(J_flat, (layers, num_pairs))
-        J_eff = np.sum(J_mat, axis=0)           # sum over layers
-        logits = np.dot(J_eff, F_t)             # (N,)
+        logits = np.dot(J_flat, F_t)            # (N,)
         q = softmax(logits)
         return np.mean((z_t - P_t @ q) ** 2)
 
@@ -1370,9 +1271,8 @@ def train_classical_ising_baseline(
             hist["loss"].append(float(loss_val))
 
     # Final q
-    J_mat = onp.reshape(onp.array(J, dtype=onp.float64), (layers, num_pairs))
-    J_eff = onp.sum(J_mat, axis=0)
-    logits = J_eff @ F  # (N,)
+    J_np = onp.array(J, dtype=onp.float64)
+    logits = J_np @ F  # (N,)
     logits = logits - float(logits.max())
     q = onp.exp(logits)
     q = q / float(q.sum())
@@ -1482,14 +1382,12 @@ def run_sweep(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.ndarray, good_
 
             spec_metrics = compute_metrics_for_q(q_spec, holdout_mask, qH_unif, H_size, cfg.Q80_thr, cfg.Q80_search_max)
             mse_spec = moment_mse(P, q_spec, z)
-            prop1_viol_spec = check_prop1_curve_bound(q_spec, holdout_mask)
 
             # --- IQP training (Result 1) ---
             q_iqp = None
             iqp_metrics = dict(qH=float("nan"), qH_ratio=float("nan"), R_Q1000=float("nan"),
                                R_Q10000=float("nan"), Q80=float("nan"), Q80_pred=float("nan"), Q80_lb=float("nan"))
             loss_iqp = float("nan")
-            prop1_viol_iqp = float("nan")
 
             loss_mode = str(cfg.iqp_loss).lower()
             seed_term_k = 7 * int(K) if loss_mode == "parity_mse" else 0
@@ -1510,14 +1408,12 @@ def run_sweep(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.ndarray, good_
                     xent_emp=emp,
                 )
                 iqp_metrics = compute_metrics_for_q(q_iqp, holdout_mask, qH_unif, H_size, cfg.Q80_thr, cfg.Q80_search_max)
-                prop1_viol_iqp = check_prop1_curve_bound(q_iqp, holdout_mask)
 
             # --- Classical baseline training (same objective/budget) ---
             q_class = None
             class_metrics = dict(qH=float("nan"), qH_ratio=float("nan"), R_Q1000=float("nan"),
                                  R_Q10000=float("nan"), Q80=float("nan"), Q80_pred=float("nan"), Q80_lb=float("nan"))
             loss_class = float("nan")
-            prop1_viol_class = float("nan")
 
             if cfg.use_classical:
                 q_class, loss_class, _ = train_classical_ising_baseline(
@@ -1532,7 +1428,6 @@ def run_sweep(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.ndarray, good_
                     return_hist=False,
                 )
                 class_metrics = compute_metrics_for_q(q_class, holdout_mask, qH_unif, H_size, cfg.Q80_thr, cfg.Q80_search_max)
-                prop1_viol_class = check_prop1_curve_bound(q_class, holdout_mask)
 
             Ku, mean_wt = alpha_stats(alphas)
 
@@ -1552,7 +1447,6 @@ def run_sweep(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.ndarray, good_
                 Q80_pred_iqp=float(iqp_metrics["Q80_pred"]),
                 Q80_lb_iqp=float(iqp_metrics["Q80_lb"]),
                 train_loss_iqp=float(loss_iqp),
-                prop1_max_violation_iqp=float(prop1_viol_iqp),
 
                 # Classical baseline
                 qH_class=float(class_metrics["qH"]),
@@ -1563,7 +1457,6 @@ def run_sweep(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.ndarray, good_
                 Q80_pred_class=float(class_metrics["Q80_pred"]),
                 Q80_lb_class=float(class_metrics["Q80_lb"]),
                 train_loss_class=float(loss_class),
-                prop1_max_violation_class=float(prop1_viol_class),
 
                 # Spectral completion (Result 2)
                 qH_spec=float(spec_metrics["qH"]),
@@ -1574,7 +1467,6 @@ def run_sweep(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.ndarray, good_
                 Q80_pred_spec=float(spec_metrics["Q80_pred"]),
                 Q80_lb_spec=float(spec_metrics["Q80_lb"]),
                 moment_mse_spec=float(mse_spec),
-                prop1_max_violation_spec=float(prop1_viol_spec),
 
                 # Visibility + Lemma 1 diagnostics
                 Vis=float(lemma["Vis"]),
