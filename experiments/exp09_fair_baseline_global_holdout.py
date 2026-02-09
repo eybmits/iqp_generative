@@ -342,7 +342,7 @@ def _plot_holdout_protocol_comparison(holdout_meta: List[Dict], outdir: str) -> 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--outdir", type=str, default=str(ROOT / "outputs" / "paper_even_final" / "06_claim_fair_baseline_global_holdout"))
-    ap.add_argument("--target-family", type=str, default="paper_even", choices=["paper_even", "paper_nonparity", "paper"])
+    ap.add_argument("--target-family", type=str, default="paper_even", choices=["paper_even", "paper"])
     ap.add_argument("--holdout-modes", type=str, default="high_value,global")
     ap.add_argument("--n", type=int, default=12)
     ap.add_argument("--beta", type=float, default=0.9)
@@ -366,6 +366,8 @@ def main() -> None:
     target_family = str(args.target_family).strip().lower()
     if target_family == "paper":
         target_family = "paper_even"
+    if target_family != "paper_even":
+        raise ValueError("exp09 supports only target-family=paper_even.")
     args.target_family = target_family
 
     outdir = _ensure_outdir(args.outdir)
@@ -389,12 +391,7 @@ def main() -> None:
     if args.mode in ("run", "run+analyze"):
         bits_table = hv.make_bits_table(args.n)
 
-        if target_family == "paper_even":
-            p_star, support, scores = hv.build_target_distribution_paper(args.n, args.beta)
-        elif target_family == "paper_nonparity":
-            p_star, support, scores = hv.build_target_distribution_paper_nonparity(args.n, args.beta)
-        else:
-            raise ValueError(f"Unsupported target family: {target_family}")
+        p_star, support, scores = hv.build_target_distribution_paper(args.n, args.beta)
 
         good_mask = hv.topk_mask_by_scores(scores, support, frac=args.good_frac)
 
@@ -602,4 +599,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

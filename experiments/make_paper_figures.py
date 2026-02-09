@@ -97,6 +97,29 @@ def _best_case_Q80_lb(qH_ratio: float, N: int, thr: float = 0.8) -> float:
     return float(np.log(1.0 - thr) / np.log(1.0 - p))
 
 
+def _top_iqp_settings(results: List[Dict], top_n: int = 2) -> List[Tuple[float, int]]:
+    """Pick best IQP settings by finite minimal Q80_iqp; tie-break by larger qH_ratio_iqp."""
+    finite = [r for r in results if np.isfinite(float(r["Q80_iqp"]))]
+    if not finite:
+        return [(2.0, 256), (1.0, 512)]
+    finite.sort(key=lambda r: (float(r["Q80_iqp"]), -float(r["qH_ratio_iqp"])))
+
+    out: List[Tuple[float, int]] = []
+    seen = set()
+    for r in finite:
+        key = (float(r["sigma"]), int(r["K"]))
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(key)
+        if len(out) >= top_n:
+            break
+
+    while len(out) < top_n:
+        out.append(out[-1])
+    return out
+
+
 # ---------------------------------------------------------------------------
 # Shared setup
 # ---------------------------------------------------------------------------
@@ -304,7 +327,7 @@ def _visibility_computation(
 
 
 def figure_1(outdir: Path) -> None:
-    """Recovery & Mechanism: (a) σ=2,K=256; (b) σ=1,K=512; (c) Visibility."""
+    """Recovery & Mechanism: (a,b) best IQP settings from sweep; (c) Visibility."""
     print("[Fig 1] Computing recovery panels + visibility...")
     cfg = _base_config(str(outdir))
     bits_table, p_star, support, scores, good_mask, holdout_mask = _setup_target(cfg)
@@ -316,15 +339,18 @@ def figure_1(outdir: Path) -> None:
     fig, axes = plt.subplots(1, 3, figsize=hv.fig_size("full", 2.6))
     plt.subplots_adjust(wspace=0.38)
 
-    # Panel (a): σ=2, K=256
+    best_two = _top_iqp_settings(results, top_n=2)
+    (sig_a, k_a), (sig_b, k_b) = best_two
+
+    # Panel (a): best IQP setting
     hv._panel_label(axes[0], "(a)")
     _plot_recovery_panel(axes[0], cfg, p_star, holdout_mask, bits_table, results,
-                         sigma_show=2.0, K_show=256)
+                         sigma_show=sig_a, K_show=k_a)
 
-    # Panel (b): σ=1, K=512
+    # Panel (b): second-best IQP setting
     hv._panel_label(axes[1], "(b)")
     _plot_recovery_panel(axes[1], cfg, p_star, holdout_mask, bits_table, results,
-                         sigma_show=1.0, K_show=512)
+                         sigma_show=sig_b, K_show=k_b)
 
     # Panel (c): Visibility
     hv._panel_label(axes[2], "(c)")

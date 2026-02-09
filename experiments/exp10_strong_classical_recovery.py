@@ -531,7 +531,7 @@ def main() -> None:
     ap.add_argument("--iqp-steps", type=int, default=400)
     ap.add_argument("--iqp-lr", type=float, default=0.05)
     ap.add_argument("--iqp-eval-every", type=int, default=50)
-    ap.add_argument("--target-family", type=str, default="paper_even")
+    ap.add_argument("--target-family", type=str, default="paper_even", choices=["paper_even", "paper"])
     ap.add_argument("--train-ms", type=str, default="1000,5000")
     ap.add_argument("--holdout-m-train", type=int, default=5000)
     # Best settings fallback (used if pair_rows/meta are absent)
@@ -590,6 +590,10 @@ def main() -> None:
         if cfg_raw is not None
         else str(args.target_family).strip().lower()
     )
+    if target_family == "paper":
+        target_family = "paper_even"
+    if target_family != "paper_even":
+        raise ValueError("exp10 supports only target-family=paper_even.")
     train_ms = _parse_list_ints(str(cfg_raw["train_ms"])) if cfg_raw is not None and "train_ms" in cfg_raw else _parse_list_ints(str(args.train_ms))
     holdout_m_train_raw = cfg_raw.get("holdout_m_train") if cfg_raw is not None else None
     if holdout_m_train_raw is None:
@@ -598,12 +602,7 @@ def main() -> None:
         holdout_m_train = int(holdout_m_train_raw)
 
     bits_table = hv.make_bits_table(n)
-    if target_family == "paper_even":
-        p_star, support, scores = hv.build_target_distribution_paper(n, beta)
-    elif target_family == "paper_nonparity":
-        p_star, support, scores = hv.build_target_distribution_paper_nonparity(n, beta)
-    else:
-        raise ValueError(f"Unsupported target_family: {target_family}")
+    p_star, support, scores = hv.build_target_distribution_paper(n, beta)
     good_mask = hv.topk_mask_by_scores(scores, support, frac=good_frac)
 
     for mode in ("high_value", "global"):

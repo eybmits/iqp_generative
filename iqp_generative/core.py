@@ -7,16 +7,10 @@ Hero Spectral Holdout-Discovery Master Script (FULL VALIDATION + CLASSICAL BASEL
 This script is a **paper-faithful** implementation to validate **Result 1** and **Result 2**
 from the provided paper, while keeping your **paper-grade plotting style** and output naming.
 
-In addition, it includes:
-
-  (A) A **classical baseline** that is trained with the **same objective**, **same data**,
-      and **same optimizer budget** as the IQP-QCBM:
-        - Classical Ising/Boltzmann model on the **same NN + NNN ring topology**.
-        - Optimizes the same parity-moment MSE loss:  mean((z_data - P @ q)^2).
-
-  (B) Two score-tilted target families for controlled comparison:
-        - `paper_even`: even-parity support + score tilt.
-        - `paper_nonparity`: full support + same score tilt.
+In addition, it includes a **classical baseline** that is trained with the
+**same objective**, **same data**, and **same optimizer budget** as the IQP-QCBM:
+  - Classical Ising/Boltzmann model on the **same NN + NNN ring topology**.
+  - Optimizes the same parity-moment MSE loss:  mean((z_data - P @ q)^2).
 
 Core validated math (paper mapping):
   - Result 1:
@@ -64,9 +58,6 @@ Pennylane is required if --use-iqp 1 or --use-classical 1:
 Run examples:
   # Paper-even target (Appendix-A style)
   python3 -m iqp_generative.core --outdir outputs/exp00_full_validation_paper_even --target-family paper_even
-
-  # Paper-nonparity companion target
-  python3 -m iqp_generative.core --outdir outputs/exp00_full_validation_paper_nonparity --target-family paper_nonparity
 
 Notes:
   - Full sweeps with n=16, K up to 512, steps=600 are computationally heavy.
@@ -238,7 +229,7 @@ def build_target_distribution_score_tilt(
     Shared score-tilted target family:
       - score: s(x)=1+longest zero-run between ones
       - p*(x) ∝ exp(beta * s(x)) on selected support
-      - support is either full space (non-parity) or even-parity sector
+      - in this project, support is the even-parity sector
     """
     N = 2 ** n
     support = onp.zeros(N, dtype=bool)
@@ -270,13 +261,6 @@ def build_target_distribution_paper(n: int, beta: float):
       even-parity support + score tilt.
     """
     return build_target_distribution_score_tilt(n=n, beta=beta, even_parity_only=True)
-
-def build_target_distribution_paper_nonparity(n: int, beta: float):
-    """
-    Non-parity companion target:
-      same score tilt as paper target, but full support.
-    """
-    return build_target_distribution_score_tilt(n=n, beta=beta, even_parity_only=False)
 
 
 # ------------------------------------------------------------------------------
@@ -1302,8 +1286,8 @@ class Config:
     Q80_thr: float = 0.8
     Q80_search_max: int = 200000
 
-    # target family
-    target_family: str = "paper_even"  # "paper_even" or "paper_nonparity"
+    # target family (fixed in this project scope)
+    target_family: str = "paper_even"
 
     # Adversarial demo (paper-target only)
     adversarial: bool = True
@@ -1701,7 +1685,7 @@ def main():
         "--target-family",
         type=str,
         default="paper_even",
-        choices=["paper_even", "paper_nonparity", "paper"],
+        choices=["paper_even", "paper"],
     )
 
     # Adversarial (paper_even target only)
@@ -1732,6 +1716,8 @@ def main():
     # Backward-compatible alias used in older configs/scripts.
     if target_family == "paper":
         target_family = "paper_even"
+    if target_family != "paper_even":
+        raise ValueError("Only target-family=paper_even is supported in this codebase.")
 
     set_style(base=8)
     outdir = ensure_outdir(args.outdir)
@@ -1777,14 +1763,10 @@ def main():
     bits_table = make_bits_table(cfg.n)
 
     # --- Build target distribution ---
-    if cfg.target_family == "paper_even":
-        p_star, support, scores = build_target_distribution_paper(cfg.n, cfg.beta)
-        print("[Target] family=paper_even (even parity + score tilt)")
-    elif cfg.target_family == "paper_nonparity":
-        p_star, support, scores = build_target_distribution_paper_nonparity(cfg.n, cfg.beta)
-        print("[Target] family=paper_nonparity (full support + score tilt)")
-    else:
-        raise ValueError("Unknown target family.")
+    if cfg.target_family != "paper_even":
+        raise ValueError(f"Unsupported target family: {cfg.target_family}")
+    p_star, support, scores = build_target_distribution_paper(cfg.n, cfg.beta)
+    print("[Target] family=paper_even (even parity + score tilt)")
 
     # Good set selection
     good_mask = topk_mask_by_scores(scores, support, frac=cfg.good_frac)

@@ -319,7 +319,7 @@ def main() -> None:
         "--target-family",
         type=str,
         default="paper_even",
-        choices=["paper_even", "paper_nonparity", "paper"],
+        choices=["paper_even", "paper"],
     )
 
     parser.add_argument("--make-plots", type=int, default=1)
@@ -335,6 +335,8 @@ def main() -> None:
     target_family = str(args.target_family).strip().lower()
     if target_family == "paper":
         target_family = "paper_even"
+    if target_family != "paper_even":
+        raise ValueError("exp05 supports only target-family=paper_even.")
     args.target_family = target_family
 
     outdir = _ensure_outdir(args.outdir)
@@ -354,12 +356,7 @@ def main() -> None:
     bits_table = hv.make_bits_table(args.n)
 
     # Target distribution (shared)
-    if target_family == "paper_even":
-        p_star, support, scores = hv.build_target_distribution_paper(args.n, args.beta)
-    elif target_family == "paper_nonparity":
-        p_star, support, scores = hv.build_target_distribution_paper_nonparity(args.n, args.beta)
-    else:
-        raise ValueError(f"Unsupported target family for exp05: {target_family}")
+    p_star, support, scores = hv.build_target_distribution_paper(args.n, args.beta)
 
     good_mask = hv.topk_mask_by_scores(scores, support, frac=args.good_frac)
 
