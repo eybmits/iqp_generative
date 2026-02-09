@@ -45,6 +45,21 @@ try:
     HAS_TORCH = True
 except Exception:
     HAS_TORCH = False
+    # Keep module importable when torch is unavailable.
+    class _TorchStub:
+        class Tensor:
+            pass
+
+    class _NNStub:
+        class Module:
+            pass
+
+    class _FStub:
+        pass
+
+    torch = _TorchStub()  # type: ignore[assignment]
+    nn = _NNStub()  # type: ignore[assignment]
+    F = _FStub()  # type: ignore[assignment]
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:

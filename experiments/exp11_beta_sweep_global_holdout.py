@@ -567,7 +567,7 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=46)
     ap.add_argument("--train-m", type=int, default=5000)
     ap.add_argument("--sigma", type=float, default=2.0)
-    ap.add_argument("--K", type=int, default=512)
+    ap.add_argument("--K", type=int, default=256)
     ap.add_argument("--layers", type=int, default=1)
     ap.add_argument("--good-frac", type=float, default=0.05)
     ap.add_argument("--holdout-k", type=int, default=20)
