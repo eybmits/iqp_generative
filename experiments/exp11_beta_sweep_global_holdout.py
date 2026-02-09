@@ -6,8 +6,8 @@ Experiment 11: Beta-family sweep (paper_even) under configurable holdout mode.
 What this script produces:
 1) Per-beta plots (all strong baselines, same style family as exp02/exp10):
    - recovery curve:        beta_<tag>_recovery_all_baselines.pdf
-   - mass coverage curve:   beta_<tag>_mass_coverage_all_baselines.pdf
    - fit-distance bars:     beta_<tag>_fit_distance_all_baselines.pdf
+   - target score profile:  beta_<tag>_target_score_distribution.pdf
 2) Sweep summary plots:
    - beta_sweep_Q80_vs_beta.pdf
    - beta_sweep_qH_vs_beta.pdf
@@ -183,7 +183,7 @@ def _train_models_for_beta(
     artr_batch_size: int,
     maxent_steps: int,
     maxent_lr: float,
-) -> Tuple[np.ndarray, np.ndarray, List[Dict[str, object]], List[Dict[str, float]]]:
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, List[Dict[str, object]], List[Dict[str, float]]]:
     bits_table = hv.make_bits_table(n)
     p_star, support, scores = hv.build_target_distribution_paper(n, beta)
     good_mask = hv.topk_mask_by_scores(scores, support, frac=good_frac)
@@ -356,7 +356,7 @@ def _train_models_for_beta(
             }
         )
 
-    return p_star, holdout_mask, model_rows, metrics_rows
+    return p_star, scores, holdout_mask, model_rows, metrics_rows
 
 
 def _plot_recovery_single(ax, p_star: np.ndarray, holdout_mask: np.ndarray, model_rows: List[Dict[str, object]], Q: np.ndarray) -> None:
@@ -423,12 +423,35 @@ def _plot_fit_single(ax, metrics_rows: List[Dict[str, float]]) -> None:
     ax.set_xticklabels([MODEL_LABEL_SHORT[k] for k in keys], rotation=35, ha="right", fontsize=6)
 
 
+def _plot_target_score_distribution(ax, p_star: np.ndarray, scores: np.ndarray) -> None:
+    mask = p_star > 0.0
+    if not np.any(mask):
+        ax.text(0.5, 0.5, "No support", transform=ax.transAxes, ha="center", va="center")
+        ax.set_xlabel("Score")
+        ax.set_ylabel(r"$p^*(s)$")
+        return
+
+    score_vals = scores[mask]
+    masses = p_star[mask]
+    uniq = np.unique(score_vals)
+    uniq = np.sort(uniq)
+    pmass = np.array([float(masses[score_vals == s].sum()) for s in uniq], dtype=np.float64)
+
+    ax.bar(uniq, pmass, color=hv.COLORS["target"], alpha=0.85, width=0.75)
+    ax.plot(uniq, pmass, color=hv.COLORS["target"], marker="o", markersize=3.2, linewidth=1.2, alpha=0.95)
+    ax.set_xlabel("Score")
+    ax.set_ylabel(r"$p^*(s)$")
+    ax.set_ylim(0.0, max(1e-6, float(pmass.max()) * 1.12))
+    ax.set_xticks(uniq)
+
+
 def _save_per_beta_plots(
     out_per_beta: Path,
     holdout_mode: str,
     train_m: int,
     beta: float,
     p_star: np.ndarray,
+    scores: np.ndarray,
     holdout_mask: np.ndarray,
     model_rows: List[Dict[str, object]],
     metrics_rows: List[Dict[str, float]],
@@ -450,16 +473,15 @@ def _save_per_beta_plots(
     plt.close(fig)
 
     fig, ax = plt.subplots(figsize=hv.fig_size("col", 2.6), constrained_layout=True)
-    _plot_mass_single(ax, p_star, holdout_mask, model_rows, Q)
-    ax.legend(handles=handles, **LEGEND_STYLE)
-    ax.set_title(fr"{holdout_mode} holdout mass coverage, $m$={int(train_m)}, $\beta$={beta:g}")
-    fig.savefig(out_per_beta / f"beta_{btag}_mass_coverage_all_baselines.pdf")
-    plt.close(fig)
-
-    fig, ax = plt.subplots(figsize=hv.fig_size("col", 2.6), constrained_layout=True)
     _plot_fit_single(ax, metrics_rows)
     ax.set_title(fr"Fit distance to target, $\beta$={beta:g}")
     fig.savefig(out_per_beta / f"beta_{btag}_fit_distance_all_baselines.pdf")
+    plt.close(fig)
+
+    fig, ax = plt.subplots(figsize=hv.fig_size("col", 2.6), constrained_layout=True)
+    _plot_target_score_distribution(ax, p_star, scores)
+    ax.set_title(fr"Target score profile, $\beta$={beta:g}")
+    fig.savefig(out_per_beta / f"beta_{btag}_target_score_distribution.pdf")
     plt.close(fig)
 
 
@@ -528,6 +550,7 @@ def _make_collage(
     for i, beta in enumerate(betas):
         art = artifacts[beta]
         p_star = art["p_star"]
+        scores = art["scores"]
         holdout_mask = art["holdout_mask"]
         model_rows = art["model_rows"]
         metrics_rows = art["metrics_rows"]
@@ -537,19 +560,20 @@ def _make_collage(
         ax0.set_title(fr"$\beta$={beta:g} | Recovery ({holdout_mode})")
 
         ax1 = axes[i, 1]
-        _plot_mass_single(ax1, p_star, holdout_mask, model_rows, Q)
-        ax1.set_title(fr"$\beta$={beta:g} | Mass coverage ({holdout_mode})")
+        _plot_fit_single(ax1, metrics_rows)
+        ax1.set_title(fr"$\beta$={beta:g} | Fit TV ({holdout_mode})")
 
         ax2 = axes[i, 2]
-        _plot_fit_single(ax2, metrics_rows)
-        ax2.set_title(fr"$\beta$={beta:g} | Fit TV ({holdout_mode})")
+        assert isinstance(scores, np.ndarray)
+        _plot_target_score_distribution(ax2, p_star, scores)
+        ax2.set_title(fr"$\beta$={beta:g} | Target score profile")
 
         if i < n_b - 1:
             for ax in (ax0, ax1, ax2):
                 ax.set_xlabel("")
                 ax.tick_params(labelbottom=False)
 
-    axes[0, 2].legend(handles=legend_handles, loc="upper right", fontsize=6.3, frameon=True, framealpha=0.9)
+    axes[0, 0].legend(handles=legend_handles, loc="upper right", fontsize=6.3, frameon=True, framealpha=0.9)
     fig.savefig(out_collage / "collage_all_plots_all_betas.pdf")
     plt.close(fig)
 
@@ -608,7 +632,7 @@ def main() -> None:
 
     for beta in betas:
         print(f"[Beta sweep] beta={beta:g}")
-        p_star, holdout_mask, model_rows, metrics_rows = _train_models_for_beta(
+        p_star, scores, holdout_mask, model_rows, metrics_rows = _train_models_for_beta(
             holdout_mode=args.holdout_mode,
             n=args.n,
             beta=beta,
@@ -639,6 +663,7 @@ def main() -> None:
         rows_long.extend(metrics_rows)
         artifacts[beta] = {
             "p_star": p_star,
+            "scores": scores,
             "holdout_mask": holdout_mask,
             "model_rows": model_rows,
             "metrics_rows": metrics_rows,
@@ -652,6 +677,7 @@ def main() -> None:
             args.train_m,
             beta,
             p_star,
+            scores,
             holdout_mask,
             model_rows,
             metrics_rows,
