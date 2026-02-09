@@ -34,6 +34,7 @@ import numpy as np
 
 os.environ.setdefault("MPLBACKEND", "Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.lines import Line2D  # noqa: E402
 
 HAS_TORCH = False
 try:
@@ -50,6 +51,21 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from iqp_generative import core as hv  # noqa: E402
+
+
+LEGEND_STYLE = dict(
+    loc="lower right",
+    fontsize=7.0,
+    frameon=True,
+    framealpha=0.90,
+    facecolor="white",
+    edgecolor="none",
+    handlelength=1.6,
+    labelspacing=0.25,
+    borderpad=0.25,
+    handletextpad=0.5,
+    borderaxespad=0.2,
+)
 
 
 def _parse_list_ints(s: str) -> List[int]:
@@ -434,7 +450,7 @@ def _plot_recovery_all(
     q_unif = np.ones_like(p_star, dtype=np.float64) / p_star.size
     y_unif = hv.expected_unique_fraction(q_unif, holdout_mask, Q)
 
-    fig, ax = plt.subplots(figsize=hv.fig_size("full", 3.0), constrained_layout=True)
+    fig, ax = plt.subplots(figsize=hv.fig_size("col", 2.6), constrained_layout=True)
     ax.plot(Q, y_star, color=hv.COLORS["target"], linewidth=2.0, label=r"Target $p^*$", zorder=10)
 
     for idx, row in enumerate(model_rows):
@@ -454,11 +470,27 @@ def _plot_recovery_all(
 
     ax.plot(Q, y_unif, color=hv.COLORS["gray"], linewidth=1.5, linestyle="--", alpha=0.9, label="Uniform", zorder=1)
     ax.axhline(1.0, color=hv.COLORS["gray"], linestyle=":", alpha=0.7)
+    ax.set_xlim(0, Qmax)
     ax.set_xlabel(r"$Q$ samples from model")
     ax.set_ylabel(r"Recovery $R(Q)$")
     ax.set_ylim(-0.02, 1.05)
-    ax.set_title(title)
-    ax.legend(loc="lower right", frameon=False, fontsize=7)
+
+    legend_handles = [Line2D([0], [0], color=hv.COLORS["target"], lw=2.0, label=r"Target $p^*$")]
+    for row in model_rows:
+        legend_handles.append(
+            Line2D(
+                [0],
+                [0],
+                color=str(row["color"]),
+                lw=float(row.get("lw", 1.9)),
+                ls=row.get("ls", "-"),
+                label=str(row["label"]),
+            )
+        )
+    legend_handles.append(
+        Line2D([0], [0], color=hv.COLORS["gray"], lw=1.5, ls="--", label="Uniform")
+    )
+    ax.legend(handles=legend_handles, **LEGEND_STYLE)
 
     fig.savefig(str(outpath))
     plt.close(fig)
