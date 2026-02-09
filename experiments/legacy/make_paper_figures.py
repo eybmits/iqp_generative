@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.lines import Line2D
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -251,7 +251,7 @@ def _visibility_computation(
     good_frac: float,
 ):
     """Replicate exp03 visibility logic: return masks, completions, p_star."""
-    from experiments.exp03_visibility_minvis import (
+    from experiments.legacy.exp03_visibility_minvis import (
         build_target_distribution, topk_mask, sample_alphas,
         build_parity_matrix, greedy_min_abs_sum,
         linear_band_reconstruction, completion_by_axioms,

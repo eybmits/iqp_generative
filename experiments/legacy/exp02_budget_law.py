@@ -51,7 +51,7 @@ from matplotlib.lines import Line2D
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -121,7 +121,9 @@ def main() -> None:
 
     # Paper-grade style
     hv.set_style(base=8)
-    outdir = hv.ensure_outdir(os.path.join(ROOT, "outputs", "exp02_budget_law"))
+    outdir = hv.ensure_outdir(
+        os.environ.get("IQP_EXP02_OUTDIR", os.path.join(ROOT, "outputs", "exp02_budget_law"))
+    )
 
     # Colormaps for heatmaps:
     cmap_redblack = LinearSegmentedColormap.from_list("RedBlack", ["#FF0000", "#000000"])

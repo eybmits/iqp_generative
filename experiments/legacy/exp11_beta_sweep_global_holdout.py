@@ -38,12 +38,12 @@ os.environ.setdefault("MPLBACKEND", "Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from iqp_generative import core as hv  # noqa: E402
-from experiments import exp10_strong_classical_recovery as exp10  # noqa: E402
+from experiments.legacy import exp10_strong_classical_recovery as exp10  # noqa: E402
 
 
 LEGEND_STYLE = dict(
@@ -126,6 +126,25 @@ def _mass_cov_curve(q: np.ndarray, holdout_mask: np.ndarray, p_star: np.ndarray,
     base = np.clip(1.0 - qh[None, :], 0.0, 1.0)
     seen = 1.0 - np.power(base, Qvals[:, None])
     return (seen * ph[None, :]).sum(axis=1)
+
+
+def _kl_pstar_to_q(p_star: np.ndarray, q: np.ndarray, eps: float = 1e-12) -> float:
+    pv = np.asarray(p_star, dtype=np.float64)
+    qv = np.asarray(q, dtype=np.float64)
+    pv = np.clip(pv, eps, 1.0)
+    qv = np.clip(qv, eps, 1.0)
+    pv /= float(np.sum(pv))
+    qv /= float(np.sum(qv))
+    return float(np.sum(pv * np.log(pv / qv)))
+
+
+def _fit_metric_spec(fit_metric: str) -> Tuple[str, str, str, str]:
+    m = fit_metric.strip().lower()
+    if m == "tv":
+        return ("fit_tv_to_pstar", r"TV($q,p^*$)", "TV", "beta_sweep_fit_tv_vs_beta.pdf")
+    if m == "kl":
+        return ("fit_kl_pstar_to_q", r"$D_{\mathrm{KL}}(p^*\|q)$", "KL", "beta_sweep_fit_kl_vs_beta.pdf")
+    raise ValueError(f"Unsupported fit_metric: {fit_metric}")
 
 
 def _build_holdout(
@@ -345,6 +364,7 @@ def _train_models_for_beta(
                 "R_Q1000": float(met["R_Q1000"]),
                 "R_Q10000": float(met["R_Q10000"]),
                 "fit_tv_to_pstar": float(fit["tv"]),
+                "fit_kl_pstar_to_q": float(_kl_pstar_to_q(p_star=p_star, q=q)),
                 "fit_js_dist_to_pstar": float(fit["js_dist"]),
                 "fit_prob_mse_to_pstar": float(fit["prob_mse"]),
                 "holdout_size": float(H_size),
@@ -359,7 +379,14 @@ def _train_models_for_beta(
     return p_star, scores, holdout_mask, model_rows, metrics_rows
 
 
-def _plot_recovery_single(ax, p_star: np.ndarray, holdout_mask: np.ndarray, model_rows: List[Dict[str, object]], Q: np.ndarray) -> None:
+def _plot_recovery_single(
+    ax,
+    p_star: np.ndarray,
+    holdout_mask: np.ndarray,
+    model_rows: List[Dict[str, object]],
+    Q: np.ndarray,
+    log_x: bool = False,
+) -> None:
     y_star = hv.expected_unique_fraction(p_star, holdout_mask, Q)
     q_unif = np.ones_like(p_star, dtype=np.float64) / p_star.size
     y_unif = hv.expected_unique_fraction(q_unif, holdout_mask, Q)
@@ -379,7 +406,11 @@ def _plot_recovery_single(ax, p_star: np.ndarray, holdout_mask: np.ndarray, mode
         )
     ax.plot(Q, y_unif, color=hv.COLORS["gray"], linewidth=1.5, linestyle="--", alpha=0.9, zorder=1)
     ax.axhline(1.0, color=hv.COLORS["gray"], linestyle=":", alpha=0.7)
-    ax.set_xlim(0, 10000)
+    if log_x:
+        ax.set_xscale("log")
+        ax.set_xlim(1, 10000)
+    else:
+        ax.set_xlim(0, 10000)
     ax.set_ylim(-0.02, 1.05)
     ax.set_xlabel(r"$Q$ samples from model")
     ax.set_ylabel(r"Recovery $R(Q)$")
@@ -411,14 +442,15 @@ def _plot_mass_single(ax, p_star: np.ndarray, holdout_mask: np.ndarray, model_ro
     ax.set_ylabel(r"Mass coverage $C_m(Q)/p^*(H)$")
 
 
-def _plot_fit_single(ax, metrics_rows: List[Dict[str, float]]) -> None:
+def _plot_fit_single(ax, metrics_rows: List[Dict[str, float]], fit_metric: str = "tv") -> None:
+    metric_key, metric_ylabel, _, _ = _fit_metric_spec(fit_metric)
     m_by_key = {str(r["model_key"]): r for r in metrics_rows}
     keys = [k for k, _, _, _, _ in MODEL_SPECS]
-    vals = [float(m_by_key[k]["fit_tv_to_pstar"]) for k in keys]
+    vals = [float(m_by_key[k][metric_key]) for k in keys]
     cols = [c for _, _, c, _, _ in MODEL_SPECS]
     x = np.arange(len(keys))
     ax.bar(x, vals, color=cols, alpha=0.9)
-    ax.set_ylabel(r"TV($q,p^*$)")
+    ax.set_ylabel(metric_ylabel)
     ax.set_xticks(x)
     ax.set_xticklabels([MODEL_LABEL_SHORT[k] for k in keys], rotation=35, ha="right", fontsize=6)
 
@@ -456,11 +488,14 @@ def _save_per_beta_plots(
     model_rows: List[Dict[str, object]],
     metrics_rows: List[Dict[str, float]],
     Q: np.ndarray,
+    recovery_log_x: bool = False,
+    fit_metric: str = "tv",
 ) -> None:
     btag = _beta_tag(beta)
+    _, _, fit_name, _ = _fit_metric_spec(fit_metric)
 
     fig, ax = plt.subplots(figsize=hv.fig_size("col", 2.6), constrained_layout=True)
-    _plot_recovery_single(ax, p_star, holdout_mask, model_rows, Q)
+    _plot_recovery_single(ax, p_star, holdout_mask, model_rows, Q, log_x=recovery_log_x)
     handles = [Line2D([0], [0], color=hv.COLORS["target"], lw=2.0, label=r"Target $p^*$")]
     for row in model_rows:
         handles.append(
@@ -473,8 +508,8 @@ def _save_per_beta_plots(
     plt.close(fig)
 
     fig, ax = plt.subplots(figsize=hv.fig_size("col", 2.6), constrained_layout=True)
-    _plot_fit_single(ax, metrics_rows)
-    ax.set_title(fr"Fit distance to target, $\beta$={beta:g}")
+    _plot_fit_single(ax, metrics_rows, fit_metric=fit_metric)
+    ax.set_title(fr"Fit distance to target ({fit_name}), $\beta$={beta:g}")
     fig.savefig(out_per_beta / f"beta_{btag}_fit_distance_all_baselines.pdf")
     plt.close(fig)
 
@@ -485,7 +520,8 @@ def _save_per_beta_plots(
     plt.close(fig)
 
 
-def _make_summary_plots(out_summary: Path, rows_long: List[Dict[str, float]]) -> None:
+def _make_summary_plots(out_summary: Path, rows_long: List[Dict[str, float]], fit_metric: str = "tv") -> None:
+    metric_key, metric_ylabel, _, metric_filename = _fit_metric_spec(fit_metric)
     by_model: Dict[str, List[Dict[str, float]]] = {}
     for r in rows_long:
         by_model.setdefault(str(r["model_key"]), []).append(r)
@@ -517,16 +553,16 @@ def _make_summary_plots(out_summary: Path, rows_long: List[Dict[str, float]]) ->
     fig.savefig(out_summary / "beta_sweep_qH_vs_beta.pdf")
     plt.close(fig)
 
-    # fit TV vs beta
+    # fit metric vs beta
     fig, ax = plt.subplots(figsize=hv.fig_size("col", 2.6), constrained_layout=True)
     for key, label, color, ls, lw in MODEL_SPECS:
-        ys = [float(r["fit_tv_to_pstar"]) for r in by_model[key]]
+        ys = [float(r[metric_key]) for r in by_model[key]]
         xs = [float(r["beta"]) for r in by_model[key]]
         ax.plot(xs, ys, color=color, ls=ls, lw=lw, marker="o", ms=3.2, label=label)
     ax.set_xlabel(r"$\beta$")
-    ax.set_ylabel(r"TV$(q,p^*)$")
+    ax.set_ylabel(metric_ylabel)
     ax.legend(**LEGEND_STYLE)
-    fig.savefig(out_summary / "beta_sweep_fit_tv_vs_beta.pdf")
+    fig.savefig(out_summary / metric_filename)
     plt.close(fig)
 
 
@@ -536,7 +572,10 @@ def _make_collage(
     betas: List[float],
     artifacts: Dict[float, Dict[str, object]],
     Q: np.ndarray,
+    recovery_log_x: bool = False,
+    fit_metric: str = "tv",
 ) -> None:
+    _, _, fit_name, _ = _fit_metric_spec(fit_metric)
     n_b = len(betas)
     fig, axes = plt.subplots(n_b, 3, figsize=(10.5, max(2.3 * n_b, 3.5)), constrained_layout=True)
     if n_b == 1:
@@ -556,12 +595,12 @@ def _make_collage(
         metrics_rows = art["metrics_rows"]
 
         ax0 = axes[i, 0]
-        _plot_recovery_single(ax0, p_star, holdout_mask, model_rows, Q)
+        _plot_recovery_single(ax0, p_star, holdout_mask, model_rows, Q, log_x=recovery_log_x)
         ax0.set_title(fr"$\beta$={beta:g} | Recovery ({holdout_mode})")
 
         ax1 = axes[i, 1]
-        _plot_fit_single(ax1, metrics_rows)
-        ax1.set_title(fr"$\beta$={beta:g} | Fit TV ({holdout_mode})")
+        _plot_fit_single(ax1, metrics_rows, fit_metric=fit_metric)
+        ax1.set_title(fr"$\beta$={beta:g} | Fit {fit_name} ({holdout_mode})")
 
         ax2 = axes[i, 2]
         assert isinstance(scores, np.ndarray)
@@ -611,6 +650,8 @@ def main() -> None:
     ap.add_argument("--artr-batch-size", type=int, default=256)
     ap.add_argument("--maxent-steps", type=int, default=2500)
     ap.add_argument("--maxent-lr", type=float, default=5e-2)
+    ap.add_argument("--recovery-log-x", action="store_true")
+    ap.add_argument("--fit-metric", type=str, default="tv", choices=["tv", "kl"])
     args = ap.parse_args()
 
     if not hv.HAS_PENNYLANE:
@@ -682,11 +723,21 @@ def main() -> None:
             model_rows,
             metrics_rows,
             Q,
+            recovery_log_x=bool(args.recovery_log_x),
+            fit_metric=str(args.fit_metric),
         )
 
     _write_csv(out_summary / "beta_sweep_metrics_long.csv", rows_long)
-    _make_summary_plots(out_summary, rows_long)
-    _make_collage(out_collage, args.holdout_mode, betas, artifacts, Q)
+    _make_summary_plots(out_summary, rows_long, fit_metric=str(args.fit_metric))
+    _make_collage(
+        out_collage,
+        args.holdout_mode,
+        betas,
+        artifacts,
+        Q,
+        recovery_log_x=bool(args.recovery_log_x),
+        fit_metric=str(args.fit_metric),
+    )
 
     print(f"Done. Results in {outdir}")
 

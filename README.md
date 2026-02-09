@@ -6,28 +6,40 @@ IQP-QCBM holdout-discovery experiments: validating that parity-moment trained qu
 
 ```bash
 pip install -r requirements.txt
-python experiments/make_paper_figures.py
+python experiments/claims/claim01_fit_not_discovery.py
 ```
 
-This generates 4 publication-ready composite figures in `outputs/paper_figures/`:
+Run any claim directly via the dedicated claim runner:
 
-| Figure | Content | Claims |
-|--------|---------|--------|
-| `fig1.pdf` | Recovery curves + visibility mechanism | Discovery + Claim 2 |
-| `fig2.pdf` | Robustness heatmaps + budget-law scatter | Claims 3 + 4 |
-| `fig3.pdf` | Fit vs discovery (parity vs prob-MSE) | Claim 1 |
-| `fig4.pdf` | Fair classical baseline comparison | Claims 5 + 6 + 7 |
+```bash
+python experiments/claims/claim0X_*.py
+```
+
+All claim runners write to `outputs/claims/<claim_name>/`.
+
+## Claim-First Structure
+
+The repository now includes 8 dedicated claim entrypoints under `experiments/claims/`.
+Each script writes to its own claim-specific output folder under `outputs/claims/`.
+
+| Claim | Script | Default Output Folder |
+|---|---|---|
+| 1 — Fit =/= Discovery | `experiments/claims/claim01_fit_not_discovery.py` | `outputs/claims/claim01_fit_not_discovery/` |
+| 2 — Budget Law | `experiments/claims/claim02_budget_law.py` | `outputs/claims/claim02_budget_law/` |
+| 3 — Visibility/Invisibility | `experiments/claims/claim03_visibility_invisibility.py` | `outputs/claims/claim03_visibility_invisibility/` |
+| 4 — Spectral Reconstruction | `experiments/claims/claim04_spectral_reconstruction.py` | `outputs/claims/claim04_spectral_reconstruction/` |
+| 5 — IQP > strong classical baselines (high-score holdout) | `experiments/claims/claim05_iqp_vs_strong_baselines_high_score.py` | `outputs/claims/claim05_iqp_vs_strong_baselines_high_score/` |
+| 6 — Fair baseline protocol (paired controls) | `experiments/claims/claim06_fair_baseline_protocol.py` | `outputs/claims/claim06_fair_baseline_protocol/` |
+| 7 — IQP > strong classical baselines (global holdout) | `experiments/claims/claim07_iqp_vs_strong_baselines_global.py` | `outputs/claims/claim07_iqp_vs_strong_baselines_global/` |
+| 8 — IQP > strong classical baselines across beta sweep | `experiments/claims/claim08_iqp_vs_strong_baselines_beta_sweep.py` | `outputs/claims/claim08_iqp_vs_strong_baselines_beta_sweep/` |
 
 ## Structure
 
 - `iqp_generative/core.py` — shared core: target distributions, IQP/Ising training, metrics, plotting
-- `experiments/make_paper_figures.py` — master script generating all 4 paper figures
-- `experiments/exp02_budget_law.py` — reference: sweep computation for Figs 1+2
-- `experiments/exp03_visibility_minvis.py` — reference: visibility computation for Fig 1(c)
-- `experiments/exp05_discovery_axis.py` — reference: parity vs prob comparison for Fig 3
-- `experiments/exp09_fair_baseline_global_holdout.py` — reference: baseline data for Fig 4
-- `experiments/exp10_strong_classical_recovery.py` — reference: strong baseline computation for Fig 4
-- `outputs/paper_even_final/` — evidence archive with per-claim directories and CLAIMS.md
+- `experiments/claims/` — claim-first wrappers (one script per claim)
+- `experiments/legacy/` — internal legacy experiment implementations (not primary entrypoints)
+- `outputs/claims/` — claim-first output archive
+- `outputs/paper_even_final/` — legacy evidence archive
 - `docs/cover_letter_discovery.md` — cover letter draft
 
 ## Dependencies
@@ -38,4 +50,4 @@ numpy matplotlib scipy pennylane torch
 
 ## Claims
 
-See `outputs/paper_even_final/CLAIMS.md` for the full 7-claim summary with quantitative results.
+See `docs/claims_overview.md` for the current claim wording.

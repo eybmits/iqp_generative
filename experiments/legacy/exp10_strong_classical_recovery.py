@@ -61,7 +61,7 @@ except Exception:
     nn = _NNStub()  # type: ignore[assignment]
     F = _FStub()  # type: ignore[assignment]
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -85,6 +85,20 @@ LEGEND_STYLE = dict(
 
 def _parse_list_ints(s: str) -> List[int]:
     return [int(x.strip()) for x in s.split(",") if x.strip()]
+
+
+def _parse_modes(s: str) -> List[str]:
+    modes: List[str] = []
+    for x in s.split(","):
+        mode = x.strip().lower()
+        if not mode:
+            continue
+        if mode not in ("high_value", "global"):
+            raise ValueError(f"Unsupported mode: {mode}")
+        modes.append(mode)
+    if not modes:
+        raise ValueError("No valid modes provided.")
+    return modes
 
 
 def _pick_best_row(rows: List[Dict[str, str]], mode: str) -> Dict[str, str]:
@@ -567,6 +581,7 @@ def main() -> None:
         type=str,
         default=str(ROOT / "outputs" / "paper_even_final" / "07_claim_global_holdout_full_distribution"),
     )
+    ap.add_argument("--modes", type=str, default="high_value,global")
     # Core config (used if legacy config.json is absent)
     ap.add_argument("--n", type=int, default=12)
     ap.add_argument("--beta", type=float, default=0.9)
@@ -602,6 +617,7 @@ def main() -> None:
     ap.add_argument("--maxent-steps", type=int, default=2500)
     ap.add_argument("--maxent-lr", type=float, default=5e-2)
     args = ap.parse_args()
+    modes = _parse_modes(args.modes)
 
     if not hv.HAS_PENNYLANE:
         raise RuntimeError("Pennylane is required. Install it to run this script.")
@@ -652,7 +668,7 @@ def main() -> None:
     p_star, support, scores = hv.build_target_distribution_paper(n, beta)
     good_mask = hv.topk_mask_by_scores(scores, support, frac=good_frac)
 
-    for mode in ("high_value", "global"):
+    for mode in modes:
         seed: int
         train_m: int
         layers: int
