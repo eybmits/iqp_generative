@@ -1,6 +1,6 @@
 # Claim Runners
 
-This folder contains one entry script per claim.
+This folder contains the supported claim-level entrypoints.
 
 ## Scripts
 
@@ -13,5 +13,9 @@ This folder contains one entry script per claim.
 - `claim07_iqp_vs_strong_baselines_global.py`
 - `claim08_iqp_vs_strong_baselines_beta_sweep.py`
 
-Each script writes by default to `outputs/claims/<claim_name>/`.
+Each script writes outputs to a claim-specific folder under `outputs/`.
 
+## Recommended Usage
+
+Use these scripts as the public interface for reproducing results.
+Avoid editing legacy experiment modules unless implementation changes are required.

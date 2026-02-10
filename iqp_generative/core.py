@@ -446,6 +446,125 @@ def sample_alphas(n: int, sigma: float, K: int, seed: int) -> onp.ndarray:
 
     return alphas
 
+def select_alphas_active(
+    n: int,
+    sigma: float,
+    K: int,
+    seed: int,
+    bits_table: onp.ndarray,
+    roi_mask: onp.ndarray,
+    candidate_pool: int = 10000,
+    diversity_gamma: float = 0.15,
+    normalize_by_full_space: bool = True,
+) -> Tuple[onp.ndarray, Dict[str, float]]:
+    """
+    Active parity-feature acquisition for ROI visibility:
+      1) sample candidate alpha masks
+      2) score each mask by |1hat_ROI(alpha)|
+      3) greedy select top-K with diversity penalty on parity overlap
+
+    Objective (greedy approximation):
+      score(alpha) - gamma * mean_{beta in selected} corr(alpha, beta)
+    where corr is cosine overlap over binary mask supports.
+    """
+    N = 2 ** int(n)
+    roi_mask = onp.asarray(roi_mask, dtype=bool)
+    if roi_mask.size != N:
+        raise ValueError(f"roi_mask size mismatch: got {roi_mask.size}, expected {N}.")
+    roi_idxs = onp.where(roi_mask)[0]
+    if roi_idxs.size == 0:
+        raise ValueError("roi_mask is empty; cannot run active selection.")
+
+    target_pool = max(int(candidate_pool), int(K))
+    if target_pool <= 0:
+        raise ValueError("candidate_pool must be > 0.")
+
+    # Build a deduplicated candidate set (all-zero masks are already excluded by sample_alphas).
+    cand = onp.zeros((0, n), dtype=onp.int8)
+    need = target_pool
+    for trial in range(8):
+        draw = max(need * 2, 256)
+        new = sample_alphas(n=n, sigma=sigma, K=draw, seed=int(seed) + 7919 * trial)
+        cand = onp.vstack([cand, new]) if cand.size else new
+        cand = onp.unique(cand, axis=0)
+        if cand.shape[0] >= target_pool:
+            break
+        need = target_pool - cand.shape[0]
+
+    if cand.shape[0] < K:
+        raise RuntimeError(
+            f"Active candidate generation failed: only {cand.shape[0]} unique masks for K={K}. "
+            "Try larger candidate_pool or different sigma."
+        )
+    cand = cand[:target_pool]
+
+    # ROI visibility score: hat{1_ROI}(alpha) = (1/denom) sum_{x in ROI} (-1)^{alpha.x}
+    # Using parity bits directly avoids materializing full P over all states.
+    bits_roi_t = bits_table[roi_idxs].astype(onp.int16).T  # n x |ROI|
+    A = cand.astype(onp.int16)  # M x n
+    odd = onp.sum((A @ bits_roi_t) & 1, axis=1).astype(onp.float64)
+    roi_size = float(roi_idxs.size)
+    denom = float(N) if normalize_by_full_space else roi_size
+    hat_roi = ((roi_size - 2.0 * odd) / max(1.0, denom)).astype(onp.float64)
+    score = onp.abs(hat_roi)
+
+    # Greedy selection with incremental diversity penalty.
+    weights = onp.sum(cand, axis=1).astype(onp.float64)
+    avail = onp.ones(cand.shape[0], dtype=bool)
+    penalty_acc = onp.zeros(cand.shape[0], dtype=onp.float64)
+    selected: List[int] = []
+
+    for t in range(int(K)):
+        if t == 0:
+            obj = score.copy()
+        else:
+            obj = score - float(diversity_gamma) * (penalty_acc / float(t))
+        obj = obj.astype(onp.float64)
+        obj[~avail] = -onp.inf
+        j = int(onp.argmax(obj))
+        if not onp.isfinite(obj[j]):
+            break
+        selected.append(j)
+        avail[j] = False
+
+        # Update diversity penalties for remaining candidates.
+        s = cand[j].astype(onp.float64)
+        wj = max(1.0, float(weights[j]))
+        inter = cand.astype(onp.float64) @ s  # support overlap with selected mask
+        corr = inter / onp.sqrt(onp.maximum(1.0, weights * wj))
+        penalty_acc += corr
+
+    if len(selected) < K:
+        raise RuntimeError(f"Active selection produced only {len(selected)} masks for requested K={K}.")
+
+    sel = onp.array(selected, dtype=int)
+    alphas_sel = cand[sel].astype(onp.int8)
+
+    # Diagnostics
+    sel_scores = score[sel]
+    sel_hat = hat_roi[sel]
+    avg_abs_corr = 0.0
+    if len(sel) > 1:
+        S = alphas_sel.astype(onp.float64)
+        ws = onp.sum(S, axis=1)
+        G = S @ S.T
+        denom_mat = onp.sqrt(onp.maximum(1.0, ws[:, None] * ws[None, :]))
+        C = G / denom_mat
+        triu = onp.triu_indices(len(sel), k=1)
+        if triu[0].size > 0:
+            avg_abs_corr = float(onp.mean(onp.abs(C[triu])))
+
+    info = {
+        "candidate_pool": int(cand.shape[0]),
+        "roi_size": int(roi_idxs.size),
+        "score_mean_all": float(onp.mean(score)),
+        "score_mean_selected": float(onp.mean(sel_scores)),
+        "score_max_selected": float(onp.max(sel_scores)),
+        "signed_hat_mean_selected": float(onp.mean(sel_hat)),
+        "avg_abs_pair_corr_selected": float(avg_abs_corr),
+    }
+    return alphas_sel, info
+
 def build_parity_matrix(alphas: onp.ndarray, bits_table: onp.ndarray) -> onp.ndarray:
     """P[k, x] = φ_{α_k}(x) = (-1)^{α_k · x} in {+1,-1}."""
     A = alphas.astype(onp.int16)
