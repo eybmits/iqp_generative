@@ -113,6 +113,7 @@ COLORS = {
     "model":  "#D62728",   # deep red (IQP)
     "model_xent": "#FF7F0E",  # orange (IQP xent)
     "model_prob_mse": "#2CA02C",  # green (IQP prob MSE)
+    "model_mmd": "#1F77B4",  # blue (IQP MMD)
     "gray":   "#666666",
     "blue":   "#1F77B4",   # classical baseline (blue)
 }
@@ -125,6 +126,8 @@ def _iqp_loss_label(loss: str) -> str:
         return "IQP-QCBM (xent)"
     if name == "prob_mse":
         return "IQP-QCBM (prob MSE)"
+    if name == "mmd":
+        return "IQP-QCBM (MMD)"
     return f"IQP-QCBM ({name})"
 
 def _iqp_loss_color(loss: str) -> str:
@@ -135,6 +138,8 @@ def _iqp_loss_color(loss: str) -> str:
         return COLORS["model_xent"]
     if name == "prob_mse":
         return COLORS["model_prob_mse"]
+    if name == "mmd":
+        return COLORS["model_mmd"]
     return COLORS["model"]
 
 def fig_size(mode: str, h: float = None) -> Tuple[float, float]:
@@ -1224,6 +1229,30 @@ def plot_adversarial_visibility_split(p_star, holdout_visible, holdout_invisible
 # 12) Training: IQP-QCBM and Classical baseline (same objective)
 # ------------------------------------------------------------------------------
 
+def _hamming_rbf_kernel_matrix(n: int, tau: float) -> onp.ndarray:
+    """
+    Build kernel matrix K[x,x'] = exp(-d_H(x,x') / tau) over all 2^n bitstrings.
+    """
+    if tau <= 0.0:
+        raise ValueError("mmd_tau must be > 0.")
+    N = 2 ** int(n)
+    # n=12 in this project, so uint16 is sufficient and memory-safe.
+    dtype = onp.uint16 if n <= 16 else onp.uint32
+    states = onp.arange(N, dtype=dtype)
+    xor = onp.bitwise_xor(states[:, None], states[None, :])
+    max_x = int(onp.max(xor))
+    pop_lut = onp.array([int(i).bit_count() for i in range(max_x + 1)], dtype=onp.float64)
+    d_h = pop_lut[xor]
+    return onp.exp(-d_h / float(tau)).astype(onp.float64)
+
+
+def _build_mmd_kernel_matrix(n: int, kernel: str, tau: float) -> onp.ndarray:
+    name = str(kernel).strip().lower()
+    if name == "hamming_rbf":
+        return _hamming_rbf_kernel_matrix(n=n, tau=tau)
+    raise ValueError(f"Unsupported mmd kernel: {kernel}")
+
+
 def train_iqp_qcbm(
     n: int,
     layers: int,
@@ -1237,8 +1266,10 @@ def train_iqp_qcbm(
     loss_mode: str = "parity_mse",
     xent_emp: Optional[onp.ndarray] = None,
     xent_eps: float = 1e-12,
+    mmd_tau: float = 2.0,
+    mmd_kernel: str = "hamming_rbf",
 ):
-    """Train IQP-QCBM with parity-moment MSE, prob-MSE, or sample cross-entropy loss."""
+    """Train IQP-QCBM with parity-moment MSE, prob-MSE, xent, or MMD loss."""
     if not HAS_PENNYLANE:
         raise RuntimeError("Pennylane is not installed. Install with `pip install pennylane` or set --use-iqp 0.")
 
@@ -1251,6 +1282,7 @@ def train_iqp_qcbm(
         return qml.probs(wires=range(n))
 
     loss_mode = str(loss_mode).lower()
+    K_t = None
     if loss_mode == "parity_mse":
         if P is None or z_data is None:
             raise ValueError("parity_mse loss requires P and z_data.")
@@ -1266,8 +1298,16 @@ def train_iqp_qcbm(
             raise ValueError("xent loss requires xent_emp (empirical distribution).")
         emp_t = np.array(xent_emp, requires_grad=False)
         emp_t = emp_t / np.sum(emp_t)
+    elif loss_mode == "mmd":
+        if xent_emp is None:
+            raise ValueError("mmd loss requires xent_emp (empirical distribution).")
+        emp_t = np.array(xent_emp, requires_grad=False)
+        emp_t = emp_t / np.sum(emp_t)
+        K_np = _build_mmd_kernel_matrix(n=n, kernel=mmd_kernel, tau=float(mmd_tau))
+        # Keep K as an autograd tensor to ensure dot-products remain differentiable wrt q.
+        K_t = np.array(K_np, requires_grad=True)
     else:
-        raise ValueError("loss_mode must be 'parity_mse', 'prob_mse', or 'xent'.")
+        raise ValueError("loss_mode must be 'parity_mse', 'prob_mse', 'xent', or 'mmd'.")
 
     num_params = len(pairs) * layers
     rng = onp.random.default_rng(seed_init)
@@ -1282,6 +1322,10 @@ def train_iqp_qcbm(
             return np.mean((z_t - P_t @ q) ** 2)
         if loss_mode == "prob_mse":
             return np.mean((q - emp_t) ** 2)
+        if loss_mode == "mmd":
+            assert K_t is not None
+            d = q - emp_t
+            return np.dot(d, np.dot(K_t, d))
         q_clip = np.clip(q, xent_eps, 1.0)
         return -np.sum(emp_t * np.log(q_clip))
 
@@ -1420,7 +1464,9 @@ class Config:
     iqp_lr: float = 0.05
     iqp_eval_every: int = 50
     iqp_layers: int = 1
-    iqp_loss: str = "parity_mse"  # "parity_mse", "prob_mse", or "xent"
+    iqp_loss: str = "parity_mse"  # "parity_mse", "prob_mse", "xent", or "mmd"
+    iqp_mmd_tau: float = 2.0      # Hamming-RBF bandwidth for mmd
+    iqp_mmd_kernel: str = "hamming_rbf"
 
     # Classical baseline (same budget)
     use_classical: bool = True
@@ -1509,6 +1555,8 @@ def run_sweep(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.ndarray, good_
                     return_hist=False,
                     loss_mode=loss_mode,
                     xent_emp=emp,
+                    mmd_tau=cfg.iqp_mmd_tau,
+                    mmd_kernel=cfg.iqp_mmd_kernel,
                 )
                 iqp_metrics = compute_metrics_for_q(q_iqp, holdout_mask, qH_unif, H_size, cfg.Q80_thr, cfg.Q80_search_max)
 
@@ -1674,7 +1722,7 @@ def rerun_single_setting(cfg: Config, p_star: onp.ndarray, holdout_mask: onp.nda
         q_iqp, loss_iqp, hist_iqp = train_iqp_qcbm(
             n=cfg.n, layers=cfg.iqp_layers, steps=cfg.iqp_steps, lr=cfg.iqp_lr,
             P=P, z_data=z, seed_init=seed_init, eval_every=cfg.iqp_eval_every, return_hist=return_hist,
-            loss_mode=loss_mode, xent_emp=emp
+            loss_mode=loss_mode, xent_emp=emp, mmd_tau=cfg.iqp_mmd_tau, mmd_kernel=cfg.iqp_mmd_kernel
         )
 
     q_class, loss_class, hist_class = (None, float("nan"), None)
@@ -1820,14 +1868,16 @@ def main():
     parser.add_argument("--iqp-lr", type=float, default=0.05)
     parser.add_argument("--iqp-eval-every", type=int, default=50)
     parser.add_argument("--iqp-layers", type=int, default=1)
-    parser.add_argument("--iqp-loss", type=str, default="parity_mse", choices=["parity_mse", "prob_mse", "xent"])
+    parser.add_argument("--iqp-loss", type=str, default="parity_mse", choices=["parity_mse", "prob_mse", "xent", "mmd"])
+    parser.add_argument("--iqp-mmd-tau", type=float, default=2.0)
+    parser.add_argument("--iqp-mmd-kernel", type=str, default="hamming_rbf", choices=["hamming_rbf"])
     parser.add_argument("--compare-iqp-losses", type=int, default=0)
     parser.add_argument("--compare-sigma", type=float, default=None)
     parser.add_argument("--compare-K", type=int, default=None)
     parser.add_argument("--compare-loss-a", type=str, default="parity_mse",
-                        choices=["parity_mse", "prob_mse", "xent"])
+                        choices=["parity_mse", "prob_mse", "xent", "mmd"])
     parser.add_argument("--compare-loss-b", type=str, default="xent",
-                        choices=["parity_mse", "prob_mse", "xent"])
+                        choices=["parity_mse", "prob_mse", "xent", "mmd"])
 
     args = parser.parse_args()
 
@@ -1869,6 +1919,8 @@ def main():
         iqp_eval_every=args.iqp_eval_every,
         iqp_layers=args.iqp_layers,
         iqp_loss=args.iqp_loss,
+        iqp_mmd_tau=args.iqp_mmd_tau,
+        iqp_mmd_kernel=args.iqp_mmd_kernel,
 
         outdir=outdir,
     )
@@ -2018,6 +2070,8 @@ def main():
             iqp_ylab = "Moment MSE loss"
         elif cfg.iqp_loss == "prob_mse":
             iqp_ylab = "Prob MSE loss"
+        elif cfg.iqp_loss == "mmd":
+            iqp_ylab = "MMD loss"
         else:
             iqp_ylab = "NLL loss"
         plot_training_dynamics_generic(hist_iqp, os.path.join(outdir, "7_iqp_training_dynamics.pdf"),
