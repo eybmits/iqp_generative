@@ -28,8 +28,10 @@ python experiments/claims/claim08_iqp_vs_strong_baselines_beta_sweep.py
 - `iqp_generative/core.py`: shared methods (targets, training, metrics, plotting)
 - `experiments/claims/`: clean claim-level runners (recommended)
 - `experiments/legacy/`: underlying experiment implementations
+- `experiments/legacy/postprocess_budgetlaw_compact.py`: deterministic layout touch-up for claim-35 compact budgetlaw scatter
 - `docs/claims_overview.md`: compact claim wording
 - `docs/reproducibility_runbook.md`: reproducibility guide
+- `docs/budgetlaw_compact_postprocess.md`: post-processing recipe for compact budgetlaw scatter label/underlay
 - `outputs/paper_even_final/`: curated final result archive
 - `outputs/paper_figures/`: paper-facing figure exports
 
