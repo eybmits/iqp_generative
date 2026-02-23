@@ -1,0 +1,25 @@
+\paragraph{Claim-to-Implementation Mapping.}
+Table~\ref{tab:claim-mapping} links public claim runners to implementation backends and output roots.
+
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{p{1.1cm}p{3.5cm}p{4.6cm}p{4.8cm}}
+\hline
+Claim & Runner entry point & Backend module(s) & Default output root \\
+\hline
+C1 & \texttt{claim01\_fit\_not\_discovery.py} & \texttt{exp05\_discovery\_axis.py} & \texttt{outputs/claims/claim01\_fit\_not\_discovery} \\
+C2 & \texttt{claim02\_budget\_law.py} & \texttt{exp02\_budget\_law.py} & \texttt{outputs/claims/claim02\_budget\_law} \\
+C3 & \texttt{claim03\_visibility\_invisibility.py} & \texttt{exp03\_visibility\_minvis.py} & \texttt{outputs/claims/claim03\_visibility\_invisibility} \\
+C4 & \texttt{claim04\_spectral\_reconstruction.py} & \texttt{iqp\_generative/core.py} & \texttt{outputs/claims/claim04\_spectral\_reconstruction} \\
+C5 & \texttt{claim05\_iqp\_vs\_strong\_baselines\_high\_score.py} & \texttt{exp10\_strong\_classical\_recovery.py} & \texttt{outputs/claims/claim05\_iqp\_vs\_strong\_baselines\_high\_score} \\
+C6 & \texttt{claim06\_fair\_baseline\_protocol.py} & \texttt{exp09\_fair\_baseline\_global\_holdout.py} & \texttt{outputs/claims/claim06\_fair\_baseline\_protocol} \\
+C7 & \texttt{claim07\_iqp\_vs\_strong\_baselines\_global.py} & \texttt{exp10\_strong\_classical\_recovery.py} & \texttt{outputs/claims/claim07\_iqp\_vs\_strong\_baselines\_global} \\
+C8 & \texttt{claim08\_iqp\_vs\_strong\_baselines\_beta\_sweep.py} & \texttt{exp11\_beta\_sweep\_global\_holdout.py} & \texttt{outputs/claims/claim08\_iqp\_vs\_strong\_baselines\_beta\_sweep} \\
+C9 & \texttt{claim09\_expected\_visibility\_scaling.py} & \texttt{exp47\_expected\_visibility\_scaling.py} & \texttt{outputs/claims/claim09\_expected\_visibility\_scaling} \\
+C10 & \texttt{claim10\_global\_visibility\_predicts\_discovery.py} & \texttt{exp48\_global\_visibility\_predicts\_discovery.py} & \texttt{outputs/claims/claim10\_global\_visibility\_predicts\_discovery} \\
+\hline
+\end{tabular}
+\caption{Public claim runners and implementation mapping used for reproducibility.}
+\label{tab:claim-mapping}
+\end{table*}

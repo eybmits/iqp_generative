@@ -1,0 +1,182 @@
+\section{Methodology}
+\label{sec:methodology}
+
+\subsection{Problem Setup and Notation}
+We consider generative modeling on the binary hypercube \(\{0,1\}^n\) with \(n=12\), and evaluate models on discovery of unseen states under controlled holdout protocols.
+For a model distribution \(q\), a holdout set \(H \subseteq \{0,1\}^n\), and sampling budget \(Q\), discovery is measured by expected unique-state recovery
+\begin{equation}
+R(Q; q, H) \;=\; \frac{1}{|H|}\sum_{x\in H}\left(1-(1-q(x))^Q\right).
+\end{equation}
+The main scalar endpoint is
+\begin{equation}
+Q_{80}(q,H) \;=\; \min\{Q\in\mathbb{N}: R(Q; q,H)\ge 0.8\},
+\end{equation}
+with search cap \(Q_{\max}=2\times 10^5\) and \(Q_{80}=\infty\) if the threshold is not reached.
+We also report holdout mass \(q(H)=\sum_{x\in H}q(x)\), enrichment \(q(H)/q_{\mathrm{unif}}(H)\), and fixed-budget recovery values (e.g., \(R(1000)\), \(R(10000)\)).
+
+\subsection{Target Distribution Family and Region Definitions}
+All experiments use the \texttt{paper\_even} target family implemented in \texttt{iqp\_generative/core.py}. Let
+\begin{equation}
+\Omega_{\mathrm{even}} \;=\; \{x\in\{0,1\}^n : \mathrm{parity}(x)=0\}.
+\end{equation}
+Define a discrete score
+\begin{equation}
+s(x) \;=\; 1 + \mathrm{longest\_zero\_run\_between\_ones}(x),
+\end{equation}
+and target distribution
+\begin{equation}
+p^*(x) \;\propto\; \exp(\beta s(x))\mathbf{1}[x\in\Omega_{\mathrm{even}}].
+\end{equation}
+We study \(\beta\)-sweeps (typically \(0.6,\ldots,1.4\)) and fixed-\(\beta\) diagnostics.
+
+Two region notions are used:
+\begin{enumerate}
+\item Global region \(G_{\mathrm{global}}=\Omega_{\mathrm{even}}\).
+\item High-value region \(G_{\alpha}\): top \(\alpha\) fraction by score inside \(\Omega_{\mathrm{even}}\), with default \(\alpha=0.05\).
+\end{enumerate}
+
+\subsection{Holdout Construction Protocols}
+For each \((\beta,\text{seed})\), we construct holdout sets of fixed size \(|H|=20\) from a candidate region \(G\).
+
+\paragraph{Primary protocol: Global+Smart.}
+This is the default comparison protocol in the claim stack.
+Candidate region is global (\(G=\Omega_{\mathrm{even}}\)), while selection is \emph{smart} via \texttt{select\_holdout\_smart}:
+\begin{enumerate}
+\item Apply a probability-floor relaxation \(\tau\in\{1/m,\;0.5/m,\;0.25/m,\;0\}\) until enough candidates remain (\(m\) is the holdout-construction sample scale, default \(5000\)).
+\item Rank candidates by \(p^*(x)\), keep a pool (default size \(400\)).
+\item Select \(H\) by greedy farthest-point sampling in Hamming distance, with tie-break by larger \(p^*(x)\).
+\end{enumerate}
+This yields globally scoped but non-degenerate holdouts with adequate mass and diversity.
+
+\paragraph{High-value holdout.}
+Candidate region is \(G_{\alpha}\), and the same smart-selection routine is applied.
+This protocol probes discovery in concentrated high-score regions.
+
+\paragraph{Sensitivity protocol: Global+Random.}
+Candidate region is global (\(G=\Omega_{\mathrm{even}}\)), and \(H\) is sampled uniformly at random without replacement from \(G\).
+This protocol is used for robustness checks and proposition-style expectation tests.
+
+\paragraph{Train distribution under holdout masking.}
+Given holdout \(H\), the train target is
+\begin{equation}
+p_{\mathrm{train}}(x) \;=\;
+\frac{p^*(x)\mathbf{1}[x\notin H]}{1-p^*(H)}.
+\end{equation}
+All models are trained only from samples drawn from \(p_{\mathrm{train}}\).
+
+\subsection{Models and Training Objectives}
+We compare IQP-based and classical baselines under matched data and budget constraints.
+
+\paragraph{IQP-QCBM.}
+The primary model uses an IQP architecture with ZZ interactions on ring nearest-neighbor plus next-nearest-neighbor couplings, depth \(L=1\).
+Primary loss is parity-moment MSE (\texttt{parity\_mse}); additional IQP losses (\texttt{prob\_mse}, \texttt{xent}, \texttt{mmd}) are evaluated in dedicated analyses.
+
+\paragraph{Classical baselines.}
+We include:
+\begin{enumerate}
+\item Ising+fields (NN+NNN), moment-matching objective.
+\item Dense Ising+fields, cross-entropy objective.
+\item Autoregressive Transformer, maximum likelihood objective.
+\item MaxEnt parity model, parity-moment matching objective.
+\end{enumerate}
+In comparative claims, training data source, random seeds, and principal budget classes are matched to avoid protocol confounds.
+
+\paragraph{Feature supervision and empirical moments.}
+For parity-feature analyses, masks \(\alpha_k\in\{0,1\}^n\) are sampled i.i.d. with
+\begin{equation}
+p(\sigma) = \frac{1}{2}\left(1-e^{-1/(2\sigma^2)}\right),
+\end{equation}
+excluding \(\alpha=0\).
+Given sampled masks and empirical train distribution \(\hat p_{\mathrm{train}}\), moments are
+\begin{equation}
+z_k = \sum_x \phi_{\alpha_k}(x)\hat p_{\mathrm{train}}(x),\qquad
+\phi_{\alpha}(x)=(-1)^{\alpha\cdot x}.
+\end{equation}
+
+\subsection{Spectral Visibility and Linear Completion Analysis}
+Define indicator Walsh coefficients for any set \(A\subseteq\{0,1\}^n\):
+\begin{equation}
+\hat 1_A(\alpha) = 2^{-n}\sum_{x\in A}\phi_{\alpha}(x).
+\end{equation}
+For band \(\mathcal{B}=\{\alpha_k\}_{k=1}^K\), visibility is
+\begin{equation}
+\mathrm{Vis}_{\mathcal{B}}(A) = \sum_{k=1}^K z_k \hat 1_A(\alpha_k).
+\end{equation}
+Linear reconstruction is
+\begin{equation}
+q_{\mathrm{lin}}(x)=2^{-n}\left(1+\sum_{k=1}^K z_k\phi_{\alpha_k}(x)\right),
+\end{equation}
+followed by simplex completion
+\begin{equation}
+\tilde q(x)\propto \max(0,q_{\mathrm{lin}}(x)).
+\end{equation}
+The implemented identity check is
+\begin{equation}
+q_{\mathrm{lin}}(H)=|H|2^{-n}+\mathrm{Vis}_{\mathcal{B}}(H),
+\end{equation}
+validated numerically in our spectral diagnostics.
+
+\paragraph{Expected-scaling proposition checks.}
+For random \(H\subset G\), \(|H|=h\), sampled uniformly from \(G\), we test:
+\begin{align}
+\mathbb{E}_H[\hat 1_H(\alpha)] &= \frac{h}{|G|}\hat 1_G(\alpha),\\
+\mathbb{E}_H[\mathrm{Vis}_{\mathcal B}(H)] &= \frac{h}{|G|}\mathrm{Vis}_{\mathcal B}(G),\\
+\mathbb{E}_H[q_{\mathrm{lin}}(H)] &= h2^{-n}+\frac{h}{|G|}\mathrm{Vis}_{\mathcal B}(G).
+\end{align}
+These are evaluated by Monte Carlo holdout sampling with fixed \(h\), across seeds and selected \(\beta\) values.
+
+\subsection{Discovery and Fit Metrics}
+\paragraph{Primary discovery metrics.}
+\begin{enumerate}
+\item \(Q_{80}\) (lower is better).
+\item \(R(Q)\) curves over fixed \(Q\)-grid up to \(10^4\).
+\item Holdout mass \(q(H)\) and enrichment \(q(H)/q_{\mathrm{unif}}(H)\).
+\end{enumerate}
+
+\paragraph{Analytic predictors and bounds.}
+We report the budget-law predictor and lower bound from holdout mass:
+\begin{equation}
+Q_{80}^{\mathrm{pred}} \approx \frac{|H|}{q(H)}\ln 5,\qquad
+Q_{80}^{\mathrm{lb}}=\frac{\ln(0.2)}{\ln(1-q(H)/|H|)}.
+\end{equation}
+
+\paragraph{Fit metrics (secondary).}
+Distribution-fit diagnostics include TV and optional KL:
+\begin{equation}
+\mathrm{TV}(p^*,q)=\frac{1}{2}\sum_x |p^*(x)-q(x)|.
+\end{equation}
+Fit is treated as auxiliary to discovery.
+
+\paragraph{Score-bucket and support-diversity metrics.}
+For full-support diagnostics we use:
+\begin{enumerate}
+\item Score-bucket TV (\(\mathrm{TV}_{\mathrm{score}}\)).
+\item BSHS(\(Q\)): bucket-weighted support-hit score.
+\item Composite score: \(\mathrm{BSHS}(Q)\cdot (1-\mathrm{TV}_{\mathrm{score}})\).
+\item State-level concentration and diversity metrics (dominance, \(N_{\mathrm{eff}}/|A_s|\), support-hit per score level).
+\end{enumerate}
+
+\subsection{Experimental Design and Reproducibility}
+\paragraph{Data and seeds.}
+Experiments are run on \texttt{paper\_even} only.
+Common seed schedules are fixed (e.g., 42--46 in main sweeps), with paired seeds across model families.
+
+\paragraph{Budget classes.}
+Main comparative regimes include low-data and higher-data classes (e.g., \(m\in\{200,1000,5000\}\) in beta sweeps), with fixed holdout size (\(|H|=20\)) and pool size (400) unless overridden by script arguments.
+
+\paragraph{Public entry points.}
+Reproducible claim-level entry points are in \texttt{experiments/claims/claim01\_...\ claim10\_...}, each writing claim-scoped outputs under \texttt{outputs/claims/}.
+Curated final artifacts are stored under \texttt{outputs/paper\_even\_final/}.
+
+\subsection{Statistical Analysis}
+Unless noted otherwise, statistics are aggregated over seeds for fixed \((\beta,\text{protocol},\text{model})\) tuples.
+We report means and standard deviations, and for skewed/heavy-tailed discovery metrics also medians and interquartile summaries.
+Pairwise model comparisons are performed on matched \((\beta,\text{seed})\) instances to preserve within-condition fairness.
+
+For visibility-causal analyses we use rank-based tests (Spearman), with permutation-based \(p\)-values where implemented.
+For proposition checks we report absolute and relative equation residuals and lhs-vs-rhs calibration plots.
+
+\subsection{Primary vs Sensitivity Protocols}
+Our primary claim-level comparisons use \textbf{Global+Smart}, because it preserves global scope while avoiding low-mass random holdout degeneracies.
+Global+Random is retained as a sensitivity protocol and for expectation-level theory checks.
+In particular, under global-random holdouts with very small \(p^*(H)\), uniform sampling can exceed \(p^*\) on state-coverage metrics; this behavior is expected and is explicitly separated from primary protocol conclusions.

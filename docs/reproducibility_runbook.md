@@ -16,6 +16,12 @@ Each run is self-contained and writes claim-scoped artifacts into `outputs/`.
 - `outputs/paper_even_final/`: curated final analysis artifacts
 - `outputs/paper_figures/`: selected paper figures
 
+## 3.1) Paper Method Text Templates
+
+- `docs/methodology_section_full.tex`: full LaTeX-ready Methodology section
+- `docs/methodology_claim_mapping.tex`: claim runner to backend/output mapping snippet
+- `docs/methodology_at_a_glance.tex`: short summary paragraph
+
 ## 4) Expected Workflow
 
 1. Run one or more claim scripts.

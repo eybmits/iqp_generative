@@ -12,6 +12,8 @@ This folder contains the supported claim-level entrypoints.
 - `claim06_fair_baseline_protocol.py`
 - `claim07_iqp_vs_strong_baselines_global.py`
 - `claim08_iqp_vs_strong_baselines_beta_sweep.py`
+- `claim09_expected_visibility_scaling.py`
+- `claim10_global_visibility_predicts_discovery.py`
 
 Each script writes outputs to a claim-specific folder under `outputs/`.
 
