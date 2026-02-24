@@ -1,16 +1,30 @@
 # iqp_generative
 
-IQP-QCBM discovery experiments on the paper-even dataset family.
+IQP-QCBM discovery experiments on the `paper_even` target family.
 
-## Setup
+## Quickstart
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Main Entry Points (Claims)
+Run tests:
 
-Run claim scripts from `experiments/claims/`:
+```bash
+pytest -q
+```
+
+Optional shortcuts:
+
+```bash
+make test
+make claim07
+make claim11
+```
+
+## Claim Entry Points
+
+Use claim runners in `experiments/claims/` as the public interface.
 
 ```bash
 python experiments/claims/claim01_fit_not_discovery.py
@@ -21,21 +35,26 @@ python experiments/claims/claim05_iqp_vs_strong_baselines_high_score.py
 python experiments/claims/claim06_fair_baseline_protocol.py
 python experiments/claims/claim07_iqp_vs_strong_baselines_global.py
 python experiments/claims/claim08_iqp_vs_strong_baselines_beta_sweep.py
+python experiments/claims/claim09_expected_visibility_scaling.py
+python experiments/claims/claim10_global_visibility_predicts_discovery.py
+python experiments/claims/claim11_spectral_proxy_validation.py
 ```
 
-## Repository Structure
+All claim runs write to `outputs/claims/<claim_name>/`.
 
-- `iqp_generative/core.py`: shared methods (targets, training, metrics, plotting)
-- `experiments/claims/`: clean claim-level runners (recommended)
-- `experiments/legacy/`: underlying experiment implementations
-- `experiments/legacy/postprocess_budgetlaw_compact.py`: deterministic layout touch-up for claim-35 compact budgetlaw scatter
-- `docs/claims_overview.md`: compact claim wording
-- `docs/reproducibility_runbook.md`: reproducibility guide
-- `docs/budgetlaw_compact_postprocess.md`: post-processing recipe for compact budgetlaw scatter label/underlay
-- `outputs/paper_even_final/`: curated final result archive
-- `outputs/paper_figures/`: paper-facing figure exports
+## Repository Layout
 
-## Notes
+- `iqp_generative/core.py`: shared target/model/metric/plot utilities
+- `experiments/claims/`: reproducible claim-level runner scripts
+- `experiments/legacy/`: backend implementations used by claim runners
+- `tests/`: unit and smoke checks for metrics/protocol logic
+- `docs/reproducibility_runbook.md`: reproducibility instructions and workflow
+- `docs/methodology_section_full.tex`: full methodology section (paper text)
+- `docs/methodology_claim_mapping.tex`: claim-to-implementation mapping table
 
-- Temporary/quick scripts and ad-hoc sweeps were removed to keep the repo paper-focused.
-- `outputs/` is generated content and is ignored by git.
+## Protocol Notes
+
+- Primary model comparison protocol: `global+smart` holdout selection.
+- Sensitivity protocol: `global+random`.
+- Primary endpoint: exact holdout recovery via `R(Q)` and measured `Q80`.
+- Budget-law terms are treated as auxiliary approximations, not sole decision criteria.

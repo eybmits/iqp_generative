@@ -280,6 +280,7 @@ def _train_maxent_parity(
 
 def _build_holdout_mask(
     mode: str,
+    holdout_selection: str,
     p_star: np.ndarray,
     support: np.ndarray,
     good_mask: np.ndarray,
@@ -295,6 +296,21 @@ def _build_holdout_mask(
         candidate_mask = support.astype(bool)
     else:
         raise ValueError(f"Unsupported holdout mode: {mode}")
+
+    selection = str(holdout_selection).strip().lower()
+    if selection == "random":
+        cand_idx = np.where(candidate_mask)[0]
+        if int(cand_idx.size) < int(holdout_k):
+            raise RuntimeError(
+                f"Random holdout failed: candidate size {int(cand_idx.size)} < holdout_k={int(holdout_k)}."
+            )
+        rng = np.random.default_rng(int(seed) + 111)
+        pick = rng.choice(cand_idx, size=int(holdout_k), replace=False)
+        holdout = np.zeros_like(candidate_mask, dtype=bool)
+        holdout[pick] = True
+        return holdout
+    if selection != "smart":
+        raise ValueError(f"Unsupported holdout selection: {holdout_selection}")
 
     return hv.select_holdout_smart(
         p_star=p_star,
@@ -588,6 +604,7 @@ def main() -> None:
     ap.add_argument("--good-frac", type=float, default=0.05)
     ap.add_argument("--holdout-k", type=int, default=20)
     ap.add_argument("--holdout-pool", type=int, default=400)
+    ap.add_argument("--holdout-selection", type=str, default="smart", choices=["smart", "random"])
     ap.add_argument("--q80-thr", type=float, default=0.8)
     ap.add_argument("--q80-search-max", type=int, default=200000)
     ap.add_argument("--iqp-steps", type=int, default=400)
@@ -714,6 +731,7 @@ def main() -> None:
 
         holdout_mask = _build_holdout_mask(
             mode=mode,
+            holdout_selection=str(args.holdout_selection),
             p_star=p_star,
             support=support,
             good_mask=good_mask,

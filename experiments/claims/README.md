@@ -1,8 +1,8 @@
 # Claim Runners
 
-This folder contains the supported claim-level entrypoints.
+This folder contains the supported claim-level entry points.
 
-## Scripts
+## Available Runners
 
 - `claim01_fit_not_discovery.py`
 - `claim02_budget_law.py`
@@ -14,10 +14,27 @@ This folder contains the supported claim-level entrypoints.
 - `claim08_iqp_vs_strong_baselines_beta_sweep.py`
 - `claim09_expected_visibility_scaling.py`
 - `claim10_global_visibility_predicts_discovery.py`
+- `claim11_spectral_proxy_validation.py`
 
-Each script writes outputs to a claim-specific folder under `outputs/`.
+## Usage Pattern
 
-## Recommended Usage
+Each runner forwards unknown CLI flags to its backend legacy experiment module.
 
-Use these scripts as the public interface for reproducing results.
-Avoid editing legacy experiment modules unless implementation changes are required.
+Example:
+
+```bash
+python experiments/claims/claim11_spectral_proxy_validation.py \
+  --betas 0.7,0.8,0.9 \
+  --seeds 42,43,44 \
+  --train-m 200
+```
+
+Outputs are written to:
+
+- `outputs/claims/<claim_name>/`
+
+## Conventions
+
+- Treat this folder as the stable public interface.
+- Implement algorithm/protocol changes in `experiments/legacy/`.
+- Keep claim runner defaults aligned with paper/default protocol settings.

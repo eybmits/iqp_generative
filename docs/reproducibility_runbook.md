@@ -4,44 +4,57 @@
 
 ```bash
 pip install -r requirements.txt
+pytest -q
 ```
 
-## 2) Run Claims
+## 2) Public Entry Points
 
-Execute the 8 claim runners in `experiments/claims/`.
-Each run is self-contained and writes claim-scoped artifacts into `outputs/`.
+Use claim runners only (`experiments/claims/claim01_...claim11_...`).
+Each runner writes to a claim-scoped folder in `outputs/claims/`.
 
-## 3) Core Result Archives
+Example:
 
+```bash
+python experiments/claims/claim07_iqp_vs_strong_baselines_global.py
+```
+
+## 3) Recommended Reproduction Order
+
+1. Run core claims first (`claim01` to `claim08`).
+2. Run theory/diagnostic claims (`claim09` to `claim11`).
+3. Inspect artifacts in each claim output folder (PDF, CSV, JSON).
+
+## 4) Protocol Interpretation
+
+- Primary protocol for model comparison: `global+smart`.
+- Sensitivity protocol: `global+random`.
+- Primary discovery endpoint: exact recovery curve `R(Q)` and measured `Q80`.
+- Budget-law formulas are reported as auxiliary approximations.
+
+## 5) Key Output Roots
+
+- `outputs/claims/`: claim-scoped reproducible artifacts
 - `outputs/paper_even_final/`: curated final analysis artifacts
-- `outputs/paper_figures/`: selected paper figures
+- `outputs/paper_figures/`: paper-facing selected exports
 
-## 3.1) Paper Method Text Templates
+## 6) Paper Method Text Assets
 
-- `docs/methodology_section_full.tex`: full LaTeX-ready Methodology section
-- `docs/methodology_claim_mapping.tex`: claim runner to backend/output mapping snippet
-- `docs/methodology_at_a_glance.tex`: short summary paragraph
+- `docs/methodology_section_full.tex`
+- `docs/methodology_claim_mapping.tex`
+- `docs/methodology_at_a_glance.tex`
 
-## 4) Expected Workflow
+## 7) Scope Guardrails
 
-1. Run one or more claim scripts.
-2. Inspect generated PDFs/CSVs in the corresponding output folder.
-3. Use `docs/claims_overview.md` for claim phrasing consistency.
+- Dataset family in this repository: `paper_even` only.
+- Keep claim runners stable; implement changes in legacy backend scripts.
+- Avoid committing ad-hoc one-off analysis scripts as public entry points.
 
-## 5) Scope Guardrails
+## 8) Optional Figure Postprocessing
 
-- Dataset family in this repo: paper-even only.
-- Primary model: IQP-QCBM plus fair classical baselines defined in claim scripts.
-- Keep ad-hoc exploratory scripts outside the main repo history.
-
-## 6) Figure Micro-Layout Fixes (Claim 35 Compact Scatter)
-
-For final label/underlay touch-ups on the compact budgetlaw scatter, use:
+For claim-35 compact scatter label/underlay cleanup:
 
 ```bash
 python experiments/legacy/postprocess_budgetlaw_compact.py --render-png
 ```
 
-Full options and examples:
-
-- `docs/budgetlaw_compact_postprocess.md`
+Details: `docs/budgetlaw_compact_postprocess.md`

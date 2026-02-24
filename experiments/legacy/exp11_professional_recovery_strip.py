@@ -14,9 +14,11 @@ Design goals requested by user:
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import sys
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -49,14 +51,40 @@ MODEL_LABELS = {
     "classical_maxent_parity": "MaxEnt parity (P,z)",
 }
 
-# Requested style: IQP parity red, everything else gray/black.
-MODEL_STYLE = {
+# Default style: IQP parity red, everything else gray/black.
+MODEL_STYLE_GRAY = {
     "iqp_parity_mse": {"color": hv.COLORS["model"], "ls": "-", "lw": 2.35, "z": 10},
     "classical_nnn_fields_parity": {"color": "#2B2B2B", "ls": "-", "lw": 1.8, "z": 7},
     "classical_dense_fields_xent": {"color": "#4A4A4A", "ls": (0, (5, 2)), "lw": 1.8, "z": 6},
     "classical_transformer_mle": {"color": "#6A6A6A", "ls": "--", "lw": 1.9, "z": 5},
     "classical_maxent_parity": {"color": "#8A8A8A", "ls": "-.", "lw": 1.9, "z": 4},
 }
+
+# Alternative style: colored baselines (keeps IQP red).
+MODEL_STYLE_COLOR = {
+    "iqp_parity_mse": {"color": hv.COLORS["model"], "ls": "-", "lw": 2.35, "z": 10},
+    "classical_nnn_fields_parity": {"color": "#1f77b4", "ls": "-", "lw": 1.85, "z": 7},
+    "classical_dense_fields_xent": {"color": "#8c564b", "ls": (0, (5, 2)), "lw": 1.85, "z": 6},
+    "classical_transformer_mle": {"color": "#17becf", "ls": "--", "lw": 1.9, "z": 5},
+    "classical_maxent_parity": {"color": "#9467bd", "ls": "-.", "lw": 1.9, "z": 4},
+}
+
+LEGEND_STYLE = dict(
+    loc="lower right",
+    bbox_to_anchor=(0.985, 0.03),
+    fontsize=6.3,
+    frameon=True,
+    framealpha=1.0,
+    facecolor="#FFFFFF",
+    edgecolor="#D8D8D8",
+    handlelength=2.7,
+    labelspacing=0.24,
+    borderpad=0.26,
+    handletextpad=0.55,
+    borderaxespad=0.0,
+)
+
+PANEL_CACHE_VERSION = 1
 
 
 def _parse_list_floats(s: str) -> List[float]:
@@ -97,6 +125,131 @@ def _q_grid(Qmax: int = 10000) -> np.ndarray:
     return q[(q >= 0) & (q <= Qmax)]
 
 
+def _legend_handles(model_style: Dict[str, Dict[str, object]]) -> List[Line2D]:
+    handles: List[Line2D] = [
+        Line2D([0], [0], color=hv.COLORS["target"], lw=2.0, ls="-", label=r"Target $p^*$"),
+    ]
+    for key in MODEL_ORDER:
+        st = model_style[key]
+        handles.append(
+            Line2D(
+                [0],
+                [0],
+                color=str(st["color"]),
+                lw=max(1.8, float(st["lw"]) * 1.06),
+                ls=st["ls"],
+                label=str(MODEL_LABELS[key]),
+            )
+        )
+    handles.append(Line2D([0], [0], color=hv.COLORS["gray"], lw=1.75, ls="--", label="Uniform"))
+    return handles
+
+
+def _select_model_style(colorful_baselines: bool) -> Dict[str, Dict[str, object]]:
+    return MODEL_STYLE_COLOR if colorful_baselines else MODEL_STYLE_GRAY
+
+
+def _beta_tag(beta: float) -> str:
+    return f"{beta:.3f}".replace("-", "m").replace(".", "p")
+
+
+def _panel_cache_signature(args: argparse.Namespace, run_seeds: List[int], Q: np.ndarray) -> str:
+    q_hash = hashlib.sha1(Q.astype(np.int32, copy=False).tobytes()).hexdigest()[:12]
+    payload = {
+        "version": PANEL_CACHE_VERSION,
+        "holdout_mode": args.holdout_mode,
+        "n": int(args.n),
+        "run_seeds": [int(s) for s in run_seeds],
+        "train_m": int(args.train_m),
+        "sigma": float(args.sigma),
+        "K": int(args.K),
+        "layers": int(args.layers),
+        "good_frac": float(args.good_frac),
+        "holdout_k": int(args.holdout_k),
+        "holdout_pool": int(args.holdout_pool),
+        "holdout_m_train": int(args.holdout_m_train),
+        "q80_thr": float(args.q80_thr),
+        "q80_search_max": int(args.q80_search_max),
+        "iqp_steps": int(args.iqp_steps),
+        "iqp_lr": float(args.iqp_lr),
+        "iqp_eval_every": int(args.iqp_eval_every),
+        "artr_epochs": int(args.artr_epochs),
+        "artr_d_model": int(args.artr_d_model),
+        "artr_heads": int(args.artr_heads),
+        "artr_layers": int(args.artr_layers),
+        "artr_ff": int(args.artr_ff),
+        "artr_lr": float(args.artr_lr),
+        "artr_batch_size": int(args.artr_batch_size),
+        "maxent_steps": int(args.maxent_steps),
+        "maxent_lr": float(args.maxent_lr),
+        "q_hash": q_hash,
+    }
+    blob = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha1(blob).hexdigest()[:14]
+
+
+def _panel_cache_file(cache_dir: Path, beta: float, signature: str) -> Path:
+    return cache_dir / f"beta_{_beta_tag(beta)}_{signature}.npz"
+
+
+def _load_panel_cache(
+    cache_file: Path,
+    Q: np.ndarray,
+) -> Optional[Tuple[np.ndarray, np.ndarray, Dict[str, np.ndarray], np.ndarray]]:
+    if not cache_file.exists():
+        return None
+    try:
+        with np.load(cache_file, allow_pickle=False) as z:
+            version = int(z["cache_version"])
+            if version != PANEL_CACHE_VERSION:
+                return None
+            q_cached = np.asarray(z["Q"], dtype=np.int32)
+            if not np.array_equal(q_cached, Q.astype(np.int32, copy=False)):
+                return None
+            model_order = [str(x) for x in z["model_order"].tolist()]
+            if model_order != MODEL_ORDER:
+                return None
+            y_target = np.asarray(z["y_target"], dtype=np.float64)
+            y_unif = np.asarray(z["y_unif"], dtype=np.float64)
+            y_models = np.asarray(z["y_models"], dtype=np.float64)
+            tv_vals = np.asarray(z["tv_vals"], dtype=np.float64)
+    except Exception as e:
+        print(f"[cache-skip] failed to read {cache_file.name}: {e}")
+        return None
+
+    if y_target.shape != (Q.size,) or y_unif.shape != (Q.size,):
+        return None
+    if y_models.shape != (len(MODEL_ORDER), Q.size):
+        return None
+    if tv_vals.shape != (len(MODEL_ORDER),):
+        return None
+
+    y_by_key = {k: y_models[i] for i, k in enumerate(MODEL_ORDER)}
+    return y_target, y_unif, y_by_key, tv_vals
+
+
+def _save_panel_cache(
+    cache_file: Path,
+    Q: np.ndarray,
+    y_target: np.ndarray,
+    y_unif: np.ndarray,
+    y_by_key: Dict[str, np.ndarray],
+    tv_vals: np.ndarray,
+) -> None:
+    cache_file.parent.mkdir(parents=True, exist_ok=True)
+    y_models = np.stack([np.asarray(y_by_key[k], dtype=np.float64) for k in MODEL_ORDER], axis=0)
+    np.savez_compressed(
+        cache_file,
+        cache_version=np.int64(PANEL_CACHE_VERSION),
+        Q=Q.astype(np.int32, copy=False),
+        model_order=np.array(MODEL_ORDER),
+        y_target=np.asarray(y_target, dtype=np.float64),
+        y_unif=np.asarray(y_unif, dtype=np.float64),
+        y_models=y_models,
+        tv_vals=np.asarray(tv_vals, dtype=np.float64),
+    )
+
+
 def _first_q_crossing(Q: np.ndarray, y: np.ndarray, thr: float) -> float:
     """Return the first Q where y reaches thr via linear interpolation."""
     idx = np.where(y >= thr)[0]
@@ -112,6 +265,77 @@ def _first_q_crossing(Q: np.ndarray, y: np.ndarray, thr: float) -> float:
     t = (float(thr) - y0) / (y1 - y0)
     t = float(np.clip(t, 0.0, 1.0))
     return x0 + t * (x1 - x0)
+
+
+def _compute_panel_from_training(
+    args: argparse.Namespace,
+    beta: float,
+    run_seeds: List[int],
+    Q: np.ndarray,
+) -> Tuple[np.ndarray, np.ndarray, Dict[str, np.ndarray], np.ndarray]:
+    y_target_runs: List[np.ndarray] = []
+    y_unif_runs: List[np.ndarray] = []
+    y_runs_by_key: Dict[str, List[np.ndarray]] = {k: [] for k in MODEL_ORDER}
+    tv_runs_by_key: Dict[str, List[float]] = {k: [] for k in MODEL_ORDER}
+
+    for seed in run_seeds:
+        p_star, _scores, holdout_mask, model_rows, metrics_rows = exp11._train_models_for_beta(
+            holdout_mode=args.holdout_mode,
+            n=args.n,
+            beta=beta,
+            seed=int(seed),
+            train_m=args.train_m,
+            sigma=args.sigma,
+            K=args.K,
+            layers=args.layers,
+            holdout_k=args.holdout_k,
+            holdout_pool=args.holdout_pool,
+            holdout_m_train=args.holdout_m_train,
+            good_frac=args.good_frac,
+            iqp_steps=args.iqp_steps,
+            iqp_lr=args.iqp_lr,
+            iqp_eval_every=args.iqp_eval_every,
+            q80_thr=args.q80_thr,
+            q80_search_max=args.q80_search_max,
+            artr_epochs=args.artr_epochs,
+            artr_d_model=args.artr_d_model,
+            artr_heads=args.artr_heads,
+            artr_layers=args.artr_layers,
+            artr_ff=args.artr_ff,
+            artr_lr=args.artr_lr,
+            artr_batch_size=args.artr_batch_size,
+            maxent_steps=args.maxent_steps,
+            maxent_lr=args.maxent_lr,
+        )
+
+        by_key = {str(r["model_key"]): r for r in metrics_rows}
+        model_by_key = {str(r["key"]): r for r in model_rows}
+
+        y_target_runs.append(hv.expected_unique_fraction(p_star, holdout_mask, Q))
+        q_unif_seed = np.ones_like(p_star, dtype=np.float64) / p_star.size
+        y_unif_runs.append(hv.expected_unique_fraction(q_unif_seed, holdout_mask, Q))
+
+        for key in MODEL_ORDER:
+            row = model_by_key[key]
+            q = row["q"]
+            assert isinstance(q, np.ndarray)
+            y_runs_by_key[key].append(hv.expected_unique_fraction(q, holdout_mask, Q))
+            if key in by_key:
+                tv_runs_by_key[key].append(float(by_key[key]["fit_tv_to_pstar"]))
+
+    y_target = np.mean(np.stack(y_target_runs, axis=0), axis=0)
+    y_unif = np.mean(np.stack(y_unif_runs, axis=0), axis=0)
+    y_by_key = {key: np.mean(np.stack(y_runs_by_key[key], axis=0), axis=0) for key in MODEL_ORDER}
+
+    tv_vals = np.array(
+        [float(np.mean(tv_runs_by_key[key])) if tv_runs_by_key[key] else np.nan for key in MODEL_ORDER],
+        dtype=np.float64,
+    )
+    if not np.all(np.isfinite(tv_vals)):
+        finite = tv_vals[np.isfinite(tv_vals)]
+        fill = float(np.mean(finite)) if finite.size else 1.0
+        tv_vals = np.where(np.isfinite(tv_vals), tv_vals, fill)
+    return y_target, y_unif, y_by_key, tv_vals
 
 
 def main() -> None:
@@ -156,6 +380,40 @@ def main() -> None:
     ap.add_argument("--maxent-lr", type=float, default=5e-2)
     ap.add_argument("--log-x", action="store_true")
     ap.add_argument("--grid-cols", type=int, default=0, help="If >0, arrange panels in a grid with this many columns.")
+    ap.add_argument(
+        "--legend-in-first-panel",
+        type=int,
+        default=1,
+        choices=[0, 1],
+        help="Show a shared legend in the first panel (recommended for 4x2 layouts).",
+    )
+    ap.add_argument(
+        "--colorful-baselines",
+        type=int,
+        default=0,
+        choices=[0, 1],
+        help="Use colored classical baselines (legend + curves) instead of gray tones.",
+    )
+    ap.add_argument(
+        "--panel-cache",
+        type=int,
+        default=1,
+        choices=[0, 1],
+        help="Reuse/save per-beta panel cache to rerender without retraining.",
+    )
+    ap.add_argument(
+        "--panel-cache-readonly",
+        type=int,
+        default=0,
+        choices=[0, 1],
+        help="If 1, require cache hit for every beta and never retrain.",
+    )
+    ap.add_argument(
+        "--panel-cache-subdir",
+        type=str,
+        default="panel_cache",
+        help="Subdirectory in outdir where per-beta panel cache files are stored.",
+    )
     args = ap.parse_args()
 
     if not hv.HAS_PENNYLANE:
@@ -171,8 +429,17 @@ def main() -> None:
     run_seeds = _parse_list_ints(str(args.seeds)) if str(args.seeds).strip() else [int(args.seed)]
     if not run_seeds:
         run_seeds = [int(args.seed)]
+    model_style = _select_model_style(bool(int(args.colorful_baselines)))
     Q = _q_grid(10000)
     q_eval = int(np.max(Q))
+    use_panel_cache = bool(int(args.panel_cache))
+    cache_readonly = bool(int(args.panel_cache_readonly))
+    cache_dir = outdir / str(args.panel_cache_subdir)
+    cache_sig = _panel_cache_signature(args, run_seeds, Q)
+    if use_panel_cache:
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        ro_txt = " readonly=1" if cache_readonly else ""
+        print(f"[cache] dir={cache_dir} sig={cache_sig}{ro_txt}")
 
     # Layout: default horizontal strip, optional grid.
     if args.grid_cols and args.grid_cols > 0:
@@ -191,71 +458,18 @@ def main() -> None:
     for i, beta in enumerate(betas):
         ax = axes[i]
         print(f"[pro-fig] beta={beta:g} | seeds={run_seeds}")
-
-        y_target_runs: List[np.ndarray] = []
-        y_unif_runs: List[np.ndarray] = []
-        y_runs_by_key: Dict[str, List[np.ndarray]] = {k: [] for k in MODEL_ORDER}
-        tv_runs_by_key: Dict[str, List[float]] = {k: [] for k in MODEL_ORDER}
-
-        for seed in run_seeds:
-            p_star, _scores, holdout_mask, model_rows, metrics_rows = exp11._train_models_for_beta(
-                holdout_mode=args.holdout_mode,
-                n=args.n,
-                beta=beta,
-                seed=int(seed),
-                train_m=args.train_m,
-                sigma=args.sigma,
-                K=args.K,
-                layers=args.layers,
-                holdout_k=args.holdout_k,
-                holdout_pool=args.holdout_pool,
-                holdout_m_train=args.holdout_m_train,
-                good_frac=args.good_frac,
-                iqp_steps=args.iqp_steps,
-                iqp_lr=args.iqp_lr,
-                iqp_eval_every=args.iqp_eval_every,
-                q80_thr=args.q80_thr,
-                q80_search_max=args.q80_search_max,
-                artr_epochs=args.artr_epochs,
-                artr_d_model=args.artr_d_model,
-                artr_heads=args.artr_heads,
-                artr_layers=args.artr_layers,
-                artr_ff=args.artr_ff,
-                artr_lr=args.artr_lr,
-                artr_batch_size=args.artr_batch_size,
-                maxent_steps=args.maxent_steps,
-                maxent_lr=args.maxent_lr,
-            )
-
-            by_key = {str(r["model_key"]): r for r in metrics_rows}
-            model_by_key = {str(r["key"]): r for r in model_rows}
-
-            y_target_runs.append(hv.expected_unique_fraction(p_star, holdout_mask, Q))
-            q_unif_seed = np.ones_like(p_star, dtype=np.float64) / p_star.size
-            y_unif_runs.append(hv.expected_unique_fraction(q_unif_seed, holdout_mask, Q))
-
-            for key in MODEL_ORDER:
-                row = model_by_key[key]
-                q = row["q"]
-                assert isinstance(q, np.ndarray)
-                y_runs_by_key[key].append(hv.expected_unique_fraction(q, holdout_mask, Q))
-                if key in by_key:
-                    tv_runs_by_key[key].append(float(by_key[key]["fit_tv_to_pstar"]))
-
-        y_target = np.mean(np.stack(y_target_runs, axis=0), axis=0)
-        y_unif = np.mean(np.stack(y_unif_runs, axis=0), axis=0)
-        y_by_key: Dict[str, np.ndarray] = {
-            key: np.mean(np.stack(y_runs_by_key[key], axis=0), axis=0) for key in MODEL_ORDER
-        }
-
-        tv_vals = np.array(
-            [float(np.mean(tv_runs_by_key[key])) if tv_runs_by_key[key] else np.nan for key in MODEL_ORDER],
-            dtype=np.float64,
-        )
-        if not np.all(np.isfinite(tv_vals)):
-            finite = tv_vals[np.isfinite(tv_vals)]
-            fill = float(np.mean(finite)) if finite.size else 1.0
-            tv_vals = np.where(np.isfinite(tv_vals), tv_vals, fill)
+        cache_file = _panel_cache_file(cache_dir, beta, cache_sig)
+        loaded = _load_panel_cache(cache_file, Q) if use_panel_cache else None
+        if loaded is not None:
+            y_target, y_unif, y_by_key, tv_vals = loaded
+            print(f"[cache-hit] beta={beta:g} -> {cache_file.name}")
+        else:
+            if cache_readonly and use_panel_cache:
+                raise RuntimeError(f"Cache miss for beta={beta:g}: {cache_file}")
+            y_target, y_unif, y_by_key, tv_vals = _compute_panel_from_training(args, beta, run_seeds, Q)
+            if use_panel_cache:
+                _save_panel_cache(cache_file, Q, y_target, y_unif, y_by_key, tv_vals)
+                print(f"[cache-save] beta={beta:g} -> {cache_file.name}")
         enc = _tv_alpha_and_marker(tv_vals)
 
         # Target and uniform references.
@@ -264,7 +478,7 @@ def main() -> None:
 
         for j, key in enumerate(MODEL_ORDER):
             y = y_by_key[key]
-            st = MODEL_STYLE[key]
+            st = model_style[key]
             alpha = enc[j]["alpha"]
             msize = enc[j]["msize"]
             ax.plot(
@@ -292,7 +506,7 @@ def main() -> None:
         # Include the uniform baseline ("random sampling"), exclude target curve.
         candidate_curves: Dict[str, np.ndarray] = dict(y_by_key)
         candidate_curves["uniform_random"] = y_unif
-        candidate_colors: Dict[str, str] = {k: str(MODEL_STYLE[k]["color"]) for k in MODEL_ORDER}
+        candidate_colors: Dict[str, str] = {k: str(model_style[k]["color"]) for k in MODEL_ORDER}
         candidate_colors["uniform_random"] = hv.COLORS["gray"]
 
         winner_key = None
@@ -372,9 +586,14 @@ def main() -> None:
         for j in range(len(betas), len(axes)):
             axes[j].axis("off")
 
+    if bool(int(args.legend_in_first_panel)) and len(axes) > 0:
+        legend = axes[0].legend(handles=_legend_handles(model_style), **LEGEND_STYLE)
+        legend.set_zorder(60)
+
+    style_suffix = "_color_baselines" if bool(int(args.colorful_baselines)) else ""
     suffix = f"_multiseed_n{len(run_seeds)}" if len(run_seeds) > 1 else ""
-    out_pdf = out_collage / f"recovery_horizontal_professional_with_tv_encoding{suffix}.pdf"
-    out_png = out_collage / f"recovery_horizontal_professional_with_tv_encoding{suffix}.png"
+    out_pdf = out_collage / f"recovery_horizontal_professional_with_tv_encoding{suffix}{style_suffix}.pdf"
+    out_png = out_collage / f"recovery_horizontal_professional_with_tv_encoding{suffix}{style_suffix}.png"
     fig.savefig(out_pdf)
     fig.savefig(out_png, dpi=260)
     plt.close(fig)
