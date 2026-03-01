@@ -57,3 +57,13 @@ PY
 ```
 
 3. Confirm manuscript assembly uses these exact final PDFs.
+
+## Paper linking block
+
+Use a frozen tag link (not `main`) in the paper:
+
+- `https://github.com/eybmits/iqp_generative/tree/paper-final-v1`
+
+Optional direct artifact link:
+
+- `https://github.com/eybmits/iqp_generative/tree/paper-final-v1/outputs/final_plots`

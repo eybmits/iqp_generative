@@ -54,3 +54,24 @@ python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 ## Artifact integrity
 
 - `outputs/final_plots/ARTIFACT_MANIFEST.csv`
+
+## Paper links (stable)
+
+Use these links directly in the manuscript:
+
+- Repository (main): `https://github.com/eybmits/iqp_generative`
+- Frozen paper snapshot (tag): `https://github.com/eybmits/iqp_generative/tree/paper-final-v1`
+- Exact commit used for this release: `https://github.com/eybmits/iqp_generative/tree/5f5b723`
+- Final figure artifacts folder: `https://github.com/eybmits/iqp_generative/tree/paper-final-v1/outputs/final_plots`
+
+BibTeX example:
+
+```bibtex
+@misc{iqp_generative_final_2026,
+  author       = {Eybmits},
+  title        = {IQP Generative Final Plots (Minimal Release + Appendix Ablation)},
+  year         = {2026},
+  howpublished = {\url{https://github.com/eybmits/iqp_generative/tree/paper-final-v1}},
+  note         = {Accessed: 2026-03-01}
+}
+```
