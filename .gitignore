@@ -1,23 +1,11 @@
 # macOS
 .DS_Store
 
-# Python cache
+# Python
 __pycache__/
 *.pyc
 *.pyo
 
-# Outputs / generated artifacts
-outputs/
-
-# Data downloads / caches
-data/
-data_emnist/
-
-# Misc
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-coverage.xml
-htmlcov/
-tmp/
+# Optional local env
+.venv/
+venv/

@@ -1,0 +1,29 @@
+# Artifact Manifest
+
+Generated: 2026-03-01 21:26:43 UTC
+
+This manifest records SHA-256 checksums and sizes for all final artifact files in `outputs/final_plots` (excluding the manifest files themselves).
+
+| path | size_bytes | sha256 | pdf_width_pt | pdf_height_pt |
+|---|---:|---|---:|---:|
+| outputs/final_plots/fig1_target_sharpness/fig1_target_sharpness_beta_sweep.pdf | 19040 | `0d7681b190f6a8e84ade1e3d1d8a2a8d1b02b1320d12c548fb7665ec13d1a17f` | 243.12000 | 185.52000 |
+| outputs/final_plots/fig1_target_sharpness/fig1_target_sharpness_beta_sweep.png | 124755 | `2d350c60d563d674bc8fdada6be19af41a4559d3b6e9afc1c13c2783561cb7d0` |  |  |
+| outputs/final_plots/fig2_iqp_sigmak_ablation_recovery/fig2_data_default.npz | 31437 | `3b6303fc870e103e1e8e02a9f7b493ee30eceedfd8f1f58d96d40a4010325877` |  |  |
+| outputs/final_plots/fig2_iqp_sigmak_ablation_recovery/fig2_iqp_sigmak_ablation_recovery.pdf | 23423 | `dd8bcf29c1b09941a401c172a8bd8c3550c1088c7a24f2ee3fc4060da01ac2a1` | 243.12000 | 185.52000 |
+| outputs/final_plots/fig2_iqp_sigmak_ablation_recovery/fig2_iqp_sigmak_ablation_recovery.png | 128626 | `a154c82d5bec658371794ce0dceda7c7a1ebb557e6aaa566e780e8ae4220fa03` |  |  |
+| outputs/final_plots/fig3_tv_bshs_seedmean_scatter/fig3_tv_bshs_seedmean_scatter_beta_0p90_dual_axis_boxplot.pdf | 22353 | `6fc9c9318df49076209ea46db3fad659e11757cce3f6dc272c146c898d25d21a` | 243.12000 | 185.52000 |
+| outputs/final_plots/fig3_tv_bshs_seedmean_scatter/fig3_tv_bshs_seedmean_scatter_beta_0p90_dual_axis_boxplot.png | 77264 | `01a653d78669de49f8bb41f565793e801acb3131f51d734ba64006f91cd6e5b9` |  |  |
+| outputs/final_plots/fig3_tv_bshs_seedmean_scatter/tv_bshs_points_multiseed_beta_q1000_no_iqp_mse_beta0p9_newseeds12.csv | 8231 | `987e181de1759e7c3375fc43432e851c4ef921464ec4cc80c77ea140c86ee3a8` |  |  |
+| outputs/final_plots/fig3_tv_bshs_seedmean_scatter/tv_bshs_seedmean_beta_0p90_q1000_no_iqp_mse_beta0p9_newseeds12.csv | 973 | `51c95bb9c15d55f0a1e31c9932a3a94f389fd256d24e3049ee59e70853fd7327` |  |  |
+| outputs/final_plots/fig3_tv_bshs_seedmean_scatter/tv_bshs_seedmean_by_model_beta_q1000_no_iqp_mse_beta0p9_newseeds12.csv | 973 | `51c95bb9c15d55f0a1e31c9932a3a94f389fd256d24e3049ee59e70853fd7327` |  |  |
+| outputs/final_plots/fig3_tv_bshs_seedmean_scatter/tv_bshs_summary_by_model_q1000_no_iqp_mse_beta0p9_newseeds12.csv | 942 | `8a3e1e9762bb04b15451ef19ab9f6ec9c29c198624c1a05676ddac034de8bc9c` |  |  |
+| outputs/final_plots/fig3_tv_bshs_seedmean_scatter/tv_bshs_summary_multiseed_beta_q1000_no_iqp_mse_beta0p9_newseeds12.json | 1957 | `038b11d0f5ec23baf2b9388dcbe85e89770f52fa20a98ea5c13cd00bfeefca7b` |  |  |
+| outputs/final_plots/fig4_visibility_mechanistic_recovery/fig4_data_default.npz | 59506 | `0023370454c42762064b78033663d4f5c70ce643f4723021e7c665eebc6a2e69` |  |  |
+| outputs/final_plots/fig4_visibility_mechanistic_recovery/fig4_visibility_mechanistic_recovery.pdf | 18247 | `1feed032a2dda7dc2f0c051648e443ff9e129ebd2c3ee8028a3ac7df81ea2bf3` | 243.12000 | 185.52000 |
+| outputs/final_plots/fig4_visibility_mechanistic_recovery/fig4_visibility_mechanistic_recovery.png | 81364 | `8c06a7d97b4dc8826d1dae1efaf4a5ad368c2651eb5c605b9ed4457cf2897e14` |  |  |
+| outputs/final_plots/fig5_visibility_visible_invisible_recovery/fig5_data_default.npz | 62616 | `17c7009eaffabdd134fc00d06201b099b90ddb8e04c967fb873ae566357978ed` |  |  |
+| outputs/final_plots/fig5_visibility_visible_invisible_recovery/fig5_visibility_visible_invisible_recovery.pdf | 20053 | `7cd41703017192c31211766678e45080ba18e22e95ddce15e93fbcb10f5de178` | 243.12000 | 185.52000 |
+| outputs/final_plots/fig5_visibility_visible_invisible_recovery/fig5_visibility_visible_invisible_recovery.png | 79097 | `05b3396e528c235c3fb71550e662f72275f4cdf7bd811b4f1d1a7d030115a262` |  |  |
+| outputs/final_plots/fig6_beta_sweep_recovery_grid/fig6_beta_sweep_recovery_grid.pdf | 74194 | `3c5227f71ad85e0c295fd22f8cf7920fcdc6398a565ebc78616fbd3f4f8862af` | 865.19952 | 317.99952 |
+| outputs/final_plots/fig6_beta_sweep_recovery_grid/fig6_beta_sweep_recovery_grid.png | 565757 | `0fb49151a9073beeda223174be6474a4cedebc82a7a907ff12f24fac1a74fb94` |  |  |
+| outputs/final_plots/fig6_beta_sweep_recovery_grid/fig6_data_default.npz | 97644 | `8203b77b17f9971cb26fb8d2ab0c203946a8900110201bff3bda78a866da20b2` |  |  |

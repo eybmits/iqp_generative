@@ -1,4 +1,4 @@
-numpy
-matplotlib
-scipy
-pennylane
+# Minimal dependencies for final 6 plotting scripts
+numpy>=1.23
+pandas>=1.5
+matplotlib>=3.7
