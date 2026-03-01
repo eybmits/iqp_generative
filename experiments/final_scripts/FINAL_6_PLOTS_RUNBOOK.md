@@ -127,14 +127,16 @@ Input snapshots:
 
 Output:
 - `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_appendix_ablation_beta0p8_nsweep.pdf`
+- `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_appendix_ablation_beta0p8_nsweep_qholdout_vs_n.pdf`
+- `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_appendix_ablation_beta0p8_nsweep_rq10000_vs_n.pdf`
 
 Frozen ablation configuration:
 - `beta=0.8`
-- `n in {12,14,16}`
+- `n in {12,14,16,18,20}`
 - seeds `42..46` (5 seeds)
 - models: IQP parity vs IQP MSE
 - exact evaluation for `n<=14`
-- shot-based evaluation for `n=16` with `100000` shots
+- shot-based evaluation for `n>=16` with `100000` shots
 
 ## Kept files
 

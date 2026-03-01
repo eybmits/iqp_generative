@@ -57,6 +57,10 @@ Each script is standalone:
 - Produces:
   - `fig7_appendix_ablation_beta0p8_nsweep.pdf`
   - `fig7_appendix_ablation_beta0p8_nsweep.png`
+  - `fig7_appendix_ablation_beta0p8_nsweep_qholdout_vs_n.pdf`
+  - `fig7_appendix_ablation_beta0p8_nsweep_qholdout_vs_n.png`
+  - `fig7_appendix_ablation_beta0p8_nsweep_rq10000_vs_n.pdf`
+  - `fig7_appendix_ablation_beta0p8_nsweep_rq10000_vs_n.png`
 
 ## Lock docs
 

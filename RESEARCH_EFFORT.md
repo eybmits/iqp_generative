@@ -31,7 +31,7 @@ Provide a minimal and auditable release that can:
 4. Added frozen data snapshots:
    - Fig2/4/5/6 use frozen `.npz` default inputs
    - Fig3 uses frozen multiseed points CSV (`beta=0.90`, seeds `101..112`)
-   - Fig7 uses frozen ablation NPZ/CSV (`beta=0.8`, `n={12,14,16}`, 5 seeds)
+   - Fig7 uses frozen ablation NPZ/CSV (`beta=0.8`, `n={12,14,16,18,20}`, 5 seeds)
 5. Regenerated and stored final PDF/PNG outputs in `outputs/final_plots/`.
 6. Added locked execution and style docs:
    - `experiments/final_scripts/FINAL_6_PLOTS_RUNBOOK.md`
@@ -50,11 +50,11 @@ Provide a minimal and auditable release that can:
 
 ## Appendix ablation note (Fig7)
 
-The appendix ablation is fixed to `beta=0.8` (middle-regime setting) and compares IQP parity vs IQP MSE over `n={12,14,16}` with 5 seeds.
+The appendix ablation is fixed to `beta=0.8` (middle-regime setting) and compares IQP parity vs IQP MSE over `n={12,14,16,18,20}` with 5 seeds.
 
 Evaluation protocol:
 - exact evaluation for `n<=14`
-- shot-based evaluation at `n=16` with `100000` shots
+- shot-based evaluation for `n>=16` with `100000` shots
 
 The qualitative ranking remains stable under this mixed exact/shot protocol.
 

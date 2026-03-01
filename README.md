@@ -27,9 +27,9 @@ All scripts are standalone and contain their plotting style locally.
 
 - Fig2/Fig4/Fig5/Fig6 load frozen `.npz` data snapshots located next to their outputs.
 - Fig3 loads the frozen multiseed points CSV (`beta=0.90`, seeds `101..112`).
-- Fig7 loads a frozen ablation snapshot (`beta=0.8`, `n={12,14,16}`, 5 seeds):
+- Fig7 loads a frozen ablation snapshot (`beta=0.8`, `n={12,14,16,18,20}`, 5 seeds):
   - exact evaluation for `n<=14`
-  - shot-based evaluation (`100k` shots) for `n=16`
+  - shot-based evaluation (`100k` shots) for `n>=16`
 - Fig1 is generated directly from its internal deterministic construction.
 
 ## Quick run

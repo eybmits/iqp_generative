@@ -85,11 +85,11 @@ Embedded in each respective script:
   - `fig7_data_default.npz`
 - data lock:
   - `beta=0.8`
-  - `n={12,14,16}`
+  - `n={12,14,16,18,20}`
   - seeds `42..46` (5 seeds)
   - models: `iqp_parity`, `iqp_mse`
   - exact evaluation for `n<=14`
-  - shot-based eval for `n=16` with `100000` shots
+  - shot-based eval for `n>=16` with `100000` shots
 - layout lock:
   - two-panel horizontal figure (`6.95 x 2.60` inch)
   - left panel `q(H)` vs `n`
@@ -97,3 +97,5 @@ Embedded in each respective script:
   - summary lines shown as mean±std over seeds
 - output:
   - `fig7_appendix_ablation_beta0p8_nsweep.pdf/.png`
+  - `fig7_appendix_ablation_beta0p8_nsweep_qholdout_vs_n.pdf/.png`
+  - `fig7_appendix_ablation_beta0p8_nsweep_rq10000_vs_n.pdf/.png`

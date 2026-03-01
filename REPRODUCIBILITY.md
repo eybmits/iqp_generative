@@ -76,11 +76,11 @@ The final Fig7 plot uses:
 
 Characteristics:
 - fixed `beta = 0.8`
-- `n in {12,14,16}`
+- `n in {12,14,16,18,20}`
 - 5 seeds: `42..46`
 - models: `IQP parity` vs `IQP MSE`
 - exact evaluation up to `n=14`
-- shot-based evaluation at `n=16` with `100000` shots
+- shot-based evaluation for `n>=16` with `100000` shots
 
 ## Notes
 
