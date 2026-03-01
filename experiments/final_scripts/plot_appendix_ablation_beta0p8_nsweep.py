@@ -128,10 +128,10 @@ def _legend_handles(model_keys: list[str]) -> list[Line2D]:
     return handles
 
 
-def _add_legend(ax: plt.Axes, model_keys: list[str]) -> None:
+def _add_legend(ax: plt.Axes, model_keys: list[str], loc: str = "upper right") -> None:
     ax.legend(
         handles=_legend_handles(model_keys),
-        loc="upper right",
+        loc=loc,
         frameon=True,
         fontsize=8.0,
         facecolor="white",
@@ -273,7 +273,7 @@ def run() -> None:
         seed_data=r_q10000_seed,
     )
     ax_r2.set_ylim(0.0, 1.02)
-    _add_legend(ax_r2, model_keys)
+    _add_legend(ax_r2, model_keys, loc="lower left")
     out_r_pdf = outdir / "fig7_appendix_ablation_beta0p8_nsweep_rq10000_vs_n.pdf"
     out_r_png = outdir / "fig7_appendix_ablation_beta0p8_nsweep_rq10000_vs_n.png"
     fig_r.savefig(out_r_pdf)

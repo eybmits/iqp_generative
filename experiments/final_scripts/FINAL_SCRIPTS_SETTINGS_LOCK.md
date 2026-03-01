@@ -45,7 +45,7 @@ Embedded in each respective script:
   - `beta-fixed=0.90`
   - `beta-fixed-dual-axis-boxplot=1`
 - dual-axis legend lock:
-  - upper-left, white background, labels only: `Support`, `TVscore`
+  - top-center, white background, labels only: `Support`, `TVscore`
 - output:
   - `fig3_tv_bshs_seedmean_scatter_beta_0p90_dual_axis_boxplot.pdf/.png`
 
@@ -85,9 +85,10 @@ Embedded in each respective script:
   - `fig7_data_default.npz`
 - data lock:
   - `beta=0.8`
-  - `n={12,14,16,18,20}`
+  - `n={12,14,16,18}`
   - seeds `42..46` (5 seeds)
   - models: `iqp_parity`, `iqp_mse`
+  - matched optimization budget: `iqp_steps=300` (both models)
   - exact evaluation for `n<=14`
   - shot-based eval for `n>=16` with `100000` shots
 - layout lock:

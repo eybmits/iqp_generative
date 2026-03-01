@@ -54,6 +54,11 @@ Each script is standalone:
 7. `plot_appendix_ablation_beta0p8_nsweep.py`
 - Input snapshot:
   - `fig7_data_default.npz`
+- Frozen setup:
+  - `beta=0.8`
+  - `n in {12,14,16,18}`
+  - seeds `42..46` (5 seeds)
+  - `iqp_steps=300` for parity and mse
 - Produces:
   - `fig7_appendix_ablation_beta0p8_nsweep.pdf`
   - `fig7_appendix_ablation_beta0p8_nsweep.png`

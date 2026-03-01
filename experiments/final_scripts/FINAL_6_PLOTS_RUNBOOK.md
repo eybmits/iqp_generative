@@ -132,9 +132,10 @@ Output:
 
 Frozen ablation configuration:
 - `beta=0.8`
-- `n in {12,14,16,18,20}`
+- `n in {12,14,16,18}`
 - seeds `42..46` (5 seeds)
 - models: IQP parity vs IQP MSE
+- matched optimization budget: `iqp_steps=300` for both models
 - exact evaluation for `n<=14`
 - shot-based evaluation for `n>=16` with `100000` shots
 
@@ -142,5 +143,5 @@ Frozen ablation configuration:
 
 - 7 scripts above
 - outputs in `outputs/final_plots/`
-- root docs: `README.md`, `REPRODUCIBILITY.md`, `PUBLISHING_CHECKLIST.md`, `RESEARCH_EFFORT.md`
+- root docs: `README.md`, `PUBLISHING_CHECKLIST.md`
 - style/settings lock docs in this folder

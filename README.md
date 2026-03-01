@@ -27,9 +27,10 @@ All scripts are standalone and contain their plotting style locally.
 
 - Fig2/Fig4/Fig5/Fig6 load frozen `.npz` data snapshots located next to their outputs.
 - Fig3 loads the frozen multiseed points CSV (`beta=0.90`, seeds `101..112`).
-- Fig7 loads a frozen ablation snapshot (`beta=0.8`, `n={12,14,16,18,20}`, 5 seeds):
+- Fig7 loads a frozen ablation snapshot (`beta=0.8`, `n={12,14,16,18}`, 5 seeds):
   - exact evaluation for `n<=14`
   - shot-based evaluation (`100k` shots) for `n>=16`
+  - matched optimization budget: `iqp_steps=300` for parity and mse
 - Fig1 is generated directly from its internal deterministic construction.
 
 ## Quick run
@@ -46,13 +47,10 @@ python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 
 ## Documentation
 
-- `REPRODUCIBILITY.md`
 - `PUBLISHING_CHECKLIST.md`
-- `RESEARCH_EFFORT.md`
 - `experiments/final_scripts/FINAL_6_PLOTS_RUNBOOK.md`
 - `experiments/final_scripts/FINAL_SCRIPTS_SETTINGS_LOCK.md`
 
 ## Artifact integrity
 
 - `outputs/final_plots/ARTIFACT_MANIFEST.csv`
-- `outputs/final_plots/ARTIFACT_MANIFEST.md`

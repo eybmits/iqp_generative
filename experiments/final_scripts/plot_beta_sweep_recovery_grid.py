@@ -223,7 +223,7 @@ def run() -> None:
         ax.set_ylim(-0.02, 1.05)
         ax.axhline(1.0, color=COLOR_GRAY, linestyle=":", alpha=0.6, linewidth=0.9)
         ax.set_title(fr"$\beta={beta:g}$")
-        ax.set_xlabel(r"$Q$")
+        ax.set_xlabel("Q samples from model", fontsize=12)
 
         if i % ncols == 0:
             ax.set_ylabel(r"Recovery $R(Q)$")

@@ -282,7 +282,15 @@ def _render_dual_axis_boxplot(df: pd.DataFrame, out_stem: str, outdir: Path, dpi
     pos_t = x + 0.20
     w = 0.30
 
-    bshs_stats = [_build_bxp_stats(v, y_min=0.0, y_max=1.0, min_box_h_frac=0.03) for v in bshs_data]
+    b_all = np.concatenate(bshs_data)
+    b_min = float(np.min(b_all))
+    b_max = float(np.max(b_all))
+    b_pad = 0.10 * max(1e-6, b_max - b_min)
+    b_lo = max(0.0, b_min - b_pad)
+    b_hi = min(1.0, b_max + b_pad)
+    if b_hi <= b_lo:
+        b_hi = min(1.0, b_lo + 0.05)
+    bshs_stats = [_build_bxp_stats(v, y_min=b_lo, y_max=b_hi, min_box_h_frac=0.03) for v in bshs_data]
 
     tv_all = np.concatenate(tv_data)
     tv_min = float(np.min(tv_all))
@@ -318,7 +326,7 @@ def _render_dual_axis_boxplot(df: pd.DataFrame, out_stem: str, outdir: Path, dpi
     ax_l.set_xticklabels(labels, rotation=35, ha="right", fontsize=8)
     ax_l.set_xlabel("Model")
     ax_l.set_ylabel(r"Support $BSHS(Q)$")
-    ax_l.set_ylim(0.0, 1.0)
+    ax_l.set_ylim(b_lo, b_hi)
     ax_l.grid(True, axis="y", alpha=0.25, linewidth=0.6)
 
     ax_r.set_ylabel(r"TV$_{score}$")
@@ -329,8 +337,8 @@ def _render_dual_axis_boxplot(df: pd.DataFrame, out_stem: str, outdir: Path, dpi
     proxy_tv = plt.Rectangle((0, 0), 1, 1, facecolor=(0.4, 0.4, 0.4, 0.20), edgecolor="#444444", linewidth=1.2, hatch="////", label="TVscore")
     leg = ax_l.legend(
         handles=[proxy_support, proxy_tv],
-        loc="upper left",
-        bbox_to_anchor=(0.01, 0.99),
+        loc="upper center",
+        bbox_to_anchor=(0.5, 0.99),
         borderaxespad=0.0,
         frameon=True,
         fontsize=7.0,
@@ -338,7 +346,7 @@ def _render_dual_axis_boxplot(df: pd.DataFrame, out_stem: str, outdir: Path, dpi
         edgecolor="#bfbfbf",
     )
     try:
-        leg._legend_box.align = "left"
+        leg._legend_box.align = "center"
     except Exception:
         pass
 
