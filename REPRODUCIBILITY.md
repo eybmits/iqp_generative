@@ -1,6 +1,6 @@
 # Reproducibility Guide
 
-This package contains only the final 6 plotting scripts and the frozen final data needed by those scripts.
+This package contains only final plotting scripts and the frozen final data needed by those scripts.
 
 ## 1) Environment
 
@@ -17,7 +17,7 @@ Minimal dependencies are:
 
 ## 2) Rerender all final plots
 
-Run the six scripts directly:
+Run the seven scripts directly:
 
 ```bash
 python experiments/final_scripts/plot_target_sharpness_beta_sweep.py
@@ -26,6 +26,7 @@ python experiments/final_scripts/plot_tv_bshs_seedmean_scatter.py
 python experiments/final_scripts/plot_visibility_mechanistic_recovery.py
 python experiments/final_scripts/plot_visibility_visible_invisible_recovery.py
 python experiments/final_scripts/plot_beta_sweep_recovery_grid.py
+python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 ```
 
 Outputs are written to:
@@ -35,6 +36,7 @@ Outputs are written to:
 - `outputs/final_plots/fig4_visibility_mechanistic_recovery/`
 - `outputs/final_plots/fig5_visibility_visible_invisible_recovery/`
 - `outputs/final_plots/fig6_beta_sweep_recovery_grid/`
+- `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/`
 
 ## 3) Verify artifacts by checksum
 
@@ -65,6 +67,20 @@ Characteristics:
 - `Q_eval = 1000`
 - seeds `101..112` (12 seeds)
 - 5 models x 12 seeds = 60 points
+
+## 5) Fig7 appendix ablation provenance
+
+The final Fig7 plot uses:
+- `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_data_default.npz`
+- `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_seed_table.csv`
+
+Characteristics:
+- fixed `beta = 0.8`
+- `n in {12,14,16}`
+- 5 seeds: `42..46`
+- models: `IQP parity` vs `IQP MSE`
+- exact evaluation up to `n=14`
+- shot-based evaluation at `n=16` with `100000` shots
 
 ## Notes
 

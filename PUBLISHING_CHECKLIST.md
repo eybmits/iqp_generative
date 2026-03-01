@@ -3,7 +3,7 @@
 ## Package scope
 
 - [x] Only final plot package is present.
-- [x] Exactly 6 final scripts in `experiments/final_scripts/`.
+- [x] Exactly 7 final scripts in `experiments/final_scripts/`.
 - [x] Final outputs and frozen data in `outputs/final_plots/`.
 - [x] Reproducibility and style lock docs are included.
 
@@ -15,6 +15,7 @@
 - [x] Fig4 PDF/PNG
 - [x] Fig5 PDF/PNG
 - [x] Fig6 PDF/PNG
+- [x] Fig7 PDF/PNG
 
 ## Final data snapshots present
 
@@ -22,7 +23,9 @@
 - [x] `fig4_data_default.npz`
 - [x] `fig5_data_default.npz`
 - [x] `fig6_data_default.npz`
+- [x] `fig7_data_default.npz`
 - [x] Fig3 frozen multiseed CSV/summary files
+- [x] Fig7 frozen per-seed CSV
 
 ## Pre-release technical checks
 
@@ -34,6 +37,7 @@ python experiments/final_scripts/plot_tv_bshs_seedmean_scatter.py
 python experiments/final_scripts/plot_visibility_mechanistic_recovery.py
 python experiments/final_scripts/plot_visibility_visible_invisible_recovery.py
 python experiments/final_scripts/plot_beta_sweep_recovery_grid.py
+python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 ```
 
 2. Verify artifact checksums:
@@ -52,4 +56,4 @@ print('OK')
 PY
 ```
 
-3. Confirm manuscript uses these exact final PDFs.
+3. Confirm manuscript assembly uses these exact final PDFs.

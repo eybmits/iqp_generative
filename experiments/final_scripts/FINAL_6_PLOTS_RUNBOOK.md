@@ -1,22 +1,22 @@
-# Final 6 Plots Runbook (Locked)
+# Final 7 Plots Runbook (Locked)
 
-This runbook defines the exact commands for the final six figures in this minimal package.
+This runbook defines the exact commands for the final seven figures in this minimal package.
 
 ## Global policy
 
-- Exactly 6 plot scripts are used.
+- Exactly 7 plot scripts are used.
 - No legacy training scripts are required for rerendering.
 - Frozen `.npz`/`.csv` data snapshots are part of the package.
 
-## Style baseline (single-panel plots)
+## Style baseline
 
 Implemented directly inside each script:
-- figure size: `243.12/72 x 185.52/72` inches (3.3767 x 2.5767)
+- single-panel base size: `243.12/72 x 185.52/72` inches (3.3767 x 2.5767)
 - `font.size=12`
 - `axes.labelsize=12`
 - `xtick.labelsize=10`
 - `ytick.labelsize=10`
-- `legend.fontsize=7.2` (script-local override for some legends)
+- `legend.fontsize=7.2` (script-local overrides where needed)
 - `lines.linewidth=2.0`
 - `axes.linewidth=1.2`
 - `pdf.fonttype=42`, `ps.fonttype=42`
@@ -55,17 +55,9 @@ Output:
 Script:
 - `experiments/final_scripts/plot_tv_bshs_seedmean_scatter.py`
 
-Default command (locked manuscript panel):
+Default command:
 ```bash
 python experiments/final_scripts/plot_tv_bshs_seedmean_scatter.py
-```
-
-Equivalent explicit command:
-```bash
-python experiments/final_scripts/plot_tv_bshs_seedmean_scatter.py \
-  --points-csv outputs/final_plots/fig3_tv_bshs_seedmean_scatter/tv_bshs_points_multiseed_beta_q1000_no_iqp_mse_beta0p9_newseeds12.csv \
-  --beta-fixed 0.90 \
-  --beta-fixed-dual-axis-boxplot 1
 ```
 
 Output:
@@ -119,9 +111,34 @@ Input snapshot:
 Output:
 - `outputs/final_plots/fig6_beta_sweep_recovery_grid/fig6_beta_sweep_recovery_grid.pdf`
 
+## Fig7 (Appendix Ablation)
+
+Script:
+- `experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py`
+
+Command:
+```bash
+python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
+```
+
+Input snapshots:
+- `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_data_default.npz`
+- `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_seed_table.csv`
+
+Output:
+- `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_appendix_ablation_beta0p8_nsweep.pdf`
+
+Frozen ablation configuration:
+- `beta=0.8`
+- `n in {12,14,16}`
+- seeds `42..46` (5 seeds)
+- models: IQP parity vs IQP MSE
+- exact evaluation for `n<=14`
+- shot-based evaluation for `n=16` with `100000` shots
+
 ## Kept files
 
-- 6 scripts above
+- 7 scripts above
 - outputs in `outputs/final_plots/`
-- root docs: `README.md`, `REPRODUCIBILITY.md`, `PUBLISHING_CHECKLIST.md`
+- root docs: `README.md`, `REPRODUCIBILITY.md`, `PUBLISHING_CHECKLIST.md`, `RESEARCH_EFFORT.md`
 - style/settings lock docs in this folder

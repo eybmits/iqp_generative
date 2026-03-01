@@ -1,6 +1,6 @@
 # Final Scripts
 
-This folder contains exactly 6 final plotting scripts.
+This folder contains exactly 7 final plotting scripts.
 
 Each script is standalone:
 - local Matplotlib style (no shared helper module)
@@ -50,6 +50,13 @@ Each script is standalone:
 - Produces:
   - `fig6_beta_sweep_recovery_grid.pdf`
   - `fig6_beta_sweep_recovery_grid.png`
+
+7. `plot_appendix_ablation_beta0p8_nsweep.py`
+- Input snapshot:
+  - `fig7_data_default.npz`
+- Produces:
+  - `fig7_appendix_ablation_beta0p8_nsweep.pdf`
+  - `fig7_appendix_ablation_beta0p8_nsweep.png`
 
 ## Lock docs
 

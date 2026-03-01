@@ -1,6 +1,6 @@
 # Final Plot Style (Locked)
 
-This style is embedded directly inside the six final scripts.
+This style is embedded directly inside the final scripts.
 
 ## Single-panel base (Fig1-Fig5)
 
@@ -25,6 +25,14 @@ This style is embedded directly inside the six final scripts.
 ## Fig6 grid style
 
 Fig6 uses a script-specific compact serif style for the 2x4 panel grid while preserving publication-safe export settings (`pdf.fonttype=42`, `ps.fonttype=42`).
+
+## Fig7 appendix style
+
+Fig7 uses a compact two-panel horizontal layout:
+- figure size: `6.95 x 2.60` inch
+- two axes: `q(H)` vs `n` (left), `R(10000)` vs `n` (right)
+- line+marker with mean±std error bars across seeds
+- same export font embedding (`pdf.fonttype=42`, `ps.fonttype=42`)
 
 ## Rule
 
