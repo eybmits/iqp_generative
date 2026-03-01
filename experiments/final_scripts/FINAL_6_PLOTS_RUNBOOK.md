@@ -121,9 +121,18 @@ Command:
 python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 ```
 
+Optional command with classical baseline overlay:
+```bash
+python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py \
+  --include-classical-baselines 1 \
+  --baseline-csv outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_baselines_seed_table.csv
+```
+
 Input snapshots:
 - `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_data_default.npz`
 - `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_seed_table.csv`
+- optional baseline CSV schema:
+  - `n,model_key,q_holdout,R_Q10000[,seed]`
 
 Output:
 - `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_appendix_ablation_beta0p8_nsweep.pdf`

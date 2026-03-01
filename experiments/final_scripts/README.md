@@ -59,6 +59,9 @@ Each script is standalone:
   - `n in {12,14,16,18}`
   - seeds `42..46` (5 seeds)
   - `iqp_steps=300` for parity and mse
+- Optional classical baseline overlay:
+  - pass `--include-classical-baselines 1 --baseline-csv <path>`
+  - CSV schema: `n,model_key,q_holdout,R_Q10000[,seed]`
 - Produces:
   - `fig7_appendix_ablation_beta0p8_nsweep.pdf`
   - `fig7_appendix_ablation_beta0p8_nsweep.png`
