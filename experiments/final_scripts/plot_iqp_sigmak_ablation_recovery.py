@@ -68,6 +68,39 @@ def _pure_red_shades(n: int) -> List[Tuple[float, float, float, float]]:
     return out
 
 
+def _first_q_crossing(q: np.ndarray, y: np.ndarray, thr: float) -> float:
+    mask = y >= thr
+    if not np.any(mask):
+        return float("inf")
+    j = int(np.flatnonzero(mask)[0])
+    if j == 0:
+        return float(q[0])
+    q0, q1 = float(q[j - 1]), float(q[j])
+    y0, y1 = float(y[j - 1]), float(y[j])
+    if y1 <= y0:
+        return q1
+    t = (thr - y0) / (y1 - y0)
+    t = float(np.clip(t, 0.0, 1.0))
+    return q0 + t * (q1 - q0)
+
+
+def _q80_ranked_reds(q: np.ndarray, y_other: np.ndarray, thr: float = 0.8) -> List[Tuple[float, float, float, float]]:
+    n = int(y_other.shape[0])
+    if n <= 0:
+        return []
+
+    q80 = np.asarray([_first_q_crossing(q, y_other[i], thr) for i in range(n)], dtype=np.float64)
+    y_end = np.asarray([float(y_other[i, -1]) for i in range(n)], dtype=np.float64)
+    # Primary sort: lower Q80 is better. Tie-breaker: higher end-recovery is better.
+    order = np.lexsort((-y_end, q80))
+
+    rank_colors = list(reversed(_pure_red_shades(n)))  # best -> darkest
+    curve_colors: List[Tuple[float, float, float, float]] = [rank_colors[-1]] * n
+    for rank, idx in enumerate(order):
+        curve_colors[int(idx)] = rank_colors[rank]
+    return curve_colors
+
+
 def run() -> None:
     ap = argparse.ArgumentParser(description="Final IQP sigma-K ablation recovery plot (data-driven).")
     ap.add_argument(
@@ -106,7 +139,7 @@ def run() -> None:
     ax.plot(Q, y_target, color="#111111", linewidth=2.2, zorder=30)
     ax.plot(Q, y_unif, color="#6E6E6E", linewidth=1.6, linestyle="--", zorder=5)
 
-    reds = _pure_red_shades(max(1, y_other.shape[0]))
+    reds = _q80_ranked_reds(Q.astype(np.float64), y_other, thr=0.8)
     for i in range(y_other.shape[0]):
         ax.plot(Q, y_other[i], color=reds[i], linewidth=1.3, alpha=0.98, zorder=10)
 
@@ -123,7 +156,7 @@ def run() -> None:
     handles = [
         Line2D([0], [0], color="#111111", lw=2.2, label=r"Target $p^*$"),
         Line2D([0], [0], color="#C40000", lw=2.8, label=fr"IQP Parity ($\sigma={best_sigma:g}, K={best_K}$)"),
-        Line2D([0], [0], color=_pure_red_shades(1)[0], lw=1.5, label=fr"IQP Parity (n={int(y_other.shape[0])})"),
+        Line2D([0], [0], color=_pure_red_shades(1)[0], lw=1.5, label="IQP Parity (other σ,K settings)"),
         Line2D([0], [0], color="#1F77B4", lw=1.9, label=ref_label),
         Line2D([0], [0], color="#6E6E6E", lw=1.6, ls="--", label="Uniform"),
     ]
