@@ -156,18 +156,30 @@ def _legend_handles(model_keys: list[str]) -> list[Line2D]:
     return handles
 
 
-def _add_legend(ax: plt.Axes, model_keys: list[str], loc: str = "upper right") -> None:
-    ax.legend(
+def _add_legend(
+    ax: plt.Axes,
+    model_keys: list[str],
+    loc: str = "upper right",
+    bbox_to_anchor: tuple[float, float] | None = None,
+    framealpha: float = 1.0,
+) -> None:
+    leg = ax.legend(
         handles=_legend_handles(model_keys),
         loc=loc,
+        bbox_to_anchor=bbox_to_anchor,
         frameon=True,
-        fontsize=8.0,
+        fontsize=6.9,
         facecolor="white",
         edgecolor="#bfbfbf",
-        borderpad=0.25,
-        labelspacing=0.25,
-        handlelength=1.8,
+        framealpha=framealpha,
+        borderpad=0.20,
+        labelspacing=0.18,
+        handlelength=1.55,
+        handletextpad=0.45,
+        borderaxespad=0.20,
     )
+    # Force legend above all plotted curves so it visibly overlays them.
+    leg.set_zorder(100)
 
 
 def _q80_from_qh_values(qh: np.ndarray, holdout_size: int, thr: float) -> np.ndarray:
@@ -401,7 +413,7 @@ def run() -> None:
     right_std = r_q10000_std
     right_ylabel = r"Recovery $R(10000)$"
     right_is_log = False
-    right_legend_loc = "lower left"
+    right_legend_loc = "upper left"
     if str(args.right_metric).lower() == "q80_from_qh":
         right_seed = _q80_from_qh_values(q_holdout_seed, holdout_size=holdout_size, thr=float(args.q80_thr))
         right_mean, right_std = _reduce_seed_stats(right_seed)
@@ -487,7 +499,7 @@ def run() -> None:
         seed_values=seed_values,
         seed_data=q_holdout_seed,
     )
-    _add_legend(ax_q, model_keys)
+    _add_legend(ax_q, model_keys, loc="upper right")
     out_q_pdf = outdir / "fig7_appendix_ablation_beta0p8_nsweep_qholdout_vs_n.pdf"
     out_q_png = outdir / "fig7_appendix_ablation_beta0p8_nsweep_qholdout_vs_n.png"
     fig_q.savefig(out_q_pdf)
@@ -515,7 +527,13 @@ def run() -> None:
             ax_r2.set_ylim(y_lo, y_hi)
     else:
         ax_r2.set_ylim(0.0, 1.02)
-    _add_legend(ax_r2, model_keys, loc=right_legend_loc)
+    _add_legend(
+        ax_r2,
+        model_keys,
+        loc="upper left",
+        bbox_to_anchor=None,
+        framealpha=0.95,
+    )
     out_r_pdf = outdir / "fig7_appendix_ablation_beta0p8_nsweep_rq10000_vs_n.pdf"
     out_r_png = outdir / "fig7_appendix_ablation_beta0p8_nsweep_rq10000_vs_n.png"
     fig_r.savefig(out_r_pdf)
