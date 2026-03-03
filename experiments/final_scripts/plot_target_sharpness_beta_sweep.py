@@ -20,6 +20,7 @@ import numpy as np
 import os
 os.environ.setdefault("MPLBACKEND", "Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.lines import Line2D  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -164,6 +165,15 @@ def main() -> None:
 
     legend_handles = []
     legend_labels = []
+    gray_label = (
+        fr"gray: $\beta \in [{args.bg_beta_min:g}, {args.bg_beta_max:g}]$"
+        fr", $\Delta\beta={args.bg_beta_step:g}$"
+    )
+    legend_handles.append(
+        Line2D([0], [0], color=str(args.bg_color), linewidth=1.2, alpha=float(args.bg_alpha))
+    )
+    legend_labels.append(gray_label)
+
     for i, b in enumerate(highlight):
         c = curves[float(b)]
         line, = ax.plot(
