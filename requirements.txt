@@ -1,5 +1,4 @@
-# Core dependencies for plotting + analysis scripts
+# Core dependencies for final plotting + manifest tooling
 numpy>=1.23
 pandas>=1.5
 matplotlib>=3.7
-torch>=2.2

@@ -4,15 +4,14 @@
 
 - [x] `main` branch has no unmerged paths.
 - [x] Docs (`README.md`, `REPRODUCIBILITY.md`) match the current repository scope.
-- [x] New experiment scripts are documented with runnable commands.
+- [x] Final plotting scripts are documented with runnable commands.
 
 ## Artifact scope
 
 - [x] Final figures (Fig1-Fig7) are present under `outputs/final_plots/`.
-- [x] Claim artifacts for D3PM and Transformer comparisons are present under `outputs/claims/`.
-- [x] Both manifests exist:
+- [x] Final manifest files exist:
   - `outputs/final_plots/ARTIFACT_MANIFEST.csv`
-  - `outputs/claims/ARTIFACT_MANIFEST.csv`
+  - `outputs/final_plots/ARTIFACT_MANIFEST.md`
 
 ## Rebuild checks
 
@@ -28,19 +27,21 @@ python experiments/final_scripts/plot_beta_sweep_recovery_grid.py
 python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 ```
 
-2. Reproduce extended baselines:
+2. Rebuild final manifest:
 
 ```bash
-python experiments/d3pm/eval_d3pm_vs_iqp_beta0p9_n12.py
-python experiments/transformer/eval_transformer_vs_iqp_n12.py
+python tools/build_final_manifest.py \
+  --root outputs/final_plots \
+  --output-csv outputs/final_plots/ARTIFACT_MANIFEST.csv \
+  --output-md outputs/final_plots/ARTIFACT_MANIFEST.md
 ```
 
-3. Verify manifests:
+3. Verify final manifest:
 
 ```bash
-python scripts/verify_artifacts.py \
-  outputs/final_plots/ARTIFACT_MANIFEST.csv \
-  outputs/claims/ARTIFACT_MANIFEST.csv
+python tools/verify_final_manifest.py \
+  --manifest outputs/final_plots/ARTIFACT_MANIFEST.csv \
+  --strict 1
 ```
 
 ## Publication links

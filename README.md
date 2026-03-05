@@ -1,22 +1,18 @@
-# IQP Generative Reproducible Research Repository
+# IQP Generative Final-Plots Reproducible Package
 
-This repository is curated as a reproducible research package for the IQP generative study.
+This repository is curated as a reproducible final-figure package for the IQP generative study.
 
 It includes:
-- final paper plotting scripts and frozen figure data
-- extended D3PM and Transformer comparison experiments
-- claim-level artifacts under `outputs/claims/`
-- deterministic artifact manifests with SHA256 verification
+- final paper plotting scripts (Fig1-Fig7)
+- frozen final figure inputs and rendered artifacts under `outputs/final_plots/`
+- deterministic manifest build/verify utilities for publication integrity
 
 ## Repository layout
 
 - `experiments/final_scripts/`: final figure scripts (Fig1-Fig7)
-- `experiments/d3pm/`: D3PM evaluation and plotting workflows
-- `experiments/transformer/`: Transformer baseline evaluation and ablation plots
-- `outputs/final_plots/`: frozen final-figure data and rendered artifacts
-- `outputs/claims/`: claim-level outputs and auxiliary comparison artifacts
-- `scripts/build_artifact_manifest.py`: deterministic manifest builder
-- `scripts/verify_artifacts.py`: manifest verification utility
+- `outputs/final_plots/`: frozen final inputs and rendered PDF/PNG artifacts
+- `tools/build_final_manifest.py`: deterministic final-manifest builder
+- `tools/verify_final_manifest.py`: final-manifest verification utility
 
 ## Environment
 
@@ -28,7 +24,7 @@ pip install -r requirements.txt
 
 ## Rebuild commands
 
-Final figures:
+Rerender final figures:
 
 ```bash
 python experiments/final_scripts/plot_target_sharpness_beta_sweep.py
@@ -40,35 +36,23 @@ python experiments/final_scripts/plot_beta_sweep_recovery_grid.py
 python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 ```
 
-D3PM pilot + ablation plotting:
-
-```bash
-python experiments/d3pm/eval_d3pm_vs_iqp_beta0p9_n12.py
-python experiments/d3pm/plot_d3pm_vs_iqp_beta0p9_n12.py
-python experiments/d3pm/plot_d3pm_beta_ablation_study.py
-```
-
-Transformer pilot + ablation plotting:
-
-```bash
-python experiments/transformer/eval_transformer_vs_iqp_n12.py
-python experiments/transformer/plot_transformer_vs_iqp_ablation.py
-```
-
 ## Artifact integrity
 
-Verify both final and claim artifacts:
+Verify final artifacts against the manifest:
 
 ```bash
-python scripts/verify_artifacts.py \
-  outputs/final_plots/ARTIFACT_MANIFEST.csv \
-  outputs/claims/ARTIFACT_MANIFEST.csv
+python tools/verify_final_manifest.py \
+  --manifest outputs/final_plots/ARTIFACT_MANIFEST.csv \
+  --strict 1
 ```
 
-Regenerate a manifest (if artifacts are intentionally rebuilt):
+Rebuild the final manifest after intentional artifact updates:
 
 ```bash
-python scripts/build_artifact_manifest.py outputs/claims
+python tools/build_final_manifest.py \
+  --root outputs/final_plots \
+  --output-csv outputs/final_plots/ARTIFACT_MANIFEST.csv \
+  --output-md outputs/final_plots/ARTIFACT_MANIFEST.md
 ```
 
 ## Citation links

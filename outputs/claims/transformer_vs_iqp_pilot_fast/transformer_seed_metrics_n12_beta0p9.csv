@@ -1,2 +1,0 @@
-model_key,model_label,n,beta,seed,train_m,val_m,holdout_k,holdout_protocol,holdout_pool,holdout_m,d_model,n_layers,n_heads,ff_mult,dropout,steps,batch_size,lr,weight_decay,best_val_ce,TV_score,BSHS,Composite,q_holdout,R_Q1000,R_Q10000,q_eval
-transformer_strong_ar,Transformer AR (strong),12,0.9,101,200,200,20,global_smart,400,5000,128,4,4,4,0.1,400,256,0.002,0.01,0.5615447759628296,0.22819827059103245,0.5324152307953196,0.41091899589150227,0.03214412786312441,0.5180311356214807,0.9528902438513402,1000

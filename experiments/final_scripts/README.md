@@ -1,11 +1,11 @@
 # Final Scripts
 
-This folder contains exactly 7 final plotting scripts.
+This folder contains exactly 7 standalone final plotting scripts.
 
-Each script is standalone:
+Each script uses:
 - local Matplotlib style (no shared helper module)
 - fixed default output folder in `outputs/final_plots/...`
-- deterministic output from frozen final data (where applicable)
+- deterministic rendering from frozen final data (where applicable)
 
 ## Scripts and outputs
 
@@ -69,9 +69,3 @@ Each script is standalone:
   - `fig7_appendix_ablation_beta0p8_nsweep_qholdout_vs_n.png`
   - `fig7_appendix_ablation_beta0p8_nsweep_rq10000_vs_n.pdf`
   - `fig7_appendix_ablation_beta0p8_nsweep_rq10000_vs_n.png`
-
-## Lock docs
-
-- `FINAL_6_PLOTS_RUNBOOK.md`
-- `FINAL_PLOT_STYLE.md`
-- `FINAL_SCRIPTS_SETTINGS_LOCK.md`

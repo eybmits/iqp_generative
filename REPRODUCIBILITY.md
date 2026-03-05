@@ -1,6 +1,6 @@
 # Reproducibility Guide
 
-This document defines a deterministic rebuild and verification workflow for both final-paper figures and claim-level comparison artifacts.
+This document defines a deterministic rebuild and verification workflow for the final-paper figure package (Fig1-Fig7).
 
 ## 1) Environment
 
@@ -10,7 +10,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-For deterministic Python hashing in local runs:
+Optional deterministic hash seed:
 
 ```bash
 export PYTHONHASHSEED=0
@@ -28,59 +28,31 @@ python experiments/final_scripts/plot_beta_sweep_recovery_grid.py
 python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 ```
 
-## 3) Reproduce D3PM vs IQP pilot (n=12, beta=0.9)
-
-Default script settings are scientific-run settings:
-- `seeds=101..112`
-- `train_m=200`
-- `holdout_protocol=global_smart`
-- `holdout_k=20`, `holdout_pool=400`, `holdout_m=5000`
-
-Run:
+## 3) Rebuild final artifact manifest
 
 ```bash
-python experiments/d3pm/eval_d3pm_vs_iqp_beta0p9_n12.py
-python experiments/d3pm/plot_d3pm_vs_iqp_beta0p9_n12.py
-python experiments/d3pm/plot_d3pm_beta_ablation_study.py
+python tools/build_final_manifest.py \
+  --root outputs/final_plots \
+  --output-csv outputs/final_plots/ARTIFACT_MANIFEST.csv \
+  --output-md outputs/final_plots/ARTIFACT_MANIFEST.md
 ```
 
-## 4) Reproduce Transformer vs IQP pilot (n=12)
-
-Default script settings are strong-baseline settings:
-- `seeds=101..112`
-- `train_m=200`, `val_m=200`
-- `holdout_protocol=global_smart`
-- architecture `d_model=192`, `n_layers=8`, `n_heads=6`
-
-Run:
+## 4) Verify final artifact manifest
 
 ```bash
-python experiments/transformer/eval_transformer_vs_iqp_n12.py
-python experiments/transformer/plot_transformer_vs_iqp_ablation.py
+python tools/verify_final_manifest.py \
+  --manifest outputs/final_plots/ARTIFACT_MANIFEST.csv \
+  --strict 1
 ```
 
-## 5) Verify artifact manifests
+## 5) Expected outputs
 
-```bash
-python scripts/verify_artifacts.py \
-  outputs/final_plots/ARTIFACT_MANIFEST.csv \
-  outputs/claims/ARTIFACT_MANIFEST.csv
-```
+- Final figures and frozen inputs: `outputs/final_plots/...`
+- Final manifest files:
+  - `outputs/final_plots/ARTIFACT_MANIFEST.csv`
+  - `outputs/final_plots/ARTIFACT_MANIFEST.md`
 
-If artifacts were intentionally rebuilt, regenerate manifest(s) first:
+## 6) Scope note
 
-```bash
-python scripts/build_artifact_manifest.py outputs/claims
-python scripts/build_artifact_manifest.py outputs/final_plots --output outputs/final_plots/ARTIFACT_MANIFEST.csv
-```
-
-## 6) Expected outputs
-
-- Final figures: `outputs/final_plots/...`
-- D3PM artifacts: `outputs/claims/d3pm_*`
-- Transformer artifacts: `outputs/claims/transformer_*`
-- Aggregate claim manifest: `outputs/claims/ARTIFACT_MANIFEST.csv`
-
-## 7) Practical runtime note
-
-The evaluation scripts in `experiments/d3pm/` and `experiments/transformer/` can be compute-heavy on CPU; GPU (`cuda` or `mps`) is supported via `--device`.
+This release is intentionally scoped to final plotting reproducibility.
+Training/evaluation claim stacks and extended baseline experiments are not part of this package.

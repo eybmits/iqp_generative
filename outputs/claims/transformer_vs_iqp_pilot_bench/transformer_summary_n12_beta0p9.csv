@@ -1,8 +1,0 @@
-metric,mean,std,model_key
-TV_score,0.24640330779391995,,transformer_strong_ar
-BSHS,0.6567812382473893,,transformer_strong_ar
-Composite,0.49494816864624597,,transformer_strong_ar
-q_holdout,0.03711829619486249,,transformer_strong_ar
-R_Q1000,0.5293453981570544,,transformer_strong_ar
-R_Q10000,0.9398480464664724,,transformer_strong_ar
-best_val_ce,0.5682019591331482,,transformer_strong_ar
