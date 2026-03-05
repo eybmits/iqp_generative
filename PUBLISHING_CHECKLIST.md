@@ -1,35 +1,23 @@
 # Publishing Checklist
 
-## Package scope
+## Repository integrity
 
-- [x] Only final plot package is present.
-- [x] Exactly 7 final scripts in `experiments/final_scripts/`.
-- [x] Final outputs and frozen data in `outputs/final_plots/`.
-- [x] Reproducibility and style lock docs are included.
+- [x] `main` branch has no unmerged paths.
+- [x] Docs (`README.md`, `REPRODUCIBILITY.md`) match the current repository scope.
+- [x] New experiment scripts are documented with runnable commands.
 
-## Final figures present
+## Artifact scope
 
-- [x] Fig1 PDF/PNG
-- [x] Fig2 PDF/PNG
-- [x] Fig3 PDF/PNG
-- [x] Fig4 PDF/PNG
-- [x] Fig5 PDF/PNG
-- [x] Fig6 PDF/PNG
-- [x] Fig7 PDF/PNG
+- [x] Final figures (Fig1-Fig7) are present under `outputs/final_plots/`.
+- [x] Claim artifacts for D3PM and Transformer comparisons are present under `outputs/claims/`.
+- [x] Both manifests exist:
+  - `outputs/final_plots/ARTIFACT_MANIFEST.csv`
+  - `outputs/claims/ARTIFACT_MANIFEST.csv`
 
-## Final data snapshots present
+## Rebuild checks
 
-- [x] `fig2_data_default.npz`
-- [x] `fig4_data_default.npz`
-- [x] `fig5_data_default.npz`
-- [x] `fig6_data_default.npz`
-- [x] `fig7_data_default.npz`
-- [x] Fig3 frozen multiseed CSV/summary files
-- [x] Fig7 frozen per-seed CSV
+1. Rerender final figures:
 
-## Pre-release technical checks
-
-1. Rerender all figures:
 ```bash
 python experiments/final_scripts/plot_target_sharpness_beta_sweep.py
 python experiments/final_scripts/plot_iqp_sigmak_ablation_recovery.py
@@ -40,30 +28,24 @@ python experiments/final_scripts/plot_beta_sweep_recovery_grid.py
 python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 ```
 
-2. Verify artifact checksums:
+2. Reproduce extended baselines:
+
 ```bash
-python - <<'PY'
-from pathlib import Path
-import csv, hashlib
-rows = list(csv.DictReader(Path('outputs/final_plots/ARTIFACT_MANIFEST.csv').open('r', encoding='utf-8')))
-for r in rows:
-    p = Path(r['path'])
-    if not p.exists():
-        raise SystemExit(f"MISSING {p}")
-    if hashlib.sha256(p.read_bytes()).hexdigest() != r['sha256']:
-        raise SystemExit(f"HASH MISMATCH {p}")
-print('OK')
-PY
+python experiments/d3pm/eval_d3pm_vs_iqp_beta0p9_n12.py
+python experiments/transformer/eval_transformer_vs_iqp_n12.py
 ```
 
-3. Confirm manuscript assembly uses these exact final PDFs.
+3. Verify manifests:
 
-## Paper linking block
+```bash
+python scripts/verify_artifacts.py \
+  outputs/final_plots/ARTIFACT_MANIFEST.csv \
+  outputs/claims/ARTIFACT_MANIFEST.csv
+```
 
-Use a frozen tag link (not `main`) in the paper:
+## Publication links
+
+Use frozen tag links in manuscript references:
 
 - `https://github.com/eybmits/iqp_generative/tree/paper-final-v1`
-
-Optional direct artifact link:
-
 - `https://github.com/eybmits/iqp_generative/tree/paper-final-v1/outputs/final_plots`

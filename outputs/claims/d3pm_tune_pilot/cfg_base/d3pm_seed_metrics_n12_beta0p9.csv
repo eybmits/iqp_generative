@@ -1,0 +1,2 @@
+model_key,model_label,n,beta,seed,train_m,holdout_k,timesteps,steps,TV_score,BSHS,Composite,q_holdout,R_Q1000,R_Q10000,q_eval,eval_samples
+d3pm_standard,D3PM (MLP),12,0.9,101,200,20,24,250,0.2610246421913519,0.6172349859800538,0.4561214446166261,0.0013333333333333333,0.06212393642985534,0.3772235227653988,1000,60000

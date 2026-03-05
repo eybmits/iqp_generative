@@ -1,0 +1,2 @@
+n,model_key,q_holdout,R_Q10000,seed
+12,transformer_strong_ar,0.03214412786312441,0.9528902438513402,101

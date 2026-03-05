@@ -1,0 +1,2 @@
+n,model_key,q_holdout,R_Q10000,seed
+12,d3pm_standard,0.02948,0.9101192952759263,101

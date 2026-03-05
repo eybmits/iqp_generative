@@ -26,6 +26,11 @@ LW_UNIFORM = 1.35
 LW_MODEL_SCALE = 1.0
 LW_Q80 = 1.2
 MS_Q80 = 6.0
+HIGHLIGHT_PRE_ALPHA = 1.00
+HIGHLIGHT_POST_ALPHA = 0.38
+HIGHLIGHT_PRE_LW_SCALE = 1.22
+HIGHLIGHT_Z_PRE = 55.0
+HIGHLIGHT_Z_POST = 54.0
 
 
 def _tv_alpha_and_marker(tv_vals: np.ndarray) -> Dict[int, Dict[str, float]]:
@@ -74,6 +79,67 @@ def _legend_handles_compact(model_labels: List[str], style_color: List[str], sty
         )
     handles.append(Line2D([0], [0], color=COLOR_GRAY, lw=LW_UNIFORM, ls="--", label="Uniform"))
     return handles
+
+
+def _plot_fade_after_q80(
+    *,
+    ax: plt.Axes,
+    Q: np.ndarray,
+    y: np.ndarray,
+    q80: float,
+    color: str,
+    linestyle: object,
+    linewidth: float,
+    zorder: float,
+) -> None:
+    qf = Q.astype(np.float64)
+    yf = y.astype(np.float64)
+    if not np.isfinite(float(q80)):
+        ax.plot(qf, yf, color=color, linestyle=linestyle, linewidth=linewidth, alpha=HIGHLIGHT_PRE_ALPHA, zorder=zorder)
+        return
+
+    q80v = float(np.clip(float(q80), float(np.min(qf)), float(np.max(qf))))
+    y80 = float(np.interp(q80v, qf, yf))
+
+    left_mask = qf <= q80v
+    right_mask = qf >= q80v
+    q_left = qf[left_mask]
+    y_left = yf[left_mask]
+    q_right = qf[right_mask]
+    y_right = yf[right_mask]
+
+    if q_left.size == 0:
+        q_left = np.array([q80v], dtype=np.float64)
+        y_left = np.array([y80], dtype=np.float64)
+    elif q_left[-1] < q80v:
+        q_left = np.append(q_left, q80v)
+        y_left = np.append(y_left, y80)
+
+    if q_right.size == 0:
+        q_right = np.array([q80v], dtype=np.float64)
+        y_right = np.array([y80], dtype=np.float64)
+    elif q_right[0] > q80v:
+        q_right = np.insert(q_right, 0, q80v)
+        y_right = np.insert(y_right, 0, y80)
+
+    ax.plot(
+        q_left,
+        y_left,
+        color=color,
+        linestyle=linestyle,
+        linewidth=max(1.0, float(linewidth) * HIGHLIGHT_PRE_LW_SCALE),
+        alpha=HIGHLIGHT_PRE_ALPHA,
+        zorder=max(HIGHLIGHT_Z_PRE, zorder + 0.3),
+    )
+    ax.plot(
+        q_right,
+        y_right,
+        color=color,
+        linestyle=linestyle,
+        linewidth=max(1.0, float(linewidth) * LW_MODEL_SCALE),
+        alpha=HIGHLIGHT_POST_ALPHA,
+        zorder=max(HIGHLIGHT_Z_POST, zorder + 0.2),
+    )
 
 
 def run() -> None:
@@ -161,25 +227,10 @@ def run() -> None:
         ym = y_models[i]
         tv = tv_vals[i]
         enc = _tv_alpha_and_marker(tv)
+        qf = Q.astype(np.float64)
 
         ax.plot(Q, yt, color=COLOR_TARGET, linewidth=LW_TARGET, zorder=20)
         ax.plot(Q, yu, color=COLOR_GRAY, linewidth=LW_UNIFORM, linestyle="--", alpha=0.85, zorder=1)
-
-        for j, _key in enumerate(model_order):
-            y = ym[j]
-            alpha = enc[j]["alpha"]
-            msize = enc[j]["msize"]
-            ax.plot(
-                Q,
-                y,
-                color=style_color[j],
-                linestyle=style_ls[j],
-                linewidth=max(1.0, float(style_lw[j]) * LW_MODEL_SCALE),
-                alpha=alpha,
-                zorder=style_z[j],
-            )
-            y_end = float(np.interp(float(np.max(Q)), Q.astype(np.float64), y.astype(np.float64)))
-            ax.plot([float(np.max(Q))], [y_end], marker="o", markersize=msize, color=style_color[j], alpha=alpha, zorder=style_z[j] + 0.2)
 
         candidate_curves: Dict[str, np.ndarray] = {model_order[j]: ym[j] for j in range(len(model_order))}
         candidate_curves["uniform_random"] = yu
@@ -189,15 +240,46 @@ def run() -> None:
         winner_key = None
         winner_q80 = float("inf")
         for key, y_curve in candidate_curves.items():
-            q80 = _first_q_crossing(Q.astype(np.float64), y_curve.astype(np.float64), float(args.q80_thr))
+            q80 = _first_q_crossing(qf, y_curve.astype(np.float64), float(args.q80_thr))
             if np.isfinite(q80) and q80 < winner_q80:
                 winner_q80 = float(q80)
                 winner_key = key
 
+        winner_model_key = winner_key if winner_key in model_order else None
+
+        for j, key in enumerate(model_order):
+            y = ym[j]
+            alpha = enc[j]["alpha"]
+            msize = enc[j]["msize"]
+            if key == winner_model_key:
+                _plot_fade_after_q80(
+                    ax=ax,
+                    Q=Q,
+                    y=y,
+                    q80=winner_q80,
+                    color=style_color[j],
+                    linestyle=style_ls[j],
+                    linewidth=max(1.0, float(style_lw[j]) * LW_MODEL_SCALE),
+                    zorder=style_z[j],
+                )
+            else:
+                ax.plot(
+                    Q,
+                    y,
+                    color=style_color[j],
+                    linestyle=style_ls[j],
+                    linewidth=max(1.0, float(style_lw[j]) * LW_MODEL_SCALE),
+                    alpha=alpha,
+                    zorder=style_z[j],
+                )
+            y_end = float(np.interp(float(np.max(Q)), Q.astype(np.float64), y.astype(np.float64)))
+            end_alpha = HIGHLIGHT_POST_ALPHA if key == winner_model_key else alpha
+            ax.plot([float(np.max(Q))], [y_end], marker="o", markersize=msize, color=style_color[j], alpha=end_alpha, zorder=style_z[j] + 0.2)
+
         if winner_key is not None and np.isfinite(winner_q80):
             q80_mark = float(np.clip(winner_q80, x_min, x_max))
             wcolor = candidate_colors[winner_key]
-            y_q80 = float(np.interp(q80_mark, Q.astype(np.float64), candidate_curves[winner_key].astype(np.float64)))
+            y_q80 = float(np.interp(q80_mark, qf, candidate_curves[winner_key].astype(np.float64)))
             ax.axvspan(q80_mark, x_max, color="#FFFFFF", alpha=0.42, zorder=25)
             ax.axvline(q80_mark, color=wcolor, linestyle="--", linewidth=LW_Q80, alpha=0.95, zorder=28)
             ax.plot([q80_mark], [y_q80], marker="o", markersize=MS_Q80, markerfacecolor=wcolor, markeredgecolor="white", markeredgewidth=0.8, zorder=30)

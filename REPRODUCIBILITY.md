@@ -1,6 +1,6 @@
 # Reproducibility Guide
 
-This package contains only final plotting scripts and the frozen final data needed by those scripts.
+This document defines a deterministic rebuild and verification workflow for both final-paper figures and claim-level comparison artifacts.
 
 ## 1) Environment
 
@@ -10,14 +10,13 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Minimal dependencies are:
-- `numpy`
-- `pandas`
-- `matplotlib`
+For deterministic Python hashing in local runs:
 
-## 2) Rerender all final plots
+```bash
+export PYTHONHASHSEED=0
+```
 
-Run the seven scripts directly:
+## 2) Rerender final figures (Fig1-Fig7)
 
 ```bash
 python experiments/final_scripts/plot_target_sharpness_beta_sweep.py
@@ -29,61 +28,59 @@ python experiments/final_scripts/plot_beta_sweep_recovery_grid.py
 python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 ```
 
-Outputs are written to:
-- `outputs/final_plots/fig1_target_sharpness/`
-- `outputs/final_plots/fig2_iqp_sigmak_ablation_recovery/`
-- `outputs/final_plots/fig3_tv_bshs_seedmean_scatter/`
-- `outputs/final_plots/fig4_visibility_mechanistic_recovery/`
-- `outputs/final_plots/fig5_visibility_visible_invisible_recovery/`
-- `outputs/final_plots/fig6_beta_sweep_recovery_grid/`
-- `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/`
+## 3) Reproduce D3PM vs IQP pilot (n=12, beta=0.9)
 
-## 3) Verify artifacts by checksum
+Default script settings are scientific-run settings:
+- `seeds=101..112`
+- `train_m=200`
+- `holdout_protocol=global_smart`
+- `holdout_k=20`, `holdout_pool=400`, `holdout_m=5000`
+
+Run:
 
 ```bash
-python - <<'PY'
-from pathlib import Path
-import csv, hashlib
-manifest = Path('outputs/final_plots/ARTIFACT_MANIFEST.csv')
-rows = list(csv.DictReader(manifest.open('r', encoding='utf-8')))
-for r in rows:
-    p = Path(r['path'])
-    if not p.exists():
-        raise SystemExit(f"MISSING: {p}")
-    h = hashlib.sha256(p.read_bytes()).hexdigest()
-    if h != r['sha256']:
-        raise SystemExit(f"HASH MISMATCH: {p}")
-print(f"OK: {len(rows)} files verified")
-PY
+python experiments/d3pm/eval_d3pm_vs_iqp_beta0p9_n12.py
+python experiments/d3pm/plot_d3pm_vs_iqp_beta0p9_n12.py
+python experiments/d3pm/plot_d3pm_beta_ablation_study.py
 ```
 
-## 4) Fig3 provenance in this minimal package
+## 4) Reproduce Transformer vs IQP pilot (n=12)
 
-The final Fig3 plot uses the frozen CSV:
-- `outputs/final_plots/fig3_tv_bshs_seedmean_scatter/tv_bshs_points_multiseed_beta_q1000_no_iqp_mse_beta0p9_newseeds12.csv`
+Default script settings are strong-baseline settings:
+- `seeds=101..112`
+- `train_m=200`, `val_m=200`
+- `holdout_protocol=global_smart`
+- architecture `d_model=192`, `n_layers=8`, `n_heads=6`
 
-Characteristics:
-- fixed `beta = 0.90`
-- `Q_eval = 1000`
-- seeds `101..112` (12 seeds)
-- 5 models x 12 seeds = 60 points
+Run:
 
-## 5) Fig7 appendix ablation provenance
+```bash
+python experiments/transformer/eval_transformer_vs_iqp_n12.py
+python experiments/transformer/plot_transformer_vs_iqp_ablation.py
+```
 
-The final Fig7 plot uses:
-- `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_data_default.npz`
-- `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_seed_table.csv`
+## 5) Verify artifact manifests
 
-Characteristics:
-- fixed `beta = 0.8`
-- `n in {12,14,16,18}`
-- 5 seeds: `42..46`
-- models: `IQP parity` vs `IQP MSE`
-- exact evaluation up to `n=14`
-- shot-based evaluation for `n>=16` with `100000` shots
-- matched optimization budget: `iqp_steps=300` for parity and mse
+```bash
+python scripts/verify_artifacts.py \
+  outputs/final_plots/ARTIFACT_MANIFEST.csv \
+  outputs/claims/ARTIFACT_MANIFEST.csv
+```
 
-## Notes
+If artifacts were intentionally rebuilt, regenerate manifest(s) first:
 
-- Legacy training scripts are intentionally not part of this minimal release.
-- Reproducibility here means deterministic rerender from frozen final data + final plotting scripts.
+```bash
+python scripts/build_artifact_manifest.py outputs/claims
+python scripts/build_artifact_manifest.py outputs/final_plots --output outputs/final_plots/ARTIFACT_MANIFEST.csv
+```
+
+## 6) Expected outputs
+
+- Final figures: `outputs/final_plots/...`
+- D3PM artifacts: `outputs/claims/d3pm_*`
+- Transformer artifacts: `outputs/claims/transformer_*`
+- Aggregate claim manifest: `outputs/claims/ARTIFACT_MANIFEST.csv`
+
+## 7) Practical runtime note
+
+The evaluation scripts in `experiments/d3pm/` and `experiments/transformer/` can be compute-heavy on CPU; GPU (`cuda` or `mps`) is supported via `--device`.

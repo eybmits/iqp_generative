@@ -1,0 +1,8 @@
+metric,mean,std,model_key
+TV_score,0.22819827059103245,,transformer_strong_ar
+BSHS,0.5324152307953196,,transformer_strong_ar
+Composite,0.41091899589150227,,transformer_strong_ar
+q_holdout,0.03214412786312441,,transformer_strong_ar
+R_Q1000,0.5180311356214807,,transformer_strong_ar
+R_Q10000,0.9528902438513402,,transformer_strong_ar
+best_val_ce,0.5615447759628296,,transformer_strong_ar
