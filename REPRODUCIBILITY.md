@@ -53,7 +53,21 @@ python tools/verify_final_manifest.py \
   --strict 1
 ```
 
-## 5) Recompute the documented Fig6 multiseed rerun
+## 5) Recompute the documented Fig2 recovery-summary companion figure
+
+```bash
+MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig2_recovery_summary_panels.py
+```
+
+The current script defaults reproduce:
+
+- `outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels.pdf`
+
+Exact run metadata is stored in:
+
+- `outputs/analysis/fig2_recovery_summary_panels/RUN_CONFIG.json`
+
+## 6) Recompute the documented Fig6 multiseed rerun
 
 ```bash
 MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_sweep_recovery_grid_multiseed.py
@@ -67,7 +81,7 @@ Exact run metadata is stored in:
 
 - `outputs/analysis/fig6_multiseed_all600_seeds42_46/RUN_CONFIG.json`
 
-## 6) Recompute the documented Fig3 KL-BSHS rerun
+## 7) Recompute the documented Fig3 KL-BSHS rerun
 
 ```bash
 MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig3_kl_bshs_dual_axis_boxplot.py
@@ -83,7 +97,7 @@ The per-seed values and run metadata are stored in:
 - `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/kl_bshs_summary_multiseed_beta_q1000_beta0p90_newseeds20.json`
 - `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/RUN_CONFIG.json`
 
-## 7) Verify the documented analysis artifacts
+## 8) Verify the documented analysis artifacts
 
 ```bash
 python - <<'PY'
@@ -108,7 +122,7 @@ print(f'OK: {count} analysis files verified')
 PY
 ```
 
-## 8) Notes
+## 9) Notes
 
 - The frozen 7-figure package rerenders deterministically from frozen final data.
 - The Fig6 multiseed rerun and the Fig3 KL-BSHS rerun are recomputations, not frozen-data rerenders.

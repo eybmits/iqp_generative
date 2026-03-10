@@ -2,6 +2,7 @@
 
 Kept analysis drivers:
 
+- `plot_fig2_recovery_summary_panels.py`
 - `plot_fig6_beta_sweep_recovery_grid_multiseed.py`
 - `plot_fig3_kl_bshs_dual_axis_boxplot.py`
 
@@ -13,7 +14,14 @@ Prerequisites for rerunning these analyses:
 
 Selected analysis runs:
 
-1. Fig6 multiseed recovery rerun
+1. Fig2 recovery-summary companion figure
+
+```bash
+MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig2_recovery_summary_panels.py \
+  --outdir outputs/analysis/fig2_recovery_summary_panels
+```
+
+2. Fig6 multiseed recovery rerun
 
 ```bash
 MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_sweep_recovery_grid_multiseed.py \
@@ -26,7 +34,7 @@ MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_sweep_rec
   --outdir outputs/analysis/fig6_multiseed_all600_seeds42_46
 ```
 
-2. Fig3 KL-BSHS dual-axis boxplot
+3. Fig3 KL-BSHS dual-axis boxplot
 
 ```bash
 MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig3_kl_bshs_dual_axis_boxplot.py \
@@ -40,5 +48,6 @@ MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig3_kl_bshs_dual_a
 
 Archived outputs live in:
 
+- `outputs/analysis/fig2_recovery_summary_panels/`
 - `outputs/analysis/fig6_multiseed_all600_seeds42_46/`
 - `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/`

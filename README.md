@@ -45,7 +45,15 @@ python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 
 ## Selected documented analysis reruns
 
-1. Fig6 multiseed recovery rerun
+1. Fig2 recovery-summary companion figure
+- built directly from the frozen Fig2 snapshot
+- no retraining; same sigma-K settings and same recovery curves
+- selected output:
+  `outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels.pdf`
+- exact run metadata:
+  `outputs/analysis/fig2_recovery_summary_panels/RUN_CONFIG.json`
+
+2. Fig6 multiseed recovery rerun
 - betas `0.5..1.2`
 - seeds `42..46`
 - holdout seed `46`
@@ -57,7 +65,7 @@ python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 - exact run metadata:
   `outputs/analysis/fig6_multiseed_all600_seeds42_46/RUN_CONFIG.json`
 
-2. Fig3 KL-BSHS dual-axis boxplot
+3. Fig3 KL-BSHS dual-axis boxplot
 - `beta = 0.9`
 - seeds `101..120`
 - `Q_eval = 1000`
