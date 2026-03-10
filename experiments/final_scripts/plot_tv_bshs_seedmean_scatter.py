@@ -250,7 +250,15 @@ def _style_bxp(
         ln.set_linewidth(1.0)
 
 
-def _render_dual_axis_boxplot(df: pd.DataFrame, out_stem: str, outdir: Path, dpi: int) -> None:
+def _render_dual_axis_boxplot(
+    df: pd.DataFrame,
+    out_stem: str,
+    outdir: Path,
+    dpi: int,
+    right_metric_col: str = "TV_score",
+    right_metric_axis_label: str = r"TV$_{score}$",
+    right_metric_legend_label: str = "TVscore",
+) -> None:
     fig, ax_l = plt.subplots(figsize=(FIG_W, FIG_H), constrained_layout=True)
     ax_r = ax_l.twinx()
     ax_l.set_facecolor("white")
@@ -259,11 +267,11 @@ def _render_dual_axis_boxplot(df: pd.DataFrame, out_stem: str, outdir: Path, dpi
     kept_keys: List[str] = []
     labels: List[str] = []
     bshs_data: List[np.ndarray] = []
-    tv_data: List[np.ndarray] = []
+    right_metric_data: List[np.ndarray] = []
 
     for key in model_keys:
         v_b = df.loc[df["model_key"] == key, "BSHS"].astype(float).to_numpy()
-        v_t = df.loc[df["model_key"] == key, "TV_score"].astype(float).to_numpy()
+        v_t = df.loc[df["model_key"] == key, right_metric_col].astype(float).to_numpy()
         v_b = v_b[np.isfinite(v_b)]
         v_t = v_t[np.isfinite(v_t)]
         if v_b.size == 0 or v_t.size == 0:
@@ -271,7 +279,7 @@ def _render_dual_axis_boxplot(df: pd.DataFrame, out_stem: str, outdir: Path, dpi
         kept_keys.append(key)
         labels.append(MODEL_SHORT_LABELS.get(key, key))
         bshs_data.append(v_b)
-        tv_data.append(v_t)
+        right_metric_data.append(v_t)
 
     if not kept_keys:
         plt.close(fig)
@@ -292,7 +300,7 @@ def _render_dual_axis_boxplot(df: pd.DataFrame, out_stem: str, outdir: Path, dpi
         b_hi = min(1.0, b_lo + 0.05)
     bshs_stats = [_build_bxp_stats(v, y_min=b_lo, y_max=b_hi, min_box_h_frac=0.03) for v in bshs_data]
 
-    tv_all = np.concatenate(tv_data)
+    tv_all = np.concatenate(right_metric_data)
     tv_min = float(np.min(tv_all))
     tv_max = float(np.max(tv_all))
     tv_pad = 0.10 * max(1e-6, tv_max - tv_min)
@@ -300,7 +308,7 @@ def _render_dual_axis_boxplot(df: pd.DataFrame, out_stem: str, outdir: Path, dpi
     tv_hi = tv_max + tv_pad
     if tv_hi <= tv_lo:
         tv_hi = tv_lo + 0.05
-    tv_stats = [_build_bxp_stats(v, y_min=tv_lo, y_max=tv_hi, min_box_h_frac=0.05) for v in tv_data]
+    tv_stats = [_build_bxp_stats(v, y_min=tv_lo, y_max=tv_hi, min_box_h_frac=0.05) for v in right_metric_data]
 
     bp_b = ax_l.bxp(
         bshs_stats,
@@ -329,12 +337,21 @@ def _render_dual_axis_boxplot(df: pd.DataFrame, out_stem: str, outdir: Path, dpi
     ax_l.set_ylim(b_lo, b_hi)
     ax_l.grid(True, axis="y", alpha=0.25, linewidth=0.6)
 
-    ax_r.set_ylabel(r"TV$_{score}$")
+    ax_r.set_ylabel(right_metric_axis_label)
     ax_r.set_ylim(tv_lo, tv_hi)
     ax_r.grid(False)
 
     proxy_support = plt.Rectangle((0, 0), 1, 1, facecolor="white", edgecolor="#444444", linewidth=1.2, label="Support")
-    proxy_tv = plt.Rectangle((0, 0), 1, 1, facecolor=(0.4, 0.4, 0.4, 0.20), edgecolor="#444444", linewidth=1.2, hatch="////", label="TVscore")
+    proxy_tv = plt.Rectangle(
+        (0, 0),
+        1,
+        1,
+        facecolor=(0.4, 0.4, 0.4, 0.20),
+        edgecolor="#444444",
+        linewidth=1.2,
+        hatch="////",
+        label=right_metric_legend_label,
+    )
     leg = ax_l.legend(
         handles=[proxy_support, proxy_tv],
         loc="upper center",
@@ -403,6 +420,9 @@ def run() -> None:
         choices=[0, 1],
         help="If 1 (and beta-fixed is set), create one combined boxplot with left BSHS axis and right TV_score axis.",
     )
+    ap.add_argument("--right-metric-col", type=str, default="TV_score")
+    ap.add_argument("--right-metric-axis-label", type=str, default=r"TV$_{score}$")
+    ap.add_argument("--right-metric-legend-label", type=str, default="TVscore")
     ap.add_argument("--hide-title", type=int, default=1, choices=[0, 1])
     ap.add_argument("--dpi", type=int, default=PNG_DPI)
     args = ap.parse_args()
@@ -438,10 +458,11 @@ def run() -> None:
     )
 
     df = pd.read_csv(points_csv)
-    for col in ["TV_score", "BSHS", "beta", "seed"]:
+    required_cols = [str(args.right_metric_col), "BSHS", "beta", "seed"]
+    for col in required_cols:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
-    df = df.dropna(subset=["TV_score", "BSHS", "beta", "seed"]).reset_index(drop=True)
+    df = df.dropna(subset=required_cols).reset_index(drop=True)
     if df.empty:
         raise RuntimeError("No valid points in CSV.")
 
@@ -466,8 +487,8 @@ def run() -> None:
         )
         _render_model_boxplot(
             df=df,
-            metric_col="TV_score",
-            y_label=r"TV$_{score}$",
+            metric_col=str(args.right_metric_col),
+            y_label=str(args.right_metric_axis_label),
             out_stem=f"fig3_tv_bshs_seedmean_scatter_beta_{beta_tag}_tvscore_boxplot",
             outdir=outdir,
             dpi=int(args.dpi),
@@ -483,6 +504,9 @@ def run() -> None:
             out_stem=f"fig3_tv_bshs_seedmean_scatter_beta_{beta_tag}_dual_axis_boxplot",
             outdir=outdir,
             dpi=int(args.dpi),
+            right_metric_col=str(args.right_metric_col),
+            right_metric_axis_label=str(args.right_metric_axis_label),
+            right_metric_legend_label=str(args.right_metric_legend_label),
         )
         return
 

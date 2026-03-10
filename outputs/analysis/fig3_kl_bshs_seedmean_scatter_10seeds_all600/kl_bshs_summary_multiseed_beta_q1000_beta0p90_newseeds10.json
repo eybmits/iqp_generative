@@ -1,0 +1,40 @@
+{
+  "config": {
+    "n": 12,
+    "beta": 0.9,
+    "seeds": [
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110
+    ],
+    "holdout_mode": "global",
+    "train_m": 200,
+    "sigma": 1.0,
+    "K": 512,
+    "q_eval": 1000,
+    "holdout_k": 20,
+    "holdout_pool": 400,
+    "holdout_m_train": 5000,
+    "iqp_steps": 600,
+    "artr_epochs": 600,
+    "maxent_steps": 600,
+    "kl_variant": "forward_kl_pstar_to_q_nats"
+  },
+  "best_model_by_mean_forward_kl": {
+    "model_key": "iqp_parity_mse",
+    "model_label": "IQP (parity)",
+    "beta": 0.9,
+    "seeds_n": 10,
+    "KL_pstar_to_q_mean": 0.6992946794754937,
+    "KL_pstar_to_q_std": 0.2292959399797077,
+    "BSHS_mean": 0.6783315607600652,
+    "BSHS_std": 0.03082526405806966
+  }
+}
