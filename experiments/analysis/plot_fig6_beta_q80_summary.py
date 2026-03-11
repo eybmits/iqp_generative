@@ -771,7 +771,7 @@ def run() -> None:
     ax.yaxis.set_major_formatter(FuncFormatter(_format_log_tick))
     ax.yaxis.set_minor_locator(NullLocator())
     ax.set_xlabel(r"Sharpness $\beta$")
-    ax.set_ylabel(rf"${_q_math_label(float(args.q80_thr))}$ (samples)")
+    ax.set_ylabel("Samples")
 
     has_censored = False
 
