@@ -175,23 +175,17 @@ def _major_beta_ticks(betas: Sequence[float]) -> List[float]:
     if len(beta_vals) <= MAX_LABELED_X_TICKS:
         return beta_vals
 
-    target_count = min(MAX_LABELED_X_TICKS, len(beta_vals))
-    idxs = np.linspace(0, len(beta_vals) - 1, num=target_count)
-    rounded = [int(round(float(idx))) for idx in idxs.tolist()]
-    rounded[0] = 0
-    rounded[-1] = len(beta_vals) - 1
-
-    keep: List[int] = []
-    for idx in rounded:
-        if not keep or idx != keep[-1]:
-            keep.append(idx)
-
-    if keep[0] != 0:
-        keep.insert(0, 0)
-    if keep[-1] != len(beta_vals) - 1:
-        keep.append(len(beta_vals) - 1)
-
-    return [beta_vals[idx] for idx in keep]
+    step = max(2, int(math.ceil(len(beta_vals) / float(MAX_LABELED_X_TICKS))))
+    major = [beta_vals[idx] for idx in range(0, len(beta_vals), step)]
+    appended_last = False
+    if not math.isclose(float(major[-1]), float(beta_vals[-1]), rel_tol=0.0, abs_tol=1e-12):
+        major.append(float(beta_vals[-1]))
+        appended_last = True
+    if appended_last and len(major) >= 2 and len(beta_vals) >= 2:
+        beta_step = float(np.median(np.diff(np.asarray(beta_vals, dtype=np.float64))))
+        if (major[-1] - major[-2]) <= 1.05 * beta_step:
+            major.pop(-2)
+    return major
 
 
 def _first_q_crossing(q: np.ndarray, y: np.ndarray, thr: float) -> float:
@@ -803,7 +797,7 @@ def run() -> None:
     ax.yaxis.set_major_formatter(FuncFormatter(_format_log_tick))
     ax.yaxis.set_minor_locator(NullLocator())
     ax.set_xlabel(r"Sharpness $\beta$")
-    ax.set_ylabel("Samples")
+    ax.set_ylabel("Q80 (Samples)")
 
     has_censored = False
 
