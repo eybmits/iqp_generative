@@ -34,6 +34,7 @@ SEED_TRACE_ALPHA = 0.18
 SEED_TRACE_LW = 0.95
 BAND_ALPHA = 0.14
 MIN_LABELED_LOG_TICK = 1_000.0
+MAX_LABELED_X_TICKS = 10
 
 TARGET_COLOR = "#1C1C1C"
 UNIFORM_KEY = "uniform_random"
@@ -167,6 +168,18 @@ def _next_log_cap(value: float) -> float:
         if tick >= value:
             return float(tick)
     return float(10.0 ** (exp + 1))
+
+
+def _major_beta_ticks(betas: Sequence[float]) -> List[float]:
+    beta_vals = [float(beta) for beta in betas]
+    if len(beta_vals) <= MAX_LABELED_X_TICKS:
+        return beta_vals
+
+    step = max(2, int(math.ceil(len(beta_vals) / float(MAX_LABELED_X_TICKS))))
+    major = [beta_vals[idx] for idx in range(0, len(beta_vals), step)]
+    if not math.isclose(float(major[-1]), float(beta_vals[-1]), rel_tol=0.0, abs_tol=1e-12):
+        major.append(float(beta_vals[-1]))
+    return major
 
 
 def _first_q_crossing(q: np.ndarray, y: np.ndarray, thr: float) -> float:
@@ -765,8 +778,15 @@ def run() -> None:
     ax.set_yscale("log")
     ax.set_xlim(min(betas) - 0.03, max(betas) + 0.03)
     ax.set_ylim(y_min, y_cap_eff)
-    ax.xaxis.set_major_locator(FixedLocator(betas))
-    ax.set_xticklabels([f"{beta:.1f}" for beta in betas])
+    major_betas = _major_beta_ticks(betas)
+    minor_betas = [float(beta) for beta in betas if all(not math.isclose(float(beta), float(major), rel_tol=0.0, abs_tol=1e-12) for major in major_betas)]
+    ax.xaxis.set_major_locator(FixedLocator(major_betas))
+    ax.set_xticklabels([f"{beta:.1f}" for beta in major_betas])
+    if minor_betas:
+        ax.xaxis.set_minor_locator(FixedLocator(minor_betas))
+        ax.tick_params(axis="x", which="minor", length=3.0, width=0.9)
+    else:
+        ax.xaxis.set_minor_locator(NullLocator())
     ax.yaxis.set_major_locator(FixedLocator(y_ticks))
     ax.yaxis.set_major_formatter(FuncFormatter(_format_log_tick))
     ax.yaxis.set_minor_locator(NullLocator())
