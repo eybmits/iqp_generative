@@ -177,8 +177,14 @@ def _major_beta_ticks(betas: Sequence[float]) -> List[float]:
 
     step = max(2, int(math.ceil(len(beta_vals) / float(MAX_LABELED_X_TICKS))))
     major = [beta_vals[idx] for idx in range(0, len(beta_vals), step)]
+    appended_last = False
     if not math.isclose(float(major[-1]), float(beta_vals[-1]), rel_tol=0.0, abs_tol=1e-12):
         major.append(float(beta_vals[-1]))
+        appended_last = True
+    if appended_last and len(major) >= 2 and len(beta_vals) >= 2:
+        beta_step = float(np.median(np.diff(np.asarray(beta_vals, dtype=np.float64))))
+        if (major[-1] - major[-2]) <= 1.05 * beta_step:
+            major.pop(-2)
     return major
 
 
