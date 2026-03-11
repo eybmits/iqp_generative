@@ -35,7 +35,7 @@ SEED_TRACE_LW = 0.95
 BAND_ALPHA = 0.14
 MIN_LABELED_LOG_TICK = 1_000.0
 MAX_LABELED_X_TICKS = 10
-X_LABEL_EVERY_N_BETAS = 4
+X_LABEL_EVERY_N_BETAS = 3
 
 TARGET_COLOR = "#1C1C1C"
 UNIFORM_KEY = "uniform_random"
@@ -177,15 +177,10 @@ def _major_beta_ticks(betas: Sequence[float]) -> List[float]:
         return beta_vals
 
     step = max(2, int(X_LABEL_EVERY_N_BETAS))
-    major = [beta_vals[idx] for idx in range(0, len(beta_vals), step)]
-    appended_last = False
-    if not math.isclose(float(major[-1]), float(beta_vals[-1]), rel_tol=0.0, abs_tol=1e-12):
-        major.append(float(beta_vals[-1]))
-        appended_last = True
-    if appended_last and len(major) >= 2 and len(beta_vals) >= 2:
-        beta_step = float(np.median(np.diff(np.asarray(beta_vals, dtype=np.float64))))
-        if (major[-1] - major[-2]) <= 1.05 * beta_step:
-            major.pop(-2)
+    # Keep dense beta sweeps on a strict modulo grid; the final off-grid beta stays as a minor tick.
+    major = [beta_vals[idx] for idx in range(0, len(beta_vals) - 1, step)]
+    if not major:
+        major = [beta_vals[0]]
     return major
 
 
