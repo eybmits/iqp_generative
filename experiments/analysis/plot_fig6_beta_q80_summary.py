@@ -35,6 +35,7 @@ SEED_TRACE_LW = 0.95
 BAND_ALPHA = 0.14
 MIN_LABELED_LOG_TICK = 1_000.0
 MAX_LABELED_X_TICKS = 10
+X_LABEL_EVERY_N_BETAS = 4
 
 TARGET_COLOR = "#1C1C1C"
 UNIFORM_KEY = "uniform_random"
@@ -175,7 +176,7 @@ def _major_beta_ticks(betas: Sequence[float]) -> List[float]:
     if len(beta_vals) <= MAX_LABELED_X_TICKS:
         return beta_vals
 
-    step = max(2, int(math.ceil(len(beta_vals) / float(MAX_LABELED_X_TICKS))))
+    step = max(2, int(X_LABEL_EVERY_N_BETAS))
     major = [beta_vals[idx] for idx in range(0, len(beta_vals), step)]
     appended_last = False
     if not math.isclose(float(major[-1]), float(beta_vals[-1]), rel_tol=0.0, abs_tol=1e-12):

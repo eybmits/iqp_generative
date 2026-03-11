@@ -1,6 +1,6 @@
 # Artifact Manifest
 
-Generated: 2026-03-11 12:43:17 UTC
+Generated: 2026-03-11 12:50:07 UTC
 
 This manifest records SHA-256 checksums and file sizes for all files in `outputs/final_plots` (excluding manifest files).
 
@@ -29,8 +29,8 @@ This manifest records SHA-256 checksums and file sizes for all files in `outputs
 | outputs/analysis/fig6_beta_q80_summary/fig6_beta_q80_summary_metrics.csv | 3893 | `d32090e1c779ec42977f98d4d9bf900ea5345efcdf690acd0b53fd1bee8a9b94` |
 | outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/README.md | 1354 | `121a9b2ea4a2a9d3747ab858f4ab513646ec6c400e1c289b29d5f6e1df270ff2` |
 | outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/RUN_CONFIG.json | 2468 | `cc43aed745b970987ab9f41ecc37648f19efba9c380c95a0df578699f1a085bb` |
-| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/fig6_beta_q80_summary.pdf | 20582 | `b6a4692a58d377945e24688756bf86691e43c6718535676705c19180a0faa56e` |
-| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/fig6_beta_q80_summary.png | 196438 | `415bb5945edc0194785fb15ce93a6c66a367277147537fe6d550e7031e7b0b41` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/fig6_beta_q80_summary.pdf | 20526 | `ed6f8023b6ba4be161e64d027aa085d71f4780a5e9b993bbd384f257a0cf9343` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/fig6_beta_q80_summary.png | 195679 | `c8f56c1d95685dc46444f7baa814a355c2cb54a4af87cea106ccbc96f74dcffa` |
 | outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/fig6_beta_q80_summary_metrics.csv | 11957 | `7d11024b943b08fceeb8d37eac77cd20ee93159dad8bf9b8fd99c56915797067` |
 | outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/README.md | 1370 | `d04669fafe9b207589c42d4875003628ac7bd7cef616068c0fb6f922def646ea` |
 | outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/RUN_CONFIG.json | 2565 | `bd708d5076aadf940efc51d6fd95a9404f053aacb12b89057b133910d0b3b141` |
