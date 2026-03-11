@@ -18,7 +18,8 @@ Main visual:
 - left panel: heatmap over the 12 parity settings in the frozen sigma-K grid
 - heatmap color: `Delta Q80 vs IQP MSE = Q80(MSE) - Q80(Parity)`
 - positive values mean parity reaches 80% recovery earlier than IQP MSE
-- cell text: parity `Q80`; the cell color alone encodes `Delta Q80 vs IQP MSE`
+- `IQP MSE` is the zero-reference baseline for `Delta Q80`
+- cell text: signed `Delta Q80 vs IQP MSE`, not absolute parity `Q80`
 
 Right benchmark panel:
 

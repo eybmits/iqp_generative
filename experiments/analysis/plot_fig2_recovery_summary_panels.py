@@ -84,7 +84,8 @@ def _first_q_crossing(q: np.ndarray, y: np.ndarray, thr: float) -> float:
 
 def _curve_metrics(q: np.ndarray, y: np.ndarray, q_thr: float) -> Dict[str, float]:
     q80 = _first_q_crossing(q=q, y=y, thr=q_thr)
-    auc_norm = float(np.trapezoid(y, q) / (q[-1] - q[0]))
+    trapz_fn = np.trapezoid if hasattr(np, "trapezoid") else np.trapz
+    auc_norm = float(trapz_fn(y, q) / (q[-1] - q[0]))
     return {
         "Q80": float(q80),
         "AUC_norm": auc_norm,
@@ -101,12 +102,18 @@ def _fmt_int(value: float) -> str:
     return f"{int(round(float(value))):,}"
 
 
+def _fmt_signed_delta(value: float) -> str:
+    rounded = int(round(float(value)))
+    if rounded > 0:
+        return f"+{rounded}"
+    return f"{rounded}"
+
+
 def _render_heatmap_panel(
     ax,
     *,
     sigma_values: List[float],
     k_values: List[int],
-    q80_grid: np.ndarray,
     delta_grid: np.ndarray,
     best_mask: np.ndarray,
     cmap,
@@ -130,16 +137,15 @@ def _render_heatmap_panel(
     for i in range(len(sigma_values)):
         for j in range(len(k_values)):
             val = float(delta_grid[i, j])
-            q80_val = float(q80_grid[i, j])
             rgba = cmap(norm(val))
             text_color = "#F7F7F7" if _luminance(rgba) < 0.48 else "#1A1A1A"
             ax.text(
                 j,
                 i - 0.02,
-                _fmt_int(q80_val),
+                _fmt_signed_delta(val),
                 ha="center",
                 va="center",
-                fontsize=11.7,
+                fontsize=10.9,
                 color=text_color,
                 fontweight="bold" if best_mask[i, j] else "normal",
             )
@@ -299,7 +305,8 @@ def _write_readme(
         "- left panel: heatmap over the 12 parity settings in the frozen sigma-K grid",
         "- heatmap color: `Delta Q80 vs IQP MSE = Q80(MSE) - Q80(Parity)`",
         "- positive values mean parity reaches 80% recovery earlier than IQP MSE",
-        "- cell text: parity `Q80`; the cell color alone encodes `Delta Q80 vs IQP MSE`",
+        "- `IQP MSE` is the zero-reference baseline for `Delta Q80`",
+        "- cell text: signed `Delta Q80 vs IQP MSE`, not absolute parity `Q80`",
         "",
         "Right benchmark panel:",
         "",
@@ -456,15 +463,14 @@ def run() -> None:
     k_values = sorted(int(r["K"]) for r in parity_rows)
     k_values = sorted(set(k_values))
 
-    q80_grid = np.full((len(sigma_values), len(k_values)), np.nan, dtype=np.float64)
-    delta_grid = np.full_like(q80_grid, np.nan)
-    best_mask = np.zeros_like(q80_grid, dtype=bool)
+    grid_shape = (len(sigma_values), len(k_values))
+    delta_grid = np.full(grid_shape, np.nan, dtype=np.float64)
+    best_mask = np.zeros(grid_shape, dtype=bool)
     for entry in rows:
         if str(entry["curve_group"]) != "iqp_parity":
             continue
         i = sigma_values.index(float(entry["sigma"]))
         j = k_values.index(int(entry["K"]))
-        q80_grid[i, j] = float(entry["Q80"])
         delta_grid[i, j] = float(entry["Q80_delta_vs_mse"])
         best_mask[i, j] = bool(int(entry["is_best_setting"]))
 
@@ -499,7 +505,6 @@ def run() -> None:
         ax_heat,
         sigma_values=sigma_values,
         k_values=k_values,
-        q80_grid=q80_grid,
         delta_grid=delta_grid,
         best_mask=best_mask,
         cmap=cmap,
@@ -547,7 +552,6 @@ def run() -> None:
         ax_heat_only,
         sigma_values=sigma_values,
         k_values=k_values,
-        q80_grid=q80_grid,
         delta_grid=delta_grid,
         best_mask=best_mask,
         cmap=cmap,
