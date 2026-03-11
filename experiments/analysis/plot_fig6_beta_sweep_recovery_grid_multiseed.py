@@ -892,6 +892,8 @@ def _write_run_config(
             "MPLCONFIGDIR=/tmp/mpl-cache python "
             "experiments/analysis/plot_fig6_beta_sweep_recovery_grid_multiseed.py "
             "--recompute 1 "
+            f"--betas {args.betas} "
+            f"--q80-search-max {int(args.q80_search_max)} "
             f"--seeds {args.seeds} "
             f"--holdout-seed {int(args.holdout_seed)} "
             f"--iqp-steps {int(args.iqp_steps)} "

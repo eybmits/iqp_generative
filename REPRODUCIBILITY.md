@@ -70,16 +70,19 @@ Exact run metadata is stored in:
 ## 6) Recompute the documented Fig6 multiseed rerun
 
 ```bash
-MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_sweep_recovery_grid_multiseed.py
+MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_sweep_recovery_grid_multiseed.py \
+  --q80-search-max 1000000000
 ```
 
-The current script defaults reproduce:
+The documented base rerun command produces:
 
 - `outputs/analysis/fig6_multiseed_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed.pdf`
 
 Exact run metadata is stored in:
 
 - `outputs/analysis/fig6_multiseed_all600_seeds42_46/RUN_CONFIG.json`
+
+The kept metrics were then extended for four remaining `classical_maxent_parity` rows with a targeted post-pass at `Qmax = 1e18`; this is documented in the output directory metadata.
 
 ## 7) Recompute the documented Fig3 KL-BSHS rerun
 
@@ -97,33 +100,82 @@ The per-seed values and run metadata are stored in:
 - `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/kl_bshs_summary_multiseed_beta_q1000_beta0p90_newseeds20.json`
 - `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/RUN_CONFIG.json`
 
-## 8) Verify the documented analysis artifacts
+## 8) Recompute the documented Fig6 beta-vs-Q80 summary
 
 ```bash
-python - <<'PY'
-from pathlib import Path
-import csv, hashlib
-manifest = Path('outputs/analysis/ARTIFACT_MANIFEST.csv')
-with manifest.open('r', encoding='utf-8', newline='') as f:
-    reader = csv.reader(f)
-    header = next(reader)
-    if header != ['path', 'bytes', 'sha256']:
-        raise SystemExit(f'Unexpected header: {header}')
-    count = 0
-    for path_s, bytes_s, sha_s in reader:
-        p = Path(path_s)
-        data = p.read_bytes()
-        if len(data) != int(bytes_s):
-            raise SystemExit(f'BYTE MISMATCH: {p}')
-        if hashlib.sha256(data).hexdigest() != sha_s:
-            raise SystemExit(f'HASH MISMATCH: {p}')
-        count += 1
-print(f'OK: {count} analysis files verified')
-PY
+MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_q80_summary.py
 ```
 
-## 9) Notes
+The current script defaults reproduce:
+
+- `outputs/analysis/fig6_beta_q80_summary/fig6_beta_q80_summary.pdf`
+
+The aggregated summary values and run metadata are stored in:
+
+- `outputs/analysis/fig6_beta_q80_summary/fig6_beta_q80_summary_metrics.csv`
+- `outputs/analysis/fig6_beta_q80_summary/RUN_CONFIG.json`
+
+## 9) Recompute the wide Fig6 multiseed rerun
+
+```bash
+MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_sweep_recovery_grid_multiseed.py \
+  --recompute 1 \
+  --betas 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0 \
+  --q80-search-max 1000000000000000000 \
+  --seeds 42,43,44,45,46 \
+  --holdout-seed 46 \
+  --iqp-steps 600 \
+  --artr-epochs 600 \
+  --maxent-steps 600 \
+  --outdir outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46
+```
+
+The documented wide rerun produces:
+
+- `outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed.pdf`
+
+Exact run metadata is stored in:
+
+- `outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/RUN_CONFIG.json`
+
+## 10) Recompute the wide Fig6 beta-vs-Q80 summary family
+
+Recommended robust summary:
+
+```bash
+MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_q80_summary.py \
+  --metrics-csv outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed_metrics.csv \
+  --data-npz outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed_data.npz \
+  --outdir outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr \
+  --band-stat iqr \
+  --show-seed-traces 0 \
+  --show-band 1
+```
+
+Companion variants:
+
+- `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/`
+  rendered with `--band-stat iqr --show-seed-traces 1 --show-band 1`
+- `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_mean_std/`
+  rendered with `--band-stat mean_std --show-seed-traces 0 --show-band 1`
+
+The recommended output is:
+
+- `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/fig6_beta_q80_summary.pdf`
+
+## 11) Verify the documented analysis artifacts
+
+```bash
+python tools/verify_final_manifest.py \
+  --manifest outputs/analysis/ARTIFACT_MANIFEST.csv \
+  --root outputs/analysis \
+  --strict 1
+```
+
+## 12) Notes
 
 - The frozen 7-figure package rerenders deterministically from frozen final data.
 - The Fig6 multiseed rerun and the Fig3 KL-BSHS rerun are recomputations, not frozen-data rerenders.
-- Both analysis reruns are implemented as standalone scripts and do not require `git show` or repo-history lookups at runtime.
+- The Fig6 beta-vs-Q80 summaries are companion plots derived from stored Fig6 multiseed artifacts.
+- For the wide `beta=0.1..2.0` summary family, `Median + IQR` is the recommended default because the `Q80` distribution is strongly heavy-tailed at large `beta`.
+- All documented analysis scripts are implemented as standalone scripts and do not require `git show` or repo-history lookups at runtime.

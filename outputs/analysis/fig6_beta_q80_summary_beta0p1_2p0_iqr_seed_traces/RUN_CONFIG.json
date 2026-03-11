@@ -1,0 +1,69 @@
+{
+  "selected_analysis_run": false,
+  "script": "experiments/analysis/plot_fig6_beta_q80_summary.py",
+  "outdir": "outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces",
+  "metrics_csv": "outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed_metrics.csv",
+  "data_npz": "outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed_data.npz",
+  "style_npz": "outputs/final_plots/fig6_beta_sweep_recovery_grid/fig6_data_default.npz",
+  "betas": [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    1.0,
+    1.1,
+    1.2,
+    1.3,
+    1.4,
+    1.5,
+    1.6,
+    1.7,
+    1.8,
+    1.9,
+    2.0
+  ],
+  "seed_values": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "model_order": [
+    "iqp_parity_mse",
+    "classical_nnn_fields_parity",
+    "classical_dense_fields_xent",
+    "classical_transformer_mle",
+    "classical_maxent_parity"
+  ],
+  "reference_series": [
+    "uniform_random"
+  ],
+  "q80_thr": 0.8,
+  "aggregation": "median_over_finite_q80",
+  "band_stat": "iqr",
+  "show_seed_traces": true,
+  "show_band": true,
+  "min_finite_seeds": 3,
+  "y_scale": "log",
+  "visual_style": "fig4_mechanistic_single_panel_style_with_seed_traces",
+  "y_cap_requested": 100000.0,
+  "y_cap_effective": 10000000000000.0,
+  "holdout_seed": 46,
+  "holdout_mode": "global",
+  "holdout_m_train": 5000,
+  "selected_output": "outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/fig6_beta_q80_summary.pdf",
+  "output_files": [
+    "outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/fig6_beta_q80_summary.pdf",
+    "outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/fig6_beta_q80_summary.png",
+    "outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/fig6_beta_q80_summary_metrics.csv",
+    "outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/RUN_CONFIG.json",
+    "outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/README.md"
+  ],
+  "rerun_command": "MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_q80_summary.py --metrics-csv outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed_metrics.csv --data-npz outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed_data.npz --style-npz outputs/final_plots/fig6_beta_sweep_recovery_grid/fig6_data_default.npz --outdir outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces"
+}

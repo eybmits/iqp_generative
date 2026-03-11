@@ -44,7 +44,29 @@
   "maxent_steps": 600,
   "maxent_lr": 0.05,
   "q80_thr": 0.8,
-  "q80_search_max": 100000,
+  "q80_search_max": 1000000000,
+  "postprocess_q80_extension": {
+    "model_key": "classical_maxent_parity",
+    "targeted_rows": [
+      {
+        "beta": 1.1,
+        "seed": 43
+      },
+      {
+        "beta": 1.2,
+        "seed": 44
+      },
+      {
+        "beta": 1.2,
+        "seed": 45
+      },
+      {
+        "beta": 1.2,
+        "seed": 46
+      }
+    ],
+    "q80_search_max": 1000000000000000000
+  },
   "band_statistic": "mean_plus_minus_std",
-  "rerun_command": "MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_sweep_recovery_grid_multiseed.py --recompute 1 --seeds 42,43,44,45,46 --holdout-seed 46 --iqp-steps 600 --artr-epochs 600 --maxent-steps 600 --outdir outputs/analysis/fig6_multiseed_all600_seeds42_46"
+  "rerun_command": "MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_sweep_recovery_grid_multiseed.py --recompute 1 --betas 0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2 --q80-search-max 1000000000 --seeds 42,43,44,45,46 --holdout-seed 46 --iqp-steps 600 --artr-epochs 600 --maxent-steps 600 --outdir outputs/analysis/fig6_multiseed_all600_seeds42_46"
 }

@@ -1,0 +1,56 @@
+# Artifact Manifest
+
+Generated: 2026-03-11 12:18:40 UTC
+
+This manifest records SHA-256 checksums and file sizes for all files in `outputs/final_plots` (excluding manifest files).
+
+| path | size_bytes | sha256 |
+|---|---:|---|
+| outputs/analysis/README.md | 1252 | `af4b184fb342b1d69b20421ff9c6cbd57dd33995876cbbda64c5ba951c82c632` |
+| outputs/analysis/fig2_recovery_summary_panels/README.md | 1571 | `9b4acf8bb51ee0c459625f7d2d59d9e2476fa58f1a81871540a86fa18a674476` |
+| outputs/analysis/fig2_recovery_summary_panels/RUN_CONFIG.json | 1450 | `8b84e859bcd30177882e2d52c1db2962858f6c59d7c31c24863cd71c0e1c729a` |
+| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels.pdf | 30856 | `89beb352ec89f6e1337bbb845341ecb4c761f0d75906197f22ddf722987ab2fb` |
+| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels.png | 168457 | `cbc81e86a6ab2b40262a9df867ee2386986ff1d548fe3bb6bb33a2bb4c73a907` |
+| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels_benchmark_only.pdf | 26064 | `0aca968063c079a20532f7553e2a4e5242ec8414615838d1497feb660374bcd6` |
+| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels_benchmark_only.png | 73426 | `da3a75d6728f6e6f6431f7cbfd4e5d4880f994c0d4837a857694a4d2e25cb2b7` |
+| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels_heatmap_only.pdf | 21918 | `4b3d57c67f75087e64052886450483270d8861003d432fd5524c0fb4fa6c6d4e` |
+| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels_heatmap_only.png | 75199 | `e4d57c82dac01c3d361de624efb6893a87646055537e76b21d72267d146f1805` |
+| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels_metrics.csv | 2151 | `6de61a41b9c46cc19190801eb1cff70d6fbecdb799c03bf4396a0365435d0ccb` |
+| outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/README.md | 1508 | `44929af4ee3df739a37d9c4823e5f454264990eef36f246f525071fbfd82ce5a` |
+| outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/RUN_CONFIG.json | 952 | `d3f8ea4c8cdcae5de355f204cba322aa5eb00a1733b85b48d98e3f6d4d645357` |
+| outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/fig3_kl_bshs_seedmean_scatter_beta_0p90_dual_axis_boxplot.pdf | 22139 | `f265c741306e9645b3d38811edc53fe331a3d99d528bf5cdd69a20f03f0ca0b2` |
+| outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/fig3_kl_bshs_seedmean_scatter_beta_0p90_dual_axis_boxplot.png | 63735 | `f22eb4d09679992d0c4ad02fc8e386161b3d1da353958ec4857468ffe6890336` |
+| outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/kl_bshs_points_multiseed_beta_q1000_beta0p90_newseeds20.csv | 14586 | `9f47eb2b5e0864dcbcc14a8d22d674db2eb238e46d02e4731c0cb9505fcf79f2` |
+| outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/kl_bshs_summary_multiseed_beta_q1000_beta0p90_newseeds20.json | 900 | `a02324afa661c878a431014cfb4956ba4050be498f1367bd368b9b1ff2540112` |
+| outputs/analysis/fig6_beta_q80_summary/README.md | 1260 | `58b8af131dedeee33381e8f17a568ba2ef7ec9d41effb4e361a34a0e05a76cb2` |
+| outputs/analysis/fig6_beta_q80_summary/RUN_CONFIG.json | 2092 | `307fb7b9bed4ce6b5f89467ae22b37a14cc32af02dd60831930629f3b2d2d8da` |
+| outputs/analysis/fig6_beta_q80_summary/fig6_beta_q80_summary.pdf | 18635 | `0f34c34062c42b13688c4299c48b99576fed3bb85df896c46c244df502b574f1` |
+| outputs/analysis/fig6_beta_q80_summary/fig6_beta_q80_summary.png | 105773 | `6f52f6518bb481300b3edb5cc7287b85709fece08fcb5064f0f9f841a5aa11db` |
+| outputs/analysis/fig6_beta_q80_summary/fig6_beta_q80_summary_metrics.csv | 3893 | `d32090e1c779ec42977f98d4d9bf900ea5345efcdf690acd0b53fd1bee8a9b94` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/README.md | 1354 | `121a9b2ea4a2a9d3747ab858f4ab513646ec6c400e1c289b29d5f6e1df270ff2` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/RUN_CONFIG.json | 2468 | `cc43aed745b970987ab9f41ecc37648f19efba9c380c95a0df578699f1a085bb` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/fig6_beta_q80_summary.pdf | 21383 | `e469b11344da549199fdaa85159ac701375cb2c492e18a32f8b8b002512a1049` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/fig6_beta_q80_summary.png | 199630 | `7b7823c789441b07999319a0245c7a7a4c6941633bf91e49710fddb01d16f002` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/fig6_beta_q80_summary_metrics.csv | 11957 | `7d11024b943b08fceeb8d37eac77cd20ee93159dad8bf9b8fd99c56915797067` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/README.md | 1370 | `d04669fafe9b207589c42d4875003628ac7bd7cef616068c0fb6f922def646ea` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/RUN_CONFIG.json | 2565 | `bd708d5076aadf940efc51d6fd95a9404f053aacb12b89057b133910d0b3b141` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/fig6_beta_q80_summary.pdf | 23713 | `2d20793b35c90034ac20c2cadf5ce8c52ac332a20d0441143d6f38c02bc759e7` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/fig6_beta_q80_summary.png | 319570 | `a611fdb58474fd40054d715d8d9c6fad9f7712c321b108eda39f436780625f21` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/fig6_beta_q80_summary_metrics.csv | 11957 | `7d11024b943b08fceeb8d37eac77cd20ee93159dad8bf9b8fd99c56915797067` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_mean_std/README.md | 1356 | `5f218c26351798562979cccc8f01f6580bc01db80dc9faad4fbe9c4691b23a29` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_mean_std/RUN_CONFIG.json | 2515 | `7450119097197cf019b01a68f3c127b7107f964f4082cc850c06949140526c94` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_mean_std/fig6_beta_q80_summary.pdf | 21232 | `56f35b3a2f321ca4558255106f231ed961931fec9b445bad8fbf5e386190f31d` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_mean_std/fig6_beta_q80_summary.png | 174271 | `530898596b75798558838104f1b4da90cd1463160806627415e7c3a6fc11e58b` |
+| outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_mean_std/fig6_beta_q80_summary_metrics.csv | 11957 | `7d11024b943b08fceeb8d37eac77cd20ee93159dad8bf9b8fd99c56915797067` |
+| outputs/analysis/fig6_multiseed_all600_seeds42_46/README.md | 1999 | `05bb025084217de339cf4a7e718c46a7a794af3b9d4ee287c70fe24f684b7a0f` |
+| outputs/analysis/fig6_multiseed_all600_seeds42_46/RUN_CONFIG.json | 1675 | `310f1c069bdda7944d04b6ef1b94c114d492db661fa25bbc67a1e18491110c4f` |
+| outputs/analysis/fig6_multiseed_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed.pdf | 236541 | `076c680b71921bd17d66df9a612dd49eade7ba97525ffbcfd125f5caa35cf762` |
+| outputs/analysis/fig6_multiseed_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed.png | 928086 | `403d7ecb44b5b1582b005dd888f901d26dd7b58f950d199bd7f1131e42941b68` |
+| outputs/analysis/fig6_multiseed_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed_data.npz | 610059 | `d1ce9ce446a9dc5f9ad20e60918fae77cba2a671ce0683a759909481d4642437` |
+| outputs/analysis/fig6_multiseed_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed_metrics.csv | 28244 | `034d496ff17cf340046b135cb3072dbbb0d59708b64e46f4023fad2b0afa9942` |
+| outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/README.md | 2054 | `847d27c82029466e0eab97e74634f02928e77b615c50619ea88ea2b8c0cb44f3` |
+| outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/RUN_CONFIG.json | 1493 | `8934f8522a36d380ea459e2378d6727da1daced1e8ace87c08962b1309d9a861` |
+| outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed.pdf | 530191 | `5f8b903b3c34afc746b686c89b4d6e549649956a477e5dba6bd608164dc250c3` |
+| outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed.png | 2173670 | `9c5fb627d09dceea1a0e77a287b741bcad917bdfcdb63fde5b7ebb87858520ae` |
+| outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed_data.npz | 1516395 | `70c74ed4902bcbdc5f8f8c492e14442ca2bd0577fc99b795020127c69906ed2d` |
+| outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed_metrics.csv | 70490 | `b43cb7ade5d47fc9c80a8b13377aad60cee18eb8032414e370eacf5d2af9a474` |

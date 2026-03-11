@@ -79,6 +79,40 @@ python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 - exact run metadata:
   `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/RUN_CONFIG.json`
 
+4. Fig6 beta-vs-Q80 compact summary
+- derived from the documented Fig6 multiseed artifacts
+- no retraining; same model family, betas, and recovery threshold
+- all five models shown
+- y-axis metric: median finite `Q80` with IQR over seeds
+- selected output:
+  `outputs/analysis/fig6_beta_q80_summary/fig6_beta_q80_summary.pdf`
+- exact run metadata:
+  `outputs/analysis/fig6_beta_q80_summary/RUN_CONFIG.json`
+
+5. Fig6 wide multiseed recovery rerun
+- betas `0.1..2.0`
+- seeds `42..46`
+- holdout seed `46`
+- IQP `600` steps
+- AR Transformer `600` epochs
+- MaxEnt `600` steps
+- `q80_search_max = 1e18`
+- selected output:
+  `outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed.pdf`
+- exact run metadata:
+  `outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/RUN_CONFIG.json`
+
+6. Fig6 wide beta-vs-Q80 summary family
+- derived from the documented wide Fig6 multiseed artifacts
+- no retraining; all values are aggregated from the stored per-seed `Q80` outputs
+- all five models plus `Uniform` shown
+- recommended robust view:
+  `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/fig6_beta_q80_summary.pdf`
+- companion detail view with all seed traces:
+  `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/fig6_beta_q80_summary.pdf`
+- comparison view using mean ± std:
+  `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_mean_std/fig6_beta_q80_summary.pdf`
+
 The selected analysis reruns are implemented locally and do not load training logic from git history at runtime.
 
 ## Artifact integrity
@@ -103,26 +137,10 @@ python tools/build_final_manifest.py \
 Verify the documented analysis artifacts:
 
 ```bash
-python - <<'PY'
-from pathlib import Path
-import csv, hashlib
-manifest = Path('outputs/analysis/ARTIFACT_MANIFEST.csv')
-with manifest.open('r', encoding='utf-8', newline='') as f:
-    reader = csv.reader(f)
-    header = next(reader)
-    if header != ['path', 'bytes', 'sha256']:
-        raise SystemExit(f'Unexpected header: {header}')
-    count = 0
-    for path_s, bytes_s, sha_s in reader:
-        p = Path(path_s)
-        data = p.read_bytes()
-        if len(data) != int(bytes_s):
-            raise SystemExit(f'BYTE MISMATCH: {p}')
-        if hashlib.sha256(data).hexdigest() != sha_s:
-            raise SystemExit(f'HASH MISMATCH: {p}')
-        count += 1
-print(f'OK: {count} analysis files verified')
-PY
+python tools/verify_final_manifest.py \
+  --manifest outputs/analysis/ARTIFACT_MANIFEST.csv \
+  --root outputs/analysis \
+  --strict 1
 ```
 
 ## Documentation
