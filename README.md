@@ -1,37 +1,25 @@
-# IQP Generative Final Plots + Documented Analysis Reruns
+# IQP Generative: Frozen Paper Figures and Documented Analysis Reruns
 
-This repository contains the frozen final paper plotting package plus selected, self-contained analysis reruns.
+This repository contains a frozen paper-figure package plus a curated set of post-freeze analysis reruns.
 
-It includes:
-- final paper plotting scripts for Fig1-Fig7
-- frozen final figure inputs and rendered artifacts under `outputs/final_plots/`
-- deterministic manifest build and verification utilities for the frozen final package
-- standalone analysis reruns under `experiments/analysis/` and `outputs/analysis/`
+The publishable artifact policy is intentional:
 
-## Repository layout
+- `outputs/final_plots/` stores the canonical frozen figure package and its manifest.
+- `outputs/analysis/` stores curated, documented reruns that are kept under version control.
+- dated reruns, replots, and chunked scratch outputs are local-only artifacts and are ignored.
 
-- `experiments/final_scripts/`: frozen final figure scripts
-- `outputs/final_plots/`: frozen final inputs and rendered PDF/PNG artifacts
-- `tools/build_final_manifest.py`: deterministic final-manifest builder
-- `tools/verify_final_manifest.py`: final-manifest verification utility
-- `experiments/analysis/`: self-contained analysis rerun scripts
-- `outputs/analysis/`: documented analysis artifacts and analysis manifest
+## Quickstart
 
-## Environment
+1. Create an environment:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-```
-
-For the documented analysis reruns, also install:
-
-```bash
 pip install -r requirements-analysis.txt
 ```
 
-## Rebuild frozen final figures
+2. Re-render the frozen final figures:
 
 ```bash
 python experiments/final_scripts/plot_target_sharpness_beta_sweep.py
@@ -43,7 +31,19 @@ python experiments/final_scripts/plot_beta_sweep_recovery_grid.py
 python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 ```
 
-## Selected documented analysis reruns
+3. Verify both curated artifact sets:
+
+```bash
+python tools/verify_final_manifest.py \
+  --manifest outputs/final_plots/ARTIFACT_MANIFEST.csv \
+  --strict 1
+
+python tools/verify_analysis_manifest.py \
+  --manifest outputs/analysis/ARTIFACT_MANIFEST.csv \
+  --strict 1
+```
+
+## Selected Documented Analysis Reruns
 
 1. Fig2 recovery-summary companion figure
 - built directly from the frozen Fig2 snapshot
@@ -60,6 +60,7 @@ python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 - IQP `600` steps
 - AR Transformer `600` epochs
 - MaxEnt `600` steps
+- `q80_search_max = 1e9`
 - selected output:
   `outputs/analysis/fig6_multiseed_all600_seeds42_46/fig6_beta_sweep_recovery_grid_multiseed.pdf`
 - exact run metadata:
@@ -82,8 +83,6 @@ python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 4. Fig6 beta-vs-Q80 compact summary
 - derived from the documented Fig6 multiseed artifacts
 - no retraining; same model family, betas, and recovery threshold
-- all five models shown
-- y-axis metric: median finite `Q80` with IQR over seeds
 - selected output:
   `outputs/analysis/fig6_beta_q80_summary/fig6_beta_q80_summary.pdf`
 - exact run metadata:
@@ -104,8 +103,7 @@ python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 
 6. Fig6 wide beta-vs-Q80 summary family
 - derived from the documented wide Fig6 multiseed artifacts
-- no retraining; all values are aggregated from the stored per-seed `Q80` outputs
-- all five models plus `Uniform` shown
+- no retraining; all values are aggregated from stored per-seed `Q80` outputs
 - recommended robust view:
   `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/fig6_beta_q80_summary.pdf`
 - companion detail view with all seed traces:
@@ -113,19 +111,61 @@ python experiments/final_scripts/plot_appendix_ablation_beta0p8_nsweep.py
 - comparison view using mean ± std:
   `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_mean_std/fig6_beta_q80_summary.pdf`
 
-The selected analysis reruns are implemented locally and do not load training logic from git history at runtime.
+## Tested Environment
 
-## Artifact integrity
+The curated artifacts currently in this repository were regenerated and verified locally with:
 
-Verify frozen final artifacts:
+- macOS on CPU
+- Python `3.13.2`
+- `numpy==2.3.3`
+- `pandas==2.3.2`
+- `matplotlib==3.10.6`
+- `torch==2.10.0`
+- `pennylane==0.42.3`
 
-```bash
-python tools/verify_final_manifest.py \
-  --manifest outputs/final_plots/ARTIFACT_MANIFEST.csv \
-  --strict 1
-```
+The frozen final figure scripts only require `requirements.txt`. The analysis reruns require `requirements-analysis.txt` in addition.
+For a tested pinned environment, use [environment.yml](/Users/superposition/Coding/iqp_generative/environment.yml).
 
-Rebuild the frozen final manifest after intentional artifact updates:
+## Repository Layout
+
+- `experiments/final_scripts/`: standalone frozen final plotting scripts
+- `experiments/analysis/`: self-contained analysis rerun drivers
+- `outputs/final_plots/`: canonical frozen figure outputs and manifests
+- `outputs/analysis/`: curated post-freeze analysis artifacts and manifests
+- `tools/`: manifest build and verification utilities
+- `docs/`: paper-side supporting material
+
+## Curated Analysis Outputs
+
+The tracked publishable analysis set currently contains:
+
+- `outputs/analysis/fig2_recovery_summary_panels/`
+- `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/`
+- `outputs/analysis/fig6_beta_q80_summary/`
+- `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/`
+- `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/`
+- `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_mean_std/`
+- `outputs/analysis/fig6_multiseed_all600_seeds42_46/`
+- `outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46/`
+
+Each curated analysis directory is expected to include:
+
+- `README.md`
+- `RUN_CONFIG.json`
+- rendered figures
+- any kept machine-readable data products such as `.npz`, `.csv`, or `.json`
+
+## Rebuild Frozen Final Figures
+
+See [experiments/final_scripts/README.md](/Users/superposition/Coding/iqp_generative/experiments/final_scripts/README.md) for the script-by-script mapping and [FINAL_SCRIPTS_SETTINGS_LOCK.md](/Users/superposition/Coding/iqp_generative/experiments/final_scripts/FINAL_SCRIPTS_SETTINGS_LOCK.md) for the frozen defaults and artifact policy.
+
+## Run Curated Analysis Reruns
+
+See [experiments/analysis/README.md](/Users/superposition/Coding/iqp_generative/experiments/analysis/README.md) for the exact commands and runtime notes.
+
+## Artifact Integrity
+
+Rebuild the frozen final manifest after intentional updates:
 
 ```bash
 python tools/build_final_manifest.py \
@@ -134,26 +174,30 @@ python tools/build_final_manifest.py \
   --output-md outputs/final_plots/ARTIFACT_MANIFEST.md
 ```
 
-Verify the documented analysis artifacts:
+Rebuild the curated analysis manifest after intentional updates:
 
 ```bash
-python tools/verify_final_manifest.py \
-  --manifest outputs/analysis/ARTIFACT_MANIFEST.csv \
+python tools/build_analysis_manifest.py \
   --root outputs/analysis \
-  --strict 1
+  --output-csv outputs/analysis/ARTIFACT_MANIFEST.csv \
+  --output-md outputs/analysis/ARTIFACT_MANIFEST.md
 ```
 
 ## Documentation
 
-- `REPRODUCIBILITY.md`
-- `experiments/final_scripts/FINAL_SCRIPTS_SETTINGS_LOCK.md`
-- `experiments/analysis/README.md`
-- `outputs/analysis/README.md`
+- [REPRODUCIBILITY.md](/Users/superposition/Coding/iqp_generative/REPRODUCIBILITY.md)
+- [CONTRIBUTING.md](/Users/superposition/Coding/iqp_generative/CONTRIBUTING.md)
+- [PUBLISHING.md](/Users/superposition/Coding/iqp_generative/PUBLISHING.md)
+- [experiments/final_scripts/README.md](/Users/superposition/Coding/iqp_generative/experiments/final_scripts/README.md)
+- [experiments/final_scripts/FINAL_SCRIPTS_SETTINGS_LOCK.md](/Users/superposition/Coding/iqp_generative/experiments/final_scripts/FINAL_SCRIPTS_SETTINGS_LOCK.md)
+- [experiments/analysis/README.md](/Users/superposition/Coding/iqp_generative/experiments/analysis/README.md)
+- [outputs/analysis/README.md](/Users/superposition/Coding/iqp_generative/outputs/analysis/README.md)
+- [CITATION.cff](/Users/superposition/Coding/iqp_generative/CITATION.cff)
 
-## Citation links
+## Citation and Snapshot Links
 
 - Main repository: `https://github.com/eybmits/iqp_generative`
 - Frozen snapshot tag: `https://github.com/eybmits/iqp_generative/tree/paper-final-v1`
-- Frozen final artifacts folder: `https://github.com/eybmits/iqp_generative/tree/paper-final-v1/outputs/final_plots`
+- Frozen final artifacts: `https://github.com/eybmits/iqp_generative/tree/paper-final-v1/outputs/final_plots`
 
-The documented reruns in `outputs/analysis/` are post-freeze analysis artifacts tracked in this repository state, not part of the frozen `paper-final-v1` snapshot.
+The curated analysis directories under `outputs/analysis/` are post-freeze artifacts tracked in the current repository state and are not part of the frozen `paper-final-v1` snapshot unless explicitly tagged later.

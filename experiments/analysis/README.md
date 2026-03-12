@@ -1,5 +1,7 @@
 # Analysis Scripts
 
+This folder contains the self-contained rerun drivers for the curated post-freeze analysis set.
+
 Kept analysis drivers:
 
 - `plot_fig2_recovery_summary_panels.py`
@@ -9,20 +11,29 @@ Kept analysis drivers:
 
 These analysis scripts are self-contained and only reuse frozen final plotting assets where that is appropriate for style consistency.
 
-Prerequisites for rerunning these analyses:
+## Environment
 
-- install `requirements-analysis.txt`
+Install:
 
-Selected analysis runs:
+```bash
+pip install -r requirements-analysis.txt
+```
 
-1. Fig2 recovery-summary companion figure
+Documented local verification environment:
+
+- macOS CPU
+- Python `3.13.2`
+
+## Curated Rerun Commands
+
+### 1. Fig2 recovery-summary companion figure
 
 ```bash
 MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig2_recovery_summary_panels.py \
   --outdir outputs/analysis/fig2_recovery_summary_panels
 ```
 
-2. Fig6 multiseed recovery rerun
+### 2. Fig6 multiseed recovery rerun for `beta = 0.5..1.2`
 
 ```bash
 MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_sweep_recovery_grid_multiseed.py \
@@ -36,7 +47,7 @@ MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_sweep_rec
   --outdir outputs/analysis/fig6_multiseed_all600_seeds42_46
 ```
 
-3. Fig3 KL-BSHS dual-axis boxplot
+### 3. Fig3 KL-BSHS dual-axis boxplot
 
 ```bash
 MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig3_kl_bshs_dual_axis_boxplot.py \
@@ -48,14 +59,14 @@ MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig3_kl_bshs_dual_a
   --maxent-steps 600
 ```
 
-4. Fig6 compact beta-vs-Q80 summary
+### 4. Fig6 compact beta-vs-Q80 summary
 
 ```bash
 MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_q80_summary.py \
   --outdir outputs/analysis/fig6_beta_q80_summary
 ```
 
-5. Fig6 wide multiseed recovery rerun
+### 5. Fig6 wide multiseed recovery rerun for `beta = 0.1..2.0`
 
 ```bash
 MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_sweep_recovery_grid_multiseed.py \
@@ -70,7 +81,7 @@ MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_fig6_beta_sweep_rec
   --outdir outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds42_46
 ```
 
-6. Fig6 wide beta-vs-Q80 summaries
+### 6. Fig6 wide beta-vs-Q80 summaries
 
 Recommended robust summary:
 
@@ -89,7 +100,14 @@ Companion variants:
 - `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/`
 - `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_mean_std/`
 
-Archived outputs live in:
+## Runtime Notes
+
+- Fig2 is lightweight and should finish quickly.
+- Fig6 and Fig3 are heavier recomputations and should be treated as CPU jobs rather than instant re-renders.
+- The wide `beta = 0.1..2.0` Fig6 sweep is materially heavier than the base `beta = 0.5..1.2` Fig6 sweep.
+- Curated outputs are deterministic at the level of saved seeds and run metadata, but absolute wall time depends on the local numeric stack.
+
+## Curated Output Directories
 
 - `outputs/analysis/fig2_recovery_summary_panels/`
 - `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/`

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Build deterministic artifact manifests for outputs/final_plots."""
+"""Build deterministic artifact manifests for outputs/analysis."""
 
 from __future__ import annotations
 
@@ -34,50 +34,48 @@ def collect_files(root: Path, excludes: set[str]) -> list[Path]:
     return files
 
 
-def to_repo_rel(path: Path, root: Path) -> str:
-    # Root is expected to be inside the repository.
-    repo_root = Path.cwd()
-    return path.relative_to(repo_root).as_posix()
+def to_repo_rel(path: Path) -> str:
+    return path.relative_to(Path.cwd()).as_posix()
 
 
 def write_csv(out_csv: Path, rows: list[dict[str, str]]) -> None:
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     with out_csv.open("w", newline="", encoding="utf-8") as fh:
-        w = csv.DictWriter(fh, fieldnames=["path", "size_bytes", "sha256"], lineterminator="\n")
-        w.writeheader()
-        for r in rows:
-            w.writerow(r)
+        writer = csv.DictWriter(fh, fieldnames=["path", "size_bytes", "sha256"], lineterminator="\n")
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
 
 
 def write_md(out_md: Path, rows: list[dict[str, str]]) -> None:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
     lines = [
-        "# Artifact Manifest",
+        "# Analysis Artifact Manifest",
         "",
         f"Generated: {now}",
         "",
-        "This manifest records SHA-256 checksums and file sizes for all files in `outputs/final_plots` (excluding manifest files).",
+        "This manifest records SHA-256 checksums and file sizes for curated files in `outputs/analysis`.",
         "",
         "| path | size_bytes | sha256 |",
         "|---|---:|---|",
     ]
-    for r in rows:
-        lines.append(f"| {r['path']} | {r['size_bytes']} | `{r['sha256']}` |")
+    for row in rows:
+        lines.append(f"| {row['path']} | {row['size_bytes']} | `{row['sha256']}` |")
 
     out_md.parent.mkdir(parents=True, exist_ok=True)
     out_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Build deterministic final artifact manifests.")
-    ap.add_argument("--root", type=str, default="outputs/final_plots", help="Artifact root directory.")
-    ap.add_argument("--output-csv", type=str, default="outputs/final_plots/ARTIFACT_MANIFEST.csv")
-    ap.add_argument("--output-md", type=str, default="outputs/final_plots/ARTIFACT_MANIFEST.md")
+    ap = argparse.ArgumentParser(description="Build deterministic analysis artifact manifests.")
+    ap.add_argument("--root", type=str, default="outputs/analysis", help="Artifact root directory.")
+    ap.add_argument("--output-csv", type=str, default="outputs/analysis/ARTIFACT_MANIFEST.csv")
+    ap.add_argument("--output-md", type=str, default="outputs/analysis/ARTIFACT_MANIFEST.md")
     ap.add_argument(
         "--exclude",
         type=str,
         default=",".join(sorted(DEFAULT_EXCLUDES)),
-        help="Comma-separated file names to exclude (by basename).",
+        help="Comma-separated file names to exclude by basename.",
     )
     args = ap.parse_args()
 
@@ -86,16 +84,13 @@ def main() -> None:
         raise FileNotFoundError(f"Artifact root not found or not a directory: {root}")
 
     excludes = {x.strip() for x in str(args.exclude).split(",") if x.strip()}
-    files = collect_files(root=root, excludes=excludes)
-
     rows: list[dict[str, str]] = []
-    for p in files:
-        rel = to_repo_rel(path=p, root=root)
+    for path in collect_files(root=root, excludes=excludes):
         rows.append(
             {
-                "path": rel,
-                "size_bytes": str(p.stat().st_size),
-                "sha256": sha256_file(p),
+                "path": to_repo_rel(path),
+                "size_bytes": str(path.stat().st_size),
+                "sha256": sha256_file(path),
             }
         )
 

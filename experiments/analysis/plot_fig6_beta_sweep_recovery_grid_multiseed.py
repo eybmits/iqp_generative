@@ -896,9 +896,13 @@ def _write_run_config(
             f"--q80-search-max {int(args.q80_search_max)} "
             f"--seeds {args.seeds} "
             f"--holdout-seed {int(args.holdout_seed)} "
+            f"--holdout-mode {str(args.holdout_mode)} "
             f"--iqp-steps {int(args.iqp_steps)} "
             f"--artr-epochs {int(args.artr_epochs)} "
             f"--maxent-steps {int(args.maxent_steps)} "
+            f"--grid-cols {int(args.grid_cols)} "
+            f"--qmax {int(args.qmax)} "
+            f"--log-x {int(args.log_x)} "
             f"--outdir {Path(args.outdir).as_posix()}"
         ),
     }
