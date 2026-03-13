@@ -33,12 +33,14 @@ TARGET_COLOR = "#2F2A2B"
 PARITY_COLOR = "#E46C5B"
 MSE_COLOR = "#5B9BE6"
 UNIFORM_COLOR = "#C6C9CF"
-HEATMAP_NEG = "#4D8FD6"
-HEATMAP_POS = "#E5545C"
+HEATMAP_LOW = "#F04B4C"
+HEATMAP_MID = "#8E111B"
+HEATMAP_HIGH = "#0D0D0F"
 ACCENT_DARK = "#171717"
 TEXT_DARK = "#222222"
 TEXT_MID = "#8A8A8A"
 AXIS_ZERO = "#C7C7C7"
+HEATMAP_CBAR_LABEL = r"IQP Parity $Q_{80}$ (samples, lower is better)"
 
 
 def apply_final_style() -> None:
@@ -102,24 +104,17 @@ def _fmt_int(value: float) -> str:
     return f"{int(round(float(value))):,}"
 
 
-def _fmt_signed_delta(value: float) -> str:
-    rounded = int(round(float(value)))
-    if rounded > 0:
-        return f"+{rounded}"
-    return f"{rounded}"
-
-
 def _render_heatmap_panel(
     ax,
     *,
     sigma_values: List[float],
     k_values: List[int],
-    delta_grid: np.ndarray,
+    q80_grid: np.ndarray,
     best_mask: np.ndarray,
     cmap,
     norm,
 ) -> None:
-    im = ax.imshow(delta_grid, cmap=cmap, norm=norm, aspect="auto")
+    im = ax.imshow(q80_grid, cmap=cmap, norm=norm, aspect="auto")
     ax.set_xticks(np.arange(len(k_values)))
     ax.set_xticklabels([f"{k}" for k in k_values], fontweight="bold")
     ax.set_yticks(np.arange(len(sigma_values)))
@@ -130,19 +125,19 @@ def _render_heatmap_panel(
     ax.set_xticks(np.arange(-0.5, len(k_values), 1), minor=True)
     ax.set_yticks(np.arange(-0.5, len(sigma_values), 1), minor=True)
     ax.grid(which="minor", color="white", linewidth=1.8)
-    ax.tick_params(which="minor", bottom=False, left=False)
+    ax.tick_params(which="minor", bottom=False, top=False, left=False, right=False)
     for spine in ax.spines.values():
         spine.set_visible(False)
 
     for i in range(len(sigma_values)):
         for j in range(len(k_values)):
-            val = float(delta_grid[i, j])
-            rgba = cmap(norm(val))
+            q80_val = float(q80_grid[i, j])
+            rgba = cmap(norm(q80_val))
             text_color = "#F7F7F7" if _luminance(rgba) < 0.48 else "#1A1A1A"
             ax.text(
                 j,
                 i - 0.02,
-                _fmt_signed_delta(val),
+                _fmt_int(q80_val),
                 ha="center",
                 va="center",
                 fontsize=10.9,
@@ -256,6 +251,15 @@ def _render_benchmark_panel(
         )
 
 
+def _style_heatmap_colorbar(cbar, cax, *, q80_min: float, q80_max: float) -> None:
+    q80_mid = 0.5 * (float(q80_min) + float(q80_max))
+    cbar.set_label(HEATMAP_CBAR_LABEL, labelpad=6, fontsize=10.5)
+    cbar.set_ticks([float(q80_min), q80_mid, float(q80_max)])
+    cbar.set_ticklabels([_fmt_int(q80_min), _fmt_int(q80_mid), _fmt_int(q80_max)])
+    cbar.outline.set_visible(False)
+    cax.tick_params(axis="x", length=3, colors="#555555")
+
+
 def _write_csv(path: Path, rows: List[Dict[str, object]]) -> None:
     if not rows:
         return
@@ -293,6 +297,7 @@ def _write_readme(
         "",
         f"- frozen snapshot: `{data_npz_rel}`",
         "- no retraining; all metrics are derived from the stored recovery curves",
+        "- heatmap palette: fixed red-black house style",
         "",
         "Primary summary metric:",
         "",
@@ -303,10 +308,10 @@ def _write_readme(
         "Main visual:",
         "",
         "- left panel: heatmap over the 12 parity settings in the frozen sigma-K grid",
-        "- heatmap color: `Delta Q80 vs IQP MSE = Q80(MSE) - Q80(Parity)`",
-        "- positive values mean parity reaches 80% recovery earlier than IQP MSE",
-        "- `IQP MSE` is the zero-reference baseline for `Delta Q80`",
-        "- cell text: signed `Delta Q80 vs IQP MSE`, not absolute parity `Q80`",
+        "- heatmap cell text: absolute `Q80(IQP Parity)` in samples",
+        "- heatmap color: same absolute `Q80(IQP Parity)` quantity",
+        "- lower `Q80` settings are rendered in brighter red; higher `Q80` settings darken toward black",
+        "- cell text and color now encode the same parity-only `Q80` metric",
         "",
         "Right benchmark panel:",
         "",
@@ -464,20 +469,22 @@ def run() -> None:
     k_values = sorted(set(k_values))
 
     grid_shape = (len(sigma_values), len(k_values))
-    delta_grid = np.full(grid_shape, np.nan, dtype=np.float64)
+    q80_grid = np.full(grid_shape, np.nan, dtype=np.float64)
     best_mask = np.zeros(grid_shape, dtype=bool)
     for entry in rows:
         if str(entry["curve_group"]) != "iqp_parity":
             continue
         i = sigma_values.index(float(entry["sigma"]))
         j = k_values.index(int(entry["K"]))
-        delta_grid[i, j] = float(entry["Q80_delta_vs_mse"])
+        q80_grid[i, j] = float(entry["Q80"])
         best_mask[i, j] = bool(int(entry["is_best_setting"]))
 
-    norm = colors.TwoSlopeNorm(vmin=-3000.0, vcenter=0.0, vmax=800.0)
+    q80_min = float(np.nanmin(q80_grid))
+    q80_max = float(np.nanmax(q80_grid))
+    norm = colors.Normalize(vmin=q80_min, vmax=q80_max)
     cmap = colors.LinearSegmentedColormap.from_list(
-        "parity_advantage",
-        [HEATMAP_NEG, "#FFFFFF", HEATMAP_POS],
+        "parity_q80_red_black",
+        [HEATMAP_LOW, HEATMAP_MID, HEATMAP_HIGH],
     )
 
     apply_final_style()
@@ -505,17 +512,13 @@ def run() -> None:
         ax_heat,
         sigma_values=sigma_values,
         k_values=k_values,
-        delta_grid=delta_grid,
+        q80_grid=q80_grid,
         best_mask=best_mask,
         cmap=cmap,
         norm=norm,
     )
     cbar = fig.colorbar(im, cax=cax, orientation="horizontal")
-    cbar.set_label(r"$\Delta Q_{80}$ vs IQP MSE (samples)", labelpad=4)
-    cbar.set_ticks([-3000.0, 0.0, 800.0])
-    cbar.set_ticklabels(["-3000", "0", "+800"])
-    cbar.outline.set_visible(False)
-    cax.tick_params(axis="x", length=3, colors="#555555")
+    _style_heatmap_colorbar(cbar, cax, q80_min=q80_min, q80_max=q80_max)
     _render_benchmark_panel(
         ax_bench,
         target_metrics=target_metrics,
@@ -552,17 +555,13 @@ def run() -> None:
         ax_heat_only,
         sigma_values=sigma_values,
         k_values=k_values,
-        delta_grid=delta_grid,
+        q80_grid=q80_grid,
         best_mask=best_mask,
         cmap=cmap,
         norm=norm,
     )
     cbar_heat_only = fig_heat.colorbar(im_heat_only, cax=cax_heat_only, orientation="horizontal")
-    cbar_heat_only.set_label(r"$\Delta Q_{80}$ vs IQP MSE (samples)", labelpad=4)
-    cbar_heat_only.set_ticks([-3000.0, 0.0, 800.0])
-    cbar_heat_only.set_ticklabels(["-3000", "0", "+800"])
-    cbar_heat_only.outline.set_visible(False)
-    cax_heat_only.tick_params(axis="x", length=3, colors="#555555")
+    _style_heatmap_colorbar(cbar_heat_only, cax_heat_only, q80_min=q80_min, q80_max=q80_max)
     fig_heat.savefig(out_heat_pdf)
     fig_heat.savefig(out_heat_png, dpi=int(args.dpi))
     plt.close(fig_heat)
@@ -587,14 +586,14 @@ def run() -> None:
             "script": SCRIPT_REL,
             "outdir": outdir_rel,
             "data_npz": data_npz_rel,
-            "selected_output": f"{outdir_rel}/{STEM}.pdf",
-            "q_threshold": q_thr,
-            "reference_loss": reference_loss,
-            "best_sigma": best_sigma,
-            "best_K": best_k,
-            "rerun_command": f"MPLCONFIGDIR=/tmp/mpl-cache python {SCRIPT_REL} --outdir {OUTDIR_REL_DEFAULT}",
-            "output_files": [
-                f"{outdir_rel}/{STEM}.pdf",
+                "selected_output": f"{outdir_rel}/{STEM}.pdf",
+                "q_threshold": q_thr,
+                "reference_loss": reference_loss,
+                "best_sigma": best_sigma,
+                "best_K": best_k,
+                "rerun_command": f"MPLCONFIGDIR=/tmp/mpl-cache python {SCRIPT_REL} --outdir {outdir_rel}",
+                "output_files": [
+                    f"{outdir_rel}/{STEM}.pdf",
                 f"{outdir_rel}/{STEM}.png",
                 f"{outdir_rel}/{STEM}_heatmap_only.pdf",
                 f"{outdir_rel}/{STEM}_heatmap_only.png",

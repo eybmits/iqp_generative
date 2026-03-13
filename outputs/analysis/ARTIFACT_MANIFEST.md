@@ -1,20 +1,20 @@
 # Analysis Artifact Manifest
 
-Generated: 2026-03-12 18:38:45 UTC
+Generated: 2026-03-13 13:00:28 UTC
 
 This manifest records SHA-256 checksums and file sizes for curated files in `outputs/analysis`.
 
 | path | size_bytes | sha256 |
 |---|---:|---|
 | outputs/analysis/README.md | 944 | `bfbf0d2815f39f7e952963dba0042b73c0d3593d6e008f67b0c98636cc26705c` |
-| outputs/analysis/fig2_recovery_summary_panels/README.md | 1621 | `f5d3c39bb1202d3bf9219509b96d82300931cd884e4881e4b71b70d871e11f32` |
+| outputs/analysis/fig2_recovery_summary_panels/README.md | 1681 | `05f5daa8513d1ff689c7115a7a049cfc2aadf3bb0e4e74534b8acf250f1c98a7` |
 | outputs/analysis/fig2_recovery_summary_panels/RUN_CONFIG.json | 1450 | `8b84e859bcd30177882e2d52c1db2962858f6c59d7c31c24863cd71c0e1c729a` |
-| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels.pdf | 30786 | `9baf88654c86d1353fd346ce5b1fabf36eb02315efa8b79e59c51ebfcdd0ec1a` |
-| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels.png | 174879 | `c1d272584f6428fbd70f6eff3ead1343ae63f809d546d39a7a67c7a1ad30ad02` |
-| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels_benchmark_only.pdf | 26078 | `3b9b0b625599c0192a1b47e621ba331b79d676e4ba9ebc64f2ea7cc963985914` |
-| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels_benchmark_only.png | 87594 | `9c8521606eeee7767d257a8d08a75314dc2d7e88673cdc104665f02d216f8dc4` |
-| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels_heatmap_only.pdf | 21871 | `208df3b1ccc0482c30227407a99037de8c5cd70639502327468ebb4e7c214390` |
-| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels_heatmap_only.png | 70065 | `f1a6d4ddce972b04743eabf5992f0560942fe5416f06fbc611aa5ed2e0b71e02` |
+| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels.pdf | 30384 | `8d6f2dc3987addfabc4493075024b7b738789fa4e7e0574e27c5a0ae9cc22e32` |
+| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels.png | 166560 | `3625be2742eac26f6a028998dbd66ded61320549b2e8a84c83023706aed82185` |
+| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels_benchmark_only.pdf | 26064 | `f982bb0871a68d67afc1e3f0b3bcbb19df79f638f46b92f36e18b3837ad86e3e` |
+| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels_benchmark_only.png | 73426 | `da3a75d6728f6e6f6431f7cbfd4e5d4880f994c0d4837a857694a4d2e25cb2b7` |
+| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels_heatmap_only.pdf | 22315 | `db6e429f45c910ab29466f62f41b744b98125a8e339c1a3e93b5a8a2ced1eff0` |
+| outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels_heatmap_only.png | 73982 | `744e65d213dcf8b48b5b596f197c9c7b4296213abe38f51522586440c106409c` |
 | outputs/analysis/fig2_recovery_summary_panels/fig2_recovery_summary_panels_metrics.csv | 2151 | `6de61a41b9c46cc19190801eb1cff70d6fbecdb799c03bf4396a0365435d0ccb` |
 | outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/README.md | 1508 | `44929af4ee3df739a37d9c4823e5f454264990eef36f246f525071fbfd82ce5a` |
 | outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/RUN_CONFIG.json | 952 | `d3f8ea4c8cdcae5de355f204cba322aa5eb00a1733b85b48d98e3f6d4d645357` |

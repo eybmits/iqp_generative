@@ -6,6 +6,7 @@ Inputs:
 
 - frozen snapshot: `outputs/final_plots/fig2_iqp_sigmak_ablation_recovery/fig2_data_default.npz`
 - no retraining; all metrics are derived from the stored recovery curves
+- heatmap palette: fixed red-black house style
 
 Primary summary metric:
 
@@ -16,10 +17,10 @@ Primary summary metric:
 Main visual:
 
 - left panel: heatmap over the 12 parity settings in the frozen sigma-K grid
-- heatmap color: `Delta Q80 vs IQP MSE = Q80(MSE) - Q80(Parity)`
-- positive values mean parity reaches 80% recovery earlier than IQP MSE
-- `IQP MSE` is the zero-reference baseline for `Delta Q80`
-- cell text: signed `Delta Q80 vs IQP MSE`, not absolute parity `Q80`
+- heatmap cell text: absolute `Q80(IQP Parity)` in samples
+- heatmap color: same absolute `Q80(IQP Parity)` quantity
+- lower `Q80` settings are rendered in brighter red; higher `Q80` settings darken toward black
+- cell text and color now encode the same parity-only `Q80` metric
 
 Right benchmark panel:
 
