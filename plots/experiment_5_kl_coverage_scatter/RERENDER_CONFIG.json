@@ -1,0 +1,6 @@
+{
+  "script": "experiment_5_kl_coverage_scatter.py",
+  "scatter_csv": "plots/experiment_5_kl_coverage_scatter/experiment_5_kl_coverage_scatter_scatter.csv",
+  "outdir": "plots/experiment_5_kl_coverage_scatter",
+  "rerender_command": "MPLCONFIGDIR=/tmp/mpl-cache python experiment_5_kl_coverage_scatter.py --scatter-csv plots/experiment_5_kl_coverage_scatter/experiment_5_kl_coverage_scatter_scatter.csv --outdir plots/experiment_5_kl_coverage_scatter --stem experiment_5_kl_coverage_scatter"
+}

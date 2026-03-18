@@ -1,0 +1,18 @@
+{
+  "script": "experiment_5_kl_coverage_scatter.py",
+  "input_mode": "scatter_csv",
+  "source_path": "plots/experiment_5_kl_coverage_scatter/experiment_5_kl_coverage_scatter_scatter.csv",
+  "outdir": "plots/experiment_5_kl_coverage_scatter",
+  "stem": "experiment_5_kl_coverage_scatter",
+  "coverage_budget": 1000,
+  "figure_width_in": 3.75,
+  "figure_height_in": 2.5766666666666667,
+  "model_order": [
+    "classical_transformer_mle",
+    "classical_dense_fields_xent",
+    "iqp_parity_mse",
+    "classical_nnn_fields_parity",
+    "classical_maxent_parity"
+  ],
+  "pdf_only": true
+}

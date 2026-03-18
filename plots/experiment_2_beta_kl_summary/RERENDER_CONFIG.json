@@ -1,0 +1,6 @@
+{
+  "script": "experiment_2_beta_kl_summary.py",
+  "series_csv": "plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_series.csv",
+  "outdir": "plots/experiment_2_beta_kl_summary",
+  "rerender_command": "MPLCONFIGDIR=/tmp/mpl-cache python experiment_2_beta_kl_summary.py --series-csv plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_series.csv --outdir plots/experiment_2_beta_kl_summary --stem experiment_2_beta_kl_summary"
+}

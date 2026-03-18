@@ -1,0 +1,6 @@
+{
+  "script": "final_plots/experiment_1_kl_diagnostics.py",
+  "data_npz": "outputs/final_plots/experiment_1_kl_diagnostics/experiment_1_data.npz",
+  "outdir": "outputs/final_plots/experiment_1_kl_diagnostics",
+  "rerender_command": "MPLCONFIGDIR=/tmp/mpl-cache python final_plots/experiment_1_kl_diagnostics.py --rerender-only 1 --data-npz outputs/final_plots/experiment_1_kl_diagnostics/experiment_1_data.npz --outdir outputs/final_plots/experiment_1_kl_diagnostics"
+}

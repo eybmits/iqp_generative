@@ -1,0 +1,14 @@
+{
+  "script": "experiment_4_recovery_sigmak_triplet.py",
+  "data_npz": "plots/experiment_4_recovery_sigmak_triplet/coverage_sigmak_triplet_data.npz",
+  "outdir": "plots/experiment_4_recovery_sigmak_triplet",
+  "beta": 0.9,
+  "seed": 45,
+  "metric": "recovery",
+  "comparison_spectral_key": "sigma=1, K=512",
+  "best_parity_key": "sigma=1, K=512",
+  "best_spectral_key": "sigma=3, K=512",
+  "elite_unseen_count": 138,
+  "pdf_only": true,
+  "source_note": "The original source NPZ is not bundled in the reduced repo layout; the rendered PDFs are retained."
+}

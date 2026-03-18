@@ -1,0 +1,18 @@
+{
+  "script": "experiment_2_beta_kl_summary.py",
+  "input_mode": "series_csv",
+  "source_path": "plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_series.csv",
+  "outdir": "plots/experiment_2_beta_kl_summary",
+  "stem": "experiment_2_beta_kl_summary",
+  "figure_width_in": 3.75,
+  "figure_height_in": 2.5766666666666667,
+  "model_order": [
+    "iqp_parity_mse",
+    "classical_nnn_fields_parity",
+    "classical_dense_fields_xent",
+    "classical_transformer_mle",
+    "classical_maxent_parity"
+  ],
+  "band": "iqr",
+  "pdf_only": true
+}
