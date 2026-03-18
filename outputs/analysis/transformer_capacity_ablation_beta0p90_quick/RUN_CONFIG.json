@@ -1,0 +1,54 @@
+{
+  "script": "experiments/analysis/plot_transformer_capacity_ablation_fixed_beta.py",
+  "outdir": "outputs/analysis/transformer_capacity_ablation_beta0p90_quick",
+  "beta": 0.9,
+  "n": 12,
+  "seeds": [
+    101,
+    102,
+    103,
+    104,
+    105
+  ],
+  "train_m": 200,
+  "val_m": 1000,
+  "holdout_mode": "global",
+  "holdout_seed": 46,
+  "sigma": 1.0,
+  "K": 512,
+  "iqp_steps": 300,
+  "artr_epochs": 300,
+  "artr_lr": 0.001,
+  "artr_batch_size": 256,
+  "transformer_configs": [
+    {
+      "variant": "tiny",
+      "d_model": 8,
+      "nhead": 2,
+      "layers": 1,
+      "dim_ff": 16
+    },
+    {
+      "variant": "small",
+      "d_model": 16,
+      "nhead": 2,
+      "layers": 1,
+      "dim_ff": 32
+    },
+    {
+      "variant": "medium",
+      "d_model": 32,
+      "nhead": 4,
+      "layers": 1,
+      "dim_ff": 64
+    },
+    {
+      "variant": "large",
+      "d_model": 64,
+      "nhead": 4,
+      "layers": 2,
+      "dim_ff": 128
+    }
+  ],
+  "rerun_command": "MPLCONFIGDIR=/tmp/mpl-cache python experiments/analysis/plot_transformer_capacity_ablation_fixed_beta.py --beta 0.9 --n 12 --seeds 101,102,103,104,105 --train-m 200 --val-m 1000 --holdout-mode global --iqp-steps 300 --artr-epochs 300 --outdir outputs/analysis/transformer_capacity_ablation_beta0p90_quick"
+}

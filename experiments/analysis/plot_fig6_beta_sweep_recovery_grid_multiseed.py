@@ -19,6 +19,13 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 
 from paper_benchmark_ledger import record_benchmark_run
+from training_protocol import (
+    PROTOCOL_VERSION as ACTIVE_PROTOCOL_VERSION,
+    STANDARD_SEED_IDS,
+    STANDARD_SEED_IDS_CSV,
+    STANDARD_SEED_SCHEDULE_CSV,
+    write_training_protocol,
+)
 
 
 HAS_PENNYLANE = False
@@ -68,10 +75,10 @@ LW_UNIFORM = 1.35
 LW_MODEL_SCALE = 1.0
 LW_Q80 = 1.2
 MS_Q80 = 6.0
-BENCHMARK_PROTOCOL_VERSION = "benchmark-standard-20-seeds-v1"
-BENCHMARK_MATCHED_INSTANCE_SEED_IDS = tuple(range(101, 121))
+BENCHMARK_PROTOCOL_VERSION = ACTIVE_PROTOCOL_VERSION
+BENCHMARK_MATCHED_INSTANCE_SEED_IDS = STANDARD_SEED_IDS
 BENCHMARK_HOLDOUT_SEED = 46
-BENCHMARK_SEED_SCHEDULE_CSV = "docs/benchmark_seed_schedule_20seeds.csv"
+BENCHMARK_SEED_SCHEDULE_CSV = STANDARD_SEED_SCHEDULE_CSV
 BENCHMARK_TRAIN_SAMPLE_OFFSET = 7
 BENCHMARK_PARITY_BAND_OFFSET = 222
 BENCHMARK_HOLDOUT_SELECTION_OFFSET = 111
@@ -128,7 +135,8 @@ def benchmark_protocol_metadata(
         "protocol_version": BENCHMARK_PROTOCOL_VERSION,
         "matched_instance_definition": (
             "A matched instance is indexed by (beta, s), with beta in {0.1, 0.2, ..., 2.0} "
-            "and s in {1, ..., 20}, yielding 400 matched instances in total."
+            f"and s in {{1, ..., {len(BENCHMARK_MATCHED_INSTANCE_SEED_IDS)}}}, "
+            f"yielding {20 * len(BENCHMARK_MATCHED_INSTANCE_SEED_IDS)} matched instances in total."
         ),
         "matched_instance_seed_ids": [int(x) for x in BENCHMARK_MATCHED_INSTANCE_SEED_IDS],
         "matched_instance_count_per_beta": int(len(BENCHMARK_MATCHED_INSTANCE_SEED_IDS)),
@@ -953,7 +961,7 @@ def _write_run_config(
         "selected_final_run": bool(legacy_repo_snapshot),
         "legacy_repo_snapshot": bool(legacy_repo_snapshot),
         "benchmark_protocol_version": BENCHMARK_PROTOCOL_VERSION,
-        "matches_benchmark_20seed_standard": bool(np.array_equal(seed_values, benchmark_seed_standard)),
+        "matches_active_standard_seed_schedule": bool(np.array_equal(seed_values, benchmark_seed_standard)),
         "script": "experiments/analysis/plot_fig6_beta_sweep_recovery_grid_multiseed.py",
         "self_contained_training_logic": True,
         "outdir": outdir_rel,
@@ -1013,6 +1021,13 @@ def _write_run_config(
     with (outdir / "RUN_CONFIG.json").open("w", encoding="utf-8") as f:
         json.dump(run_config, f, indent=2)
         f.write("\n")
+    write_training_protocol(
+        outdir,
+        experiment_name="Fig6 multiseed recovery grid",
+        note="This run uses the shared 10-seed / 600-budget analysis standard.",
+        source_relpath="experiments/analysis/plot_fig6_beta_sweep_recovery_grid_multiseed.py",
+        metrics_note="Primary outputs are multiseed recovery curves; training defaults remain fixed at the shared 600-budget protocol.",
+    )
 
 
 def run() -> None:
@@ -1025,14 +1040,14 @@ def run() -> None:
     ap.add_argument(
         "--outdir",
         type=str,
-        default=str(ROOT / "outputs" / "analysis" / "fig6_multiseed_all600_seeds101_120"),
+        default=str(ROOT / "outputs" / "analysis" / "fig6_multiseed_all600_seeds101_110"),
     )
     ap.add_argument("--betas", type=str, default="0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2")
     ap.add_argument(
         "--seeds",
         type=str,
-        default="101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120",
-        help="Comma-separated matched-instance seed IDs. The benchmark standard uses 20 seeds: 101..120.",
+        default=STANDARD_SEED_IDS_CSV,
+        help="Comma-separated matched-instance seed IDs. The active analysis standard uses 10 seeds: 101..110.",
     )
     ap.add_argument(
         "--holdout-seed",
@@ -1289,13 +1304,13 @@ def run() -> None:
         metrics_csv = outdir / f"{OUTPUT_STEM}_metrics.csv"
         data_npz = outdir / f"{OUTPUT_STEM}_data.npz"
         experiment_id = (
-            "fig6_base_multiseed_20seed"
+            "fig6_base_multiseed_10seed"
             if np.allclose(betas, np.asarray([0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2], dtype=np.float64))
-            else "fig6_wide_multiseed_20seed"
+            else "fig6_wide_multiseed_10seed"
         )
         title = (
             "Fig6 base recovery-grid benchmark (beta = 0.5..1.2)"
-            if experiment_id == "fig6_base_multiseed_20seed"
+            if experiment_id == "fig6_base_multiseed_10seed"
             else "Fig6 wide recovery-grid benchmark (beta = 0.1..2.0)"
         )
         record_benchmark_run(
@@ -1305,7 +1320,7 @@ def run() -> None:
             output_paths=[out_pdf, out_png],
             metrics_paths=[metrics_csv, data_npz],
             notes=[
-                "20-seed benchmark-standard multiseed recovery-grid run.",
+                "10-seed active-standard multiseed recovery-grid run.",
                 "Per-instance metrics and recovery curves are stored alongside the rendered panel grid.",
             ],
         )

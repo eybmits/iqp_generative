@@ -41,6 +41,7 @@ from experiments.analysis.plot_fig6_beta_sweep_recovery_grid_multiseed import ( 
     train_iqp_qcbm,
 )
 from paper_benchmark_ledger import record_benchmark_run  # noqa: E402
+from experiments.analysis.training_protocol import STANDARD_SEED_IDS_CSV, write_training_protocol  # noqa: E402
 from experiments.final_scripts.plot_tv_bshs_seedmean_scatter import (  # noqa: E402
     MODEL_LABELS,
     MODEL_ORDER,
@@ -157,15 +158,15 @@ def run() -> None:
     ap.add_argument(
         "--outdir",
         type=str,
-        default=str(ROOT / "outputs" / "analysis" / "fig3_kl_bshs_seedmean_scatter_20seeds_all600"),
+        default=str(ROOT / "outputs" / "analysis" / "fig3_kl_bshs_seedmean_scatter_10seeds_all600"),
     )
     ap.add_argument("--n", type=int, default=12)
     ap.add_argument("--beta", type=float, default=0.9)
     ap.add_argument(
         "--seeds",
         type=str,
-        default="101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120",
-        help="Comma-separated matched-instance seed IDs. The benchmark standard uses 20 seeds: 101..120.",
+        default=STANDARD_SEED_IDS_CSV,
+        help="Comma-separated matched-instance seed IDs. The active analysis standard uses 10 seeds: 101..110.",
     )
     ap.add_argument("--holdout-mode", type=str, default="global", choices=["global", "high_value"])
     ap.add_argument("--train-m", type=int, default=200)
@@ -349,7 +350,7 @@ def run() -> None:
                 "artr_epochs": int(args.artr_epochs),
                 "maxent_steps": int(args.maxent_steps),
                 "kl_variant": "forward_kl_pstar_to_q_nats",
-                "matches_benchmark_20seed_standard": bool(
+                "matches_active_standard_seed_schedule": bool(
                     seeds == [int(x) for x in BENCHMARK_MATCHED_INSTANCE_SEED_IDS]
                 ),
                 "benchmark_protocol": benchmark_protocol_metadata(
@@ -408,16 +409,23 @@ def run() -> None:
         "models": list(MODEL_ORDER),
     }
     _write_run_config(run_config_json, run_config_payload)
+    write_training_protocol(
+        outdir,
+        experiment_name="Fig3 fixed-beta KL-BSHS benchmark",
+        note="This run uses the shared 10-seed / 600-budget analysis standard.",
+        source_relpath="experiments/analysis/plot_fig3_kl_bshs_dual_axis_boxplot.py",
+        metrics_note="The reported right-axis metric is exact forward KL D_KL(p* || q).",
+    )
 
     if seeds == [int(x) for x in BENCHMARK_MATCHED_INSTANCE_SEED_IDS]:
         record_benchmark_run(
-            experiment_id="fig3_fixed_beta_kl_bshs_20seed",
+            experiment_id="fig3_fixed_beta_kl_bshs_10seed",
             title="Fig4 fixed-beta KL-BSHS benchmark at beta = 0.9",
             run_config_path=run_config_json,
             output_paths=[out_pdf, out_png],
             metrics_paths=[points_csv, summary_json],
             notes=[
-                "Fixed-beta 20-seed benchmark artifact for beta = 0.9.",
+                "Fixed-beta 10-seed active-standard artifact for beta = 0.9.",
                 "Includes the strong Transformer baseline used in the paper-side disclosure.",
             ],
         )

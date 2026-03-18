@@ -21,6 +21,7 @@ from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.ticker import FixedLocator, FuncFormatter, NullLocator  # noqa: E402
 
 from paper_benchmark_ledger import is_benchmark_20seed_run, record_benchmark_run
+from training_protocol import write_training_protocol
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_REL = "experiments/analysis/plot_fig6_beta_q80_summary.py"
@@ -265,6 +266,7 @@ def _write_readme(
         f"- `{stem}_metrics.csv`",
         "- `README.md`",
         "- `RUN_CONFIG.json`",
+        "- `TRAINING_PROTOCOL.md`",
     ]
     if has_censored:
         lines.insert(
@@ -631,7 +633,7 @@ def run() -> None:
             ROOT
             / "outputs"
             / "analysis"
-            / "fig6_multiseed_all600_seeds101_120"
+            / "fig6_multiseed_all600_seeds101_110"
             / "fig6_beta_sweep_recovery_grid_multiseed_metrics.csv"
         ),
     )
@@ -642,7 +644,7 @@ def run() -> None:
             ROOT
             / "outputs"
             / "analysis"
-            / "fig6_multiseed_all600_seeds101_120"
+            / "fig6_multiseed_all600_seeds101_110"
             / "fig6_beta_sweep_recovery_grid_multiseed_data.npz"
         ),
     )
@@ -930,6 +932,13 @@ def run() -> None:
         holdout_mode=str(curve_payload["holdout_mode"]),
         holdout_m_train=int(curve_payload["holdout_m_train"]),
     )
+    write_training_protocol(
+        outdir,
+        experiment_name="Fig6 beta-vs-Q80 summary",
+        note="This summary inherits the shared 10-seed / 600-budget training protocol from the source multiseed Fig6 run.",
+        source_relpath="experiments/analysis/plot_fig6_beta_q80_summary.py",
+        metrics_note="No retraining happens here; the plot is derived from stored multiseed artifacts.",
+    )
 
     seed_values = np.asarray(curve_payload["seed_values"], dtype=np.int64).tolist()
     if is_benchmark_20seed_run(seed_values):
@@ -963,6 +972,7 @@ def run() -> None:
     print(f"[saved] {out_png}")
     print(f"[saved] {outdir / 'README.md'}")
     print(f"[saved] {outdir / 'RUN_CONFIG.json'}")
+    print(f"[saved] {outdir / 'TRAINING_PROTOCOL.md'}")
 
 
 if __name__ == "__main__":

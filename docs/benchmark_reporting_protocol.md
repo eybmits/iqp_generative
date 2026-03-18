@@ -162,6 +162,9 @@ Per-instance metrics exposed by the current rerun scripts include:
 
 ### Summary conventions
 
+- use `SD` when the goal is to show the actual spread across matched seeds / instances
+- use `95% CI` when the goal is to quantify uncertainty of the estimated mean
+- do not use `SE` as the default error bar, because it can visually understate seed-to-seed variability
 - wide beta-sweep summaries: prefer `median + IQR` when reporting `Q80`
 - mean-based summaries remain allowed when explicitly labeled `mean +/- std`
 - Fig3 fixed-beta summaries report per-seed distributions and seed means
