@@ -22,11 +22,13 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from experiments.analysis.plot_fig6_beta_sweep_recovery_grid_multiseed import (  # noqa: E402
+    BENCHMARK_MATCHED_INSTANCE_SEED_IDS,
     HAS_PENNYLANE,
     HAS_TORCH,
     _train_classical_boltzmann,
     _train_maxent_parity,
     _train_transformer_autoregressive,
+    benchmark_protocol_metadata,
     build_parity_matrix,
     build_target_distribution_paper,
     empirical_dist,
@@ -38,6 +40,7 @@ from experiments.analysis.plot_fig6_beta_sweep_recovery_grid_multiseed import ( 
     topk_mask_by_scores,
     train_iqp_qcbm,
 )
+from paper_benchmark_ledger import record_benchmark_run  # noqa: E402
 from experiments.final_scripts.plot_tv_bshs_seedmean_scatter import (  # noqa: E402
     MODEL_LABELS,
     MODEL_ORDER,
@@ -143,6 +146,12 @@ def _write_summary(path: Path, rows: List[Dict[str, object]], config: Dict[str, 
         f.write("\n")
 
 
+def _write_run_config(path: Path, payload: Dict[str, object]) -> None:
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
+        f.write("\n")
+
+
 def run() -> None:
     ap = argparse.ArgumentParser(description="Recompute a Fig3-style BSHS vs forward-KL boxplot.")
     ap.add_argument(
@@ -152,7 +161,12 @@ def run() -> None:
     )
     ap.add_argument("--n", type=int, default=12)
     ap.add_argument("--beta", type=float, default=0.9)
-    ap.add_argument("--seeds", type=str, default="101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120")
+    ap.add_argument(
+        "--seeds",
+        type=str,
+        default="101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120",
+        help="Comma-separated matched-instance seed IDs. The benchmark standard uses 20 seeds: 101..120.",
+    )
     ap.add_argument("--holdout-mode", type=str, default="global", choices=["global", "high_value"])
     ap.add_argument("--train-m", type=int, default=200)
     ap.add_argument("--sigma", type=float, default=1.0)
@@ -194,6 +208,9 @@ def run() -> None:
     points_csv = outdir / f"kl_bshs_points_multiseed_beta_q{int(args.q_eval)}_beta{beta_tag}_newseeds{len(seeds)}.csv"
     summary_json = outdir / f"kl_bshs_summary_multiseed_beta_q{int(args.q_eval)}_beta{beta_tag}_newseeds{len(seeds)}.json"
     out_stem = f"fig3_kl_bshs_seedmean_scatter_beta_{beta_tag}_dual_axis_boxplot"
+    out_pdf = outdir / f"{out_stem}.pdf"
+    out_png = outdir / f"{out_stem}.png"
+    run_config_json = outdir / "RUN_CONFIG.json"
 
     if points_csv.exists() and not bool(int(args.recompute)):
         df = pd.read_csv(points_csv)
@@ -323,13 +340,23 @@ def run() -> None:
                 "sigma": float(args.sigma),
                 "K": int(args.K),
                 "q_eval": int(args.q_eval),
+                "seed_count": int(len(seeds)),
                 "holdout_k": int(args.holdout_k),
                 "holdout_pool": int(args.holdout_pool),
                 "holdout_m_train": int(args.holdout_m_train),
+                "holdout_seed_policy": "matched_seed_plus_111",
                 "iqp_steps": int(args.iqp_steps),
                 "artr_epochs": int(args.artr_epochs),
                 "maxent_steps": int(args.maxent_steps),
                 "kl_variant": "forward_kl_pstar_to_q_nats",
+                "matches_benchmark_20seed_standard": bool(
+                    seeds == [int(x) for x in BENCHMARK_MATCHED_INSTANCE_SEED_IDS]
+                ),
+                "benchmark_protocol": benchmark_protocol_metadata(
+                    betas=[float(args.beta)],
+                    K=int(args.K),
+                    holdout_policy="matched_seed_plus_111",
+                ),
             },
         )
         df = pd.DataFrame(rows)
@@ -343,6 +370,57 @@ def run() -> None:
         right_metric_axis_label=r"$D_{\mathrm{KL}}(p^*\|q)$",
         right_metric_legend_label="KL",
     )
+
+    run_config_payload = {
+        "script": "experiments/analysis/plot_fig3_kl_bshs_dual_axis_boxplot.py",
+        "selected_output": str(out_pdf.relative_to(ROOT)),
+        "output_files": [str(out_pdf.relative_to(ROOT)), str(out_png.relative_to(ROOT))],
+        "points_csv": str(points_csv.relative_to(ROOT)),
+        "summary_json": str(summary_json.relative_to(ROOT)),
+        "beta": float(args.beta),
+        "n": int(args.n),
+        "seeds": [int(x) for x in seeds],
+        "q_eval": int(args.q_eval),
+        "train_m": int(args.train_m),
+        "sigma": float(args.sigma),
+        "K": int(args.K),
+        "holdout_mode": str(args.holdout_mode),
+        "holdout_k": int(args.holdout_k),
+        "holdout_pool": int(args.holdout_pool),
+        "holdout_m_train": int(args.holdout_m_train),
+        "iqp_steps": int(args.iqp_steps),
+        "iqp_lr": float(args.iqp_lr),
+        "iqp_eval_every": int(args.iqp_eval_every),
+        "artr_epochs": int(args.artr_epochs),
+        "artr_d_model": int(args.artr_d_model),
+        "artr_heads": int(args.artr_heads),
+        "artr_layers": int(args.artr_layers),
+        "artr_ff": int(args.artr_ff),
+        "artr_lr": float(args.artr_lr),
+        "artr_batch_size": int(args.artr_batch_size),
+        "maxent_steps": int(args.maxent_steps),
+        "maxent_lr": float(args.maxent_lr),
+        "right_metric": {
+            "name": "forward_kl",
+            "formula": "D_KL(p* || q)",
+            "units": "nats",
+        },
+        "models": list(MODEL_ORDER),
+    }
+    _write_run_config(run_config_json, run_config_payload)
+
+    if seeds == [int(x) for x in BENCHMARK_MATCHED_INSTANCE_SEED_IDS]:
+        record_benchmark_run(
+            experiment_id="fig3_fixed_beta_kl_bshs_20seed",
+            title="Fig4 fixed-beta KL-BSHS benchmark at beta = 0.9",
+            run_config_path=run_config_json,
+            output_paths=[out_pdf, out_png],
+            metrics_paths=[points_csv, summary_json],
+            notes=[
+                "Fixed-beta 20-seed benchmark artifact for beta = 0.9.",
+                "Includes the strong Transformer baseline used in the paper-side disclosure.",
+            ],
+        )
 
 
 if __name__ == "__main__":

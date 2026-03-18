@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "generated_from": "experiments/analysis/paper_benchmark_ledger.py",
+  "runs": [
+    {
+      "recorded_at_utc": "2026-03-18T11:39:29Z",
+      "experiment_id": "fig3_fixed_beta_kl_bshs_20seed",
+      "title": "Fig4 fixed-beta KL-BSHS benchmark at beta = 0.9 (registered from existing artifact)",
+      "run_config_path": "outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/RUN_CONFIG.json",
+      "outdir": "outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600",
+      "seed_values": [
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120
+      ],
+      "betas": [
+        0.9
+      ],
+      "config_subset": {
+        "beta": 0.9,
+        "q_eval": 1000,
+        "n": 12,
+        "train_m": 200,
+        "sigma": 1.0,
+        "K": 512,
+        "holdout_mode": "global",
+        "holdout_k": 20,
+        "holdout_pool": 400,
+        "holdout_m_train": 5000,
+        "iqp_steps": 600,
+        "artr_epochs": 600,
+        "maxent_steps": 600
+      },
+      "output_paths": [
+        "outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/fig3_kl_bshs_seedmean_scatter_beta_0p90_dual_axis_boxplot.pdf",
+        "outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/fig3_kl_bshs_seedmean_scatter_beta_0p90_dual_axis_boxplot.png"
+      ],
+      "metrics_paths": [
+        "outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/kl_bshs_points_multiseed_beta_q1000_beta0p90_newseeds20.csv",
+        "outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/kl_bshs_summary_multiseed_beta_q1000_beta0p90_newseeds20.json"
+      ],
+      "notes": [
+        "Backfilled from the already committed 20-seed artifact directory.",
+        "This establishes the initial ledger entry before the next fresh rerun."
+      ]
+    }
+  ],
+  "last_updated_utc": "2026-03-18T11:39:29Z"
+}

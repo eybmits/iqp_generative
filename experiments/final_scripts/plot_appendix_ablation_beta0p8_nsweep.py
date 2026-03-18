@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Final appendix plot script: beta=0.8 n-sweep ablation (data-driven)."""
+"""Final appendix plot script: beta=0.8 n-sweep ablation (data-driven).
+
+The committed default NPZ is a historical 5-seed frozen snapshot; benchmark-standard
+20-seed reruns belong in the analysis pipeline rather than the frozen final package.
+"""
 
 from __future__ import annotations
 

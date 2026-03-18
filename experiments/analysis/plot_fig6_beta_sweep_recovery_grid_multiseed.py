@@ -18,6 +18,8 @@ os.environ.setdefault("MPLBACKEND", "Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 
+from paper_benchmark_ledger import record_benchmark_run
+
 
 HAS_PENNYLANE = False
 try:
@@ -66,6 +68,96 @@ LW_UNIFORM = 1.35
 LW_MODEL_SCALE = 1.0
 LW_Q80 = 1.2
 MS_Q80 = 6.0
+BENCHMARK_PROTOCOL_VERSION = "benchmark-standard-20-seeds-v1"
+BENCHMARK_MATCHED_INSTANCE_SEED_IDS = tuple(range(101, 121))
+BENCHMARK_HOLDOUT_SEED = 46
+BENCHMARK_SEED_SCHEDULE_CSV = "docs/benchmark_seed_schedule_20seeds.csv"
+BENCHMARK_TRAIN_SAMPLE_OFFSET = 7
+BENCHMARK_PARITY_BAND_OFFSET = 222
+BENCHMARK_HOLDOUT_SELECTION_OFFSET = 111
+BENCHMARK_CLASSICAL_NNN_INIT_OFFSET = 30001
+BENCHMARK_CLASSICAL_DENSE_INIT_OFFSET = 30004
+BENCHMARK_TRANSFORMER_INIT_OFFSET = 35501
+BENCHMARK_TRANSFORMER_DATALOADER_OFFSET = BENCHMARK_TRANSFORMER_INIT_OFFSET + 11
+BENCHMARK_MAXENT_INIT_OFFSET = 36001
+
+
+def benchmark_seed_rows(K: int = 512) -> List[Dict[str, int]]:
+    rows: List[Dict[str, int]] = []
+    iqp_offset = 10000 + 7 * int(K)
+    for idx, seed in enumerate(BENCHMARK_MATCHED_INSTANCE_SEED_IDS, start=1):
+        rows.append(
+            {
+                "matched_seed_index": int(idx),
+                "matched_seed_id": int(seed),
+                "train_sample_seed": int(seed) + BENCHMARK_TRAIN_SAMPLE_OFFSET,
+                "parity_band_seed": int(seed) + BENCHMARK_PARITY_BAND_OFFSET,
+                "iqp_init_seed": int(seed) + iqp_offset,
+                "classical_nnn_init_seed": int(seed) + BENCHMARK_CLASSICAL_NNN_INIT_OFFSET,
+                "classical_dense_xent_init_seed": int(seed) + BENCHMARK_CLASSICAL_DENSE_INIT_OFFSET,
+                "transformer_init_seed": int(seed) + BENCHMARK_TRANSFORMER_INIT_OFFSET,
+                "transformer_dataloader_seed": int(seed) + BENCHMARK_TRANSFORMER_DATALOADER_OFFSET,
+                "maxent_init_seed": int(seed) + BENCHMARK_MAXENT_INIT_OFFSET,
+            }
+        )
+    return rows
+
+
+def benchmark_protocol_metadata(
+    *,
+    betas: List[float],
+    K: int,
+    holdout_policy: str,
+    fixed_holdout_seed: Optional[int] = None,
+) -> Dict[str, object]:
+    if fixed_holdout_seed is None:
+        holdout_statement = (
+            "The holdout mask is derived per matched seed from matched_seed + "
+            f"{BENCHMARK_HOLDOUT_SELECTION_OFFSET}."
+        )
+        holdout_seed_value: Optional[int] = None
+        holdout_selection_seed: Optional[int] = None
+    else:
+        holdout_statement = (
+            "The holdout mask is shared across matched seeds and is derived from fixed holdout_seed + "
+            f"{BENCHMARK_HOLDOUT_SELECTION_OFFSET}."
+        )
+        holdout_seed_value = int(fixed_holdout_seed)
+        holdout_selection_seed = int(fixed_holdout_seed) + BENCHMARK_HOLDOUT_SELECTION_OFFSET
+    return {
+        "protocol_version": BENCHMARK_PROTOCOL_VERSION,
+        "matched_instance_definition": (
+            "A matched instance is indexed by (beta, s), with beta in {0.1, 0.2, ..., 2.0} "
+            "and s in {1, ..., 20}, yielding 400 matched instances in total."
+        ),
+        "matched_instance_seed_ids": [int(x) for x in BENCHMARK_MATCHED_INSTANCE_SEED_IDS],
+        "matched_instance_count_per_beta": int(len(BENCHMARK_MATCHED_INSTANCE_SEED_IDS)),
+        "matched_instance_count_total_wide_beta_sweep": int(20 * len(BENCHMARK_MATCHED_INSTANCE_SEED_IDS)),
+        "seed_schedule_csv": BENCHMARK_SEED_SCHEDULE_CSV,
+        "shared_randomness_statement": (
+            "Within each matched instance, all models receive the same D_train; parity-based models "
+            "additionally receive the same parity band Omega."
+        ),
+        "holdout_policy": str(holdout_policy),
+        "holdout_randomness_statement": holdout_statement,
+        "randomness_stack": [
+            "Fix beta and build p* on the even-parity support.",
+            holdout_statement,
+            f"Sample D_train from p_train with matched_seed + {BENCHMARK_TRAIN_SAMPLE_OFFSET}.",
+            f"Sample the parity band Omega with matched_seed + {BENCHMARK_PARITY_BAND_OFFSET}.",
+            "Initialize each model with its model-specific initialization seed.",
+        ],
+        "fixed_holdout_seed": holdout_seed_value,
+        "fixed_holdout_selection_seed": holdout_selection_seed,
+        "restart_policy": {
+            "num_restarts": 1,
+            "varied_across_restarts": "none",
+            "selection_rule": "single_run_only",
+        },
+        "betas_for_this_run": [float(x) for x in betas],
+        "K_for_this_run": int(K),
+        "seed_rows": benchmark_seed_rows(K=int(K)),
+    }
 
 
 def _parse_float_list(s: str) -> np.ndarray:
@@ -846,23 +938,29 @@ def _write_run_config(
     except ValueError:
         outdir_rel = str(outdir)
 
+    legacy_repo_snapshot = (
+        outdir_abs == (ROOT / "outputs" / "analysis" / "fig6_multiseed_all600_seeds42_46").resolve()
+        and np.allclose(betas, np.asarray([0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2], dtype=np.float64))
+        and np.array_equal(seed_values, np.asarray([42, 43, 44, 45, 46], dtype=np.int64))
+        and int(args.holdout_seed) == 46
+        and str(args.holdout_mode) == "global"
+        and int(args.iqp_steps) == 600
+        and int(args.artr_epochs) == 600
+        and int(args.maxent_steps) == 600
+    )
+    benchmark_seed_standard = np.asarray(BENCHMARK_MATCHED_INSTANCE_SEED_IDS, dtype=np.int64)
     run_config = {
-        "selected_final_run": (
-            outdir_abs == (ROOT / "outputs" / "analysis" / "fig6_multiseed_all600_seeds42_46").resolve()
-            and np.allclose(betas, np.asarray([0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2], dtype=np.float64))
-            and np.array_equal(seed_values, np.asarray([42, 43, 44, 45, 46], dtype=np.int64))
-            and int(args.holdout_seed) == 46
-            and str(args.holdout_mode) == "global"
-            and int(args.iqp_steps) == 600
-            and int(args.artr_epochs) == 600
-            and int(args.maxent_steps) == 600
-        ),
+        "selected_final_run": bool(legacy_repo_snapshot),
+        "legacy_repo_snapshot": bool(legacy_repo_snapshot),
+        "benchmark_protocol_version": BENCHMARK_PROTOCOL_VERSION,
+        "matches_benchmark_20seed_standard": bool(np.array_equal(seed_values, benchmark_seed_standard)),
         "script": "experiments/analysis/plot_fig6_beta_sweep_recovery_grid_multiseed.py",
         "self_contained_training_logic": True,
         "outdir": outdir_rel,
         "betas": [float(x) for x in betas.tolist()],
         "n": int(args.n),
         "seed_values": [int(x) for x in seed_values.tolist()],
+        "seed_count": int(seed_values.size),
         "holdout_seed": int(args.holdout_seed),
         "holdout_mode": str(args.holdout_mode),
         "holdout_m_train": int(args.holdout_m_train),
@@ -888,6 +986,12 @@ def _write_run_config(
         "q80_thr": float(args.q80_thr),
         "q80_search_max": int(args.q80_search_max),
         "band_statistic": "mean_plus_minus_std",
+        "benchmark_protocol": benchmark_protocol_metadata(
+            betas=[float(x) for x in betas.tolist()],
+            K=int(args.K),
+            holdout_policy="fixed_holdout_seed_plus_111",
+            fixed_holdout_seed=int(args.holdout_seed),
+        ),
         "rerun_command": (
             "MPLCONFIGDIR=/tmp/mpl-cache python "
             "experiments/analysis/plot_fig6_beta_sweep_recovery_grid_multiseed.py "
@@ -921,11 +1025,21 @@ def run() -> None:
     ap.add_argument(
         "--outdir",
         type=str,
-        default=str(ROOT / "outputs" / "analysis" / "fig6_multiseed_all600_seeds42_46"),
+        default=str(ROOT / "outputs" / "analysis" / "fig6_multiseed_all600_seeds101_120"),
     )
     ap.add_argument("--betas", type=str, default="0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2")
-    ap.add_argument("--seeds", type=str, default="42,43,44,45,46")
-    ap.add_argument("--holdout-seed", type=int, default=46)
+    ap.add_argument(
+        "--seeds",
+        type=str,
+        default="101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120",
+        help="Comma-separated matched-instance seed IDs. The benchmark standard uses 20 seeds: 101..120.",
+    )
+    ap.add_argument(
+        "--holdout-seed",
+        type=int,
+        default=BENCHMARK_HOLDOUT_SEED,
+        help="Fixed holdout seed shared across matched instances; benchmark standard keeps this at 46.",
+    )
     ap.add_argument(
         "--holdout-mode",
         type=str,
@@ -1170,6 +1284,31 @@ def run() -> None:
     fig.savefig(out_pdf)
     fig.savefig(out_png, dpi=int(args.dpi))
     plt.close(fig)
+
+    if np.array_equal(seed_values, np.asarray(BENCHMARK_MATCHED_INSTANCE_SEED_IDS, dtype=np.int64)):
+        metrics_csv = outdir / f"{OUTPUT_STEM}_metrics.csv"
+        data_npz = outdir / f"{OUTPUT_STEM}_data.npz"
+        experiment_id = (
+            "fig6_base_multiseed_20seed"
+            if np.allclose(betas, np.asarray([0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2], dtype=np.float64))
+            else "fig6_wide_multiseed_20seed"
+        )
+        title = (
+            "Fig6 base recovery-grid benchmark (beta = 0.5..1.2)"
+            if experiment_id == "fig6_base_multiseed_20seed"
+            else "Fig6 wide recovery-grid benchmark (beta = 0.1..2.0)"
+        )
+        record_benchmark_run(
+            experiment_id=experiment_id,
+            title=title,
+            run_config_path=outdir / "RUN_CONFIG.json",
+            output_paths=[out_pdf, out_png],
+            metrics_paths=[metrics_csv, data_npz],
+            notes=[
+                "20-seed benchmark-standard multiseed recovery-grid run.",
+                "Per-instance metrics and recovery curves are stored alongside the rendered panel grid.",
+            ],
+        )
 
     print(f"[saved] {out_pdf}")
     print(f"[saved] {out_png}")

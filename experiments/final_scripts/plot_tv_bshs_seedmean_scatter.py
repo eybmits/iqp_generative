@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Final plot script: TV_score vs BSHS seed-mean scatter (single panel only)."""
+"""Final plot script: TV_score vs BSHS seed-mean scatter (single panel only).
+
+The committed default CSV is a historical 12-seed frozen snapshot; benchmark-standard
+20-seed reruns are documented under experiments/analysis/.
+"""
 
 from __future__ import annotations
 
@@ -388,6 +392,7 @@ def run() -> None:
             / "fig3_tv_bshs_seedmean_scatter"
             / "tv_bshs_points_multiseed_beta_q1000_no_iqp_mse_beta0p9_newseeds12.csv"
         ),
+        help="Frozen historical 12-seed snapshot input. For benchmark-standard 20-seed reruns use the analysis drivers.",
     )
     ap.add_argument(
         "--outdir",

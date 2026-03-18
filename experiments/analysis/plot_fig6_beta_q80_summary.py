@@ -20,6 +20,8 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.ticker import FixedLocator, FuncFormatter, NullLocator  # noqa: E402
 
+from paper_benchmark_ledger import is_benchmark_20seed_run, record_benchmark_run
+
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_REL = "experiments/analysis/plot_fig6_beta_q80_summary.py"
 OUTDIR_REL_DEFAULT = "outputs/analysis/fig6_beta_q80_summary"
@@ -629,7 +631,7 @@ def run() -> None:
             ROOT
             / "outputs"
             / "analysis"
-            / "fig6_multiseed_all600_seeds42_46"
+            / "fig6_multiseed_all600_seeds101_120"
             / "fig6_beta_sweep_recovery_grid_multiseed_metrics.csv"
         ),
     )
@@ -640,7 +642,7 @@ def run() -> None:
             ROOT
             / "outputs"
             / "analysis"
-            / "fig6_multiseed_all600_seeds42_46"
+            / "fig6_multiseed_all600_seeds101_120"
             / "fig6_beta_sweep_recovery_grid_multiseed_data.npz"
         ),
     )
@@ -928,6 +930,33 @@ def run() -> None:
         holdout_mode=str(curve_payload["holdout_mode"]),
         holdout_m_train=int(curve_payload["holdout_m_train"]),
     )
+
+    seed_values = np.asarray(curve_payload["seed_values"], dtype=np.int64).tolist()
+    if is_benchmark_20seed_run(seed_values):
+        experiment_id = "fig6_base_q80_summary_20seed"
+        title = "Fig6 base Q80 summary"
+        if "beta0p1_2p0" in str(outdir):
+            band_mode = str(args.band_stat)
+            if "seed_traces" in str(outdir):
+                experiment_id = "fig6_wide_q80_summary_iqr_seed_traces_20seed"
+                title = "Fig6 wide Q80 summary with seed traces"
+            elif band_mode == "mean_std":
+                experiment_id = "fig6_wide_q80_summary_mean_std_20seed"
+                title = "Fig6 wide Q80 summary (mean +/- std)"
+            else:
+                experiment_id = "fig6_wide_q80_summary_iqr_20seed"
+                title = "Fig6 wide Q80 summary (median + IQR)"
+        record_benchmark_run(
+            experiment_id=experiment_id,
+            title=title,
+            run_config_path=outdir / "RUN_CONFIG.json",
+            output_paths=[out_pdf, out_png, outdir / "README.md"],
+            metrics_paths=[summary_csv, metrics_csv, data_npz],
+            notes=[
+                "Derived 20-seed benchmark-standard Q80 summary.",
+                "No retraining is performed in this step; the summary is built from stored multiseed artifacts.",
+            ],
+        )
 
     print(f"[saved] {summary_csv}")
     print(f"[saved] {out_pdf}")

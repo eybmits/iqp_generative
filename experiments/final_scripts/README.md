@@ -24,6 +24,8 @@ Each script uses:
 3. `plot_tv_bshs_seedmean_scatter.py`
 - Default input snapshot:
   - `tv_bshs_points_multiseed_beta_q1000_no_iqp_mse_beta0p9_newseeds12.csv`
+- Legacy note:
+  - this frozen final snapshot predates the benchmark-standard 20-seed rerun schedule and keeps its historical `12`-seed input unchanged
 - Default output mode:
   - dual-axis boxplot for `beta=0.90`
 - Produces:
@@ -59,6 +61,8 @@ Each script uses:
   - `n in {12,14,16,18}`
   - seeds `42..46` (5 seeds)
   - `iqp_steps=300` for parity and mse
+- Legacy note:
+  - this appendix snapshot is frozen as a historical `5`-seed artifact and is not the benchmark-standard 20-seed rerun configuration
 - Optional classical baseline overlay:
   - pass `--include-classical-baselines 1 --baseline-csv <path>`
   - CSV schema: `n,model_key,q_holdout,R_Q10000[,seed]`

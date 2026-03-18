@@ -25,6 +25,7 @@ This document records the publish-time policy for the standalone scripts in `exp
 
 - reads the committed Fig3 CSV snapshot in `outputs/final_plots/fig3_tv_bshs_seedmean_scatter/`
 - produces the frozen dual-axis boxplot in the same directory
+- the committed input snapshot is a historical `12`-seed artifact and is intentionally not rewritten to the benchmark-standard 20-seed schedule inside the frozen package
 
 ### 4. `plot_visibility_mechanistic_recovery.py`
 
@@ -45,6 +46,7 @@ This document records the publish-time policy for the standalone scripts in `exp
 
 - reads `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/fig7_data_default.npz`
 - produces `outputs/final_plots/fig7_appendix_ablation_beta0p8_nsweep/`
+- the committed appendix snapshot remains a historical `5`-seed artifact; benchmark-standard 20-seed reruns belong in `experiments/analysis/`, not in the frozen final package
 
 ## Change Rules
 

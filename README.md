@@ -43,7 +43,51 @@ python tools/verify_analysis_manifest.py \
   --strict 1
 ```
 
-## Selected Documented Analysis Reruns
+## 20-Seed Benchmark Standard
+
+The benchmark-side rerun standard now uses `20` matched seeds: `101..120`.
+The full reporting contract is documented in [docs/benchmark_reporting_protocol.md](/Users/markus/Documents/Projekte/iqp_generative/docs/benchmark_reporting_protocol.md), and the exact seed schedule is committed in [docs/benchmark_seed_schedule_20seeds.csv](/Users/markus/Documents/Projekte/iqp_generative/docs/benchmark_seed_schedule_20seeds.csv).
+The live paper-side run ledger is generated at [docs/paper_benchmark_ledger.md](/Users/markus/Documents/Projekte/iqp_generative/docs/paper_benchmark_ledger.md) whenever benchmark-standard 20-seed analysis drivers are executed.
+
+Recommended benchmark-standard reruns:
+
+1. Fig6 multiseed recovery rerun
+- betas `0.5..1.2`
+- seeds `101..120`
+- holdout seed `46`
+- IQP `600` steps
+- AR Transformer `600` epochs
+- MaxEnt `600` steps
+- output directory:
+  `outputs/analysis/fig6_multiseed_all600_seeds101_120/`
+
+2. Fig3 KL-BSHS dual-axis boxplot
+- `beta = 0.9`
+- seeds `101..120`
+- `Q_eval = 1000`
+- `holdout_mode = global`
+- IQP `600` steps
+- AR Transformer `600` epochs
+- MaxEnt `600` steps
+- output directory:
+  `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/`
+
+3. Fig6 wide multiseed recovery rerun
+- betas `0.1..2.0`
+- seeds `101..120`
+- holdout seed `46`
+- IQP `600` steps
+- AR Transformer `600` epochs
+- MaxEnt `600` steps
+- output directory:
+  `outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds101_120/`
+
+4. Fig6 beta-vs-Q80 summary family
+- derived from the benchmark-standard Fig6 multiseed artifacts
+- recommended summary output:
+  `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/`
+
+## Legacy Tracked Analysis Artifacts
 
 1. Fig2 recovery-summary companion figure
 - built directly from the frozen Fig2 snapshot
@@ -55,7 +99,7 @@ python tools/verify_analysis_manifest.py \
 
 2. Fig6 multiseed recovery rerun
 - betas `0.5..1.2`
-- seeds `42..46`
+- legacy seeds `42..46`
 - holdout seed `46`
 - IQP `600` steps
 - AR Transformer `600` epochs
@@ -90,7 +134,7 @@ python tools/verify_analysis_manifest.py \
 
 5. Fig6 wide multiseed recovery rerun
 - betas `0.1..2.0`
-- seeds `42..46`
+- legacy seeds `42..46`
 - holdout seed `46`
 - IQP `600` steps
 - AR Transformer `600` epochs
@@ -137,7 +181,8 @@ For a tested pinned environment, use [environment.yml](/Users/superposition/Codi
 
 ## Curated Analysis Outputs
 
-The tracked publishable analysis set currently contains:
+The tracked publishable analysis set currently contains the historical curated artifacts below.
+The benchmark-standard 20-seed reruns are defined by the source scripts and reproducibility commands, and can be regenerated into new output directories.
 
 - `outputs/analysis/fig2_recovery_summary_panels/`
 - `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/`
@@ -188,6 +233,8 @@ python tools/build_analysis_manifest.py \
 - [REPRODUCIBILITY.md](/Users/superposition/Coding/iqp_generative/REPRODUCIBILITY.md)
 - [CONTRIBUTING.md](/Users/superposition/Coding/iqp_generative/CONTRIBUTING.md)
 - [PUBLISHING.md](/Users/superposition/Coding/iqp_generative/PUBLISHING.md)
+- [docs/benchmark_reporting_protocol.md](/Users/superposition/Coding/iqp_generative/docs/benchmark_reporting_protocol.md)
+- [docs/paper_benchmark_ledger.md](/Users/superposition/Coding/iqp_generative/docs/paper_benchmark_ledger.md)
 - [experiments/final_scripts/README.md](/Users/superposition/Coding/iqp_generative/experiments/final_scripts/README.md)
 - [experiments/final_scripts/FINAL_SCRIPTS_SETTINGS_LOCK.md](/Users/superposition/Coding/iqp_generative/experiments/final_scripts/FINAL_SCRIPTS_SETTINGS_LOCK.md)
 - [experiments/analysis/README.md](/Users/superposition/Coding/iqp_generative/experiments/analysis/README.md)
