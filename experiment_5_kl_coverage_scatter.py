@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Experiment 5: standalone KL-vs-coverage scatter across the beta sweep."""
+"""Experiment 5: standalone KL-vs-coverage scatter across the beta sweep.
+
+This script is self-contained and supports two modes:
+
+1. aggregate: join the per-seed KL metrics from Experiment 2 with the per-seed
+   quality-coverage metrics from Experiment 3 and build the fixed-beta scatter.
+2. rerender: rebuild the final PDF directly from a saved scatter CSV.
+"""
 
 from __future__ import annotations
 
@@ -23,8 +30,9 @@ from matplotlib.lines import Line2D  # noqa: E402
 ROOT = Path(__file__).resolve().parent
 SCRIPT_REL = "experiment_5_kl_coverage_scatter.py"
 
-DEFAULT_METRICS_CSV = ROOT / "plots" / "experiment_5_kl_coverage_scatter" / "experiment_5_kl_coverage_scatter_scatter.csv"
-DEFAULT_SCATTER_CSV = ROOT / "plots" / "experiment_5_kl_coverage_scatter" / "experiment_5_kl_coverage_scatter_scatter.csv"
+DEFAULT_KL_METRICS_CSV = ROOT / "plots" / "experiment_2_beta_kl_summary" / "experiment_2_beta_kl_summary_metrics_per_seed.csv"
+DEFAULT_COVERAGE_METRICS_CSV = ROOT / "plots" / "experiment_3_beta_quality_coverage" / "experiment_3_beta_quality_coverage_metrics_per_seed.csv"
+DEFAULT_SCATTER_CSV = ""
 DEFAULT_OUTDIR = ROOT / "plots" / "experiment_5_kl_coverage_scatter"
 STEM = "experiment_5_kl_coverage_scatter"
 
@@ -116,23 +124,44 @@ def _coverage_column_for_budget(budget_q: int) -> str:
     return f"quality_coverage_Q{int(budget_q)}"
 
 
-def load_scatter_rows(metrics_csv: Path, *, budget_q: int) -> List[Dict[str, object]]:
+def load_scatter_rows(kl_metrics_csv: Path, coverage_metrics_csv: Path, *, budget_q: int) -> List[Dict[str, object]]:
     coverage_col = _coverage_column_for_budget(int(budget_q))
     grouped: Dict[tuple[float, str], Dict[str, List[float]]] = defaultdict(lambda: {"kl": [], "cov": []})
 
-    with metrics_csv.open("r", encoding="utf-8", newline="") as f:
+    kl_by_instance: Dict[tuple[float, int, str], float] = {}
+    with kl_metrics_csv.open("r", encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
-        required = {"beta", "model_key", "KL_pstar_to_q", coverage_col}
+        required = {"beta", "seed", "model_key", "KL_pstar_to_q"}
         if not required.issubset(set(reader.fieldnames or [])):
             missing = sorted(required.difference(set(reader.fieldnames or [])))
-            raise ValueError(f"Metrics CSV is missing required columns: {missing}")
+            raise ValueError(f"KL metrics CSV is missing required columns: {missing}")
         for row in reader:
             model_key = str(row["model_key"])
             if model_key not in MODEL_STYLE:
                 continue
-            beta = float(row["beta"])
-            grouped[(beta, model_key)]["kl"].append(float(row["KL_pstar_to_q"]))
-            grouped[(beta, model_key)]["cov"].append(float(row[coverage_col]))
+            key = (float(row["beta"]), int(row["seed"]), model_key)
+            kl_by_instance[key] = float(row["KL_pstar_to_q"])
+
+    matched_rows = 0
+    with coverage_metrics_csv.open("r", encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        required = {"beta", "seed", "model_key", coverage_col}
+        if not required.issubset(set(reader.fieldnames or [])):
+            missing = sorted(required.difference(set(reader.fieldnames or [])))
+            raise ValueError(f"Coverage metrics CSV is missing required columns: {missing}")
+        for row in reader:
+            model_key = str(row["model_key"])
+            if model_key not in MODEL_STYLE:
+                continue
+            key = (float(row["beta"]), int(row["seed"]), model_key)
+            if key not in kl_by_instance:
+                continue
+            grouped[(key[0], model_key)]["kl"].append(float(kl_by_instance[key]))
+            grouped[(key[0], model_key)]["cov"].append(float(row[coverage_col]))
+            matched_rows += 1
+
+    if matched_rows == 0:
+        raise ValueError("No overlapping KL and coverage rows found for the scatter plot.")
 
     rows_out: List[Dict[str, object]] = []
     for (beta, model_key), vals in sorted(grouped.items()):
@@ -282,18 +311,6 @@ def render_scatter(rows: Sequence[Dict[str, object]], *, budget_q: int, out_pdf:
         yr = max(1e-6, ymax - ymin)
         ax.set_ylim(max(0.0, ymin - 0.08 * yr), ymax + 0.10 * yr)
 
-    neg, total = _negative_slope_count(rows)
-    ax.text(
-        0.985,
-        0.055,
-        f"{neg}/{total} fixed-$\\beta$ slices:\nnegative KL-coverage slope",
-        transform=ax.transAxes,
-        ha="right",
-        va="bottom",
-        fontsize=8.1,
-        bbox=dict(boxstyle="round,pad=0.20", facecolor="white", edgecolor="#d0d0d0", alpha=0.90),
-    )
-
     legend = ax.legend(
         handles=_legend_handles(),
         loc="upper right",
@@ -315,7 +332,8 @@ def render_scatter(rows: Sequence[Dict[str, object]], *, budget_q: int, out_pdf:
 
 def run() -> None:
     ap = argparse.ArgumentParser(description="Experiment 5: standalone KL-vs-coverage scatter.")
-    ap.add_argument("--metrics-csv", type=str, default=str(DEFAULT_METRICS_CSV))
+    ap.add_argument("--kl-metrics-csv", type=str, default=str(DEFAULT_KL_METRICS_CSV))
+    ap.add_argument("--coverage-metrics-csv", type=str, default=str(DEFAULT_COVERAGE_METRICS_CSV))
     ap.add_argument("--scatter-csv", type=str, default=str(DEFAULT_SCATTER_CSV))
     ap.add_argument("--coverage-budget", type=int, default=1000, choices=[1000, 2000, 5000, 10000])
     ap.add_argument("--outdir", type=str, default=str(DEFAULT_OUTDIR))
@@ -327,17 +345,20 @@ def run() -> None:
 
     budget_q = int(args.coverage_budget)
     scatter_csv_arg = str(args.scatter_csv).strip()
-    metrics_csv = Path(args.metrics_csv)
     if scatter_csv_arg and Path(scatter_csv_arg).exists():
         input_mode = "scatter_csv"
         source_path = Path(scatter_csv_arg)
         scatter_rows = load_scatter_csv(source_path)
     else:
-        input_mode = "metrics_csv"
-        source_path = metrics_csv
-        if not metrics_csv.exists():
-            raise FileNotFoundError(f"Missing metrics csv: {metrics_csv}")
-        scatter_rows = load_scatter_rows(metrics_csv, budget_q=budget_q)
+        input_mode = "paired_metrics_csv"
+        kl_metrics_csv = Path(args.kl_metrics_csv)
+        coverage_metrics_csv = Path(args.coverage_metrics_csv)
+        if not kl_metrics_csv.exists():
+            raise FileNotFoundError(f"Missing KL metrics csv: {kl_metrics_csv}")
+        if not coverage_metrics_csv.exists():
+            raise FileNotFoundError(f"Missing coverage metrics csv: {coverage_metrics_csv}")
+        source_path = kl_metrics_csv
+        scatter_rows = load_scatter_rows(kl_metrics_csv, coverage_metrics_csv, budget_q=budget_q)
 
     stem = str(args.stem)
     out_pdf = outdir / f"{stem}.pdf"
@@ -351,6 +372,8 @@ def run() -> None:
             "script": SCRIPT_REL,
             "input_mode": input_mode,
             "source_path": _try_rel(source_path),
+            "kl_metrics_csv": _try_rel(Path(args.kl_metrics_csv)),
+            "coverage_metrics_csv": _try_rel(Path(args.coverage_metrics_csv)),
             "outdir": _try_rel(outdir),
             "stem": stem,
             "coverage_budget": budget_q,

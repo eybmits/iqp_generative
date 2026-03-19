@@ -1,0 +1,1001 @@
+beta,seed,model_key,model_label,n,train_m,sigma,K,iqp_steps,classical_steps,transformer_variant,transformer_d_model,transformer_heads,transformer_layers,transformer_dim_ff,transformer_epochs,maxent_steps,KL_pstar_to_q
+0.1,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5347478428235811
+0.1,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2836171144644717
+0.1,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9149612628213002
+0.1,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.3217895495398548
+0.1,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4247684743620592
+0.1,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5606703395635121
+0.1,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.8033250473319247
+0.1,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9521154463134409
+0.1,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.304841602283495
+0.1,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5256482746197695
+0.1,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5386922356132439
+0.1,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.608613810966946
+0.1,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8873863340109771
+0.1,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.3204720491894373
+0.1,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.431806156359568
+0.1,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5607002663963819
+0.1,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6273767365225575
+0.1,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9038039630080005
+0.1,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.215006905177686
+0.1,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4998316864803514
+0.1,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6006059934370409
+0.1,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8049422686291942
+0.1,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8790475965130089
+0.1,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2078883152121556
+0.1,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4527885567926644
+0.1,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5462564532136948
+0.1,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7883928225691139
+0.1,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9067306600940459
+0.1,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2240478535139405
+0.1,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6095304040152745
+0.1,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5401549837590187
+0.1,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0342562942906839
+0.1,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8795856306431888
+0.1,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.3408830101904368
+0.1,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5116153859880082
+0.1,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.525495196897534
+0.1,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.274981478286229
+0.1,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8627726132855931
+0.1,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.250433708274484
+0.1,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6414851386087506
+0.1,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5262918771203122
+0.1,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1875130156910279
+0.1,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9336603051839626
+0.1,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1197796209251236
+0.1,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6621045020626584
+0.1,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4829617702441945
+0.1,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.9157570519795546
+0.1,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9302100797727629
+0.1,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0979731001126112
+0.1,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.405737440713768
+0.2,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5473701336708251
+0.2,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9508716863337148
+0.2,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9202558963618659
+0.2,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2047935639754288
+0.2,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4352362880936476
+0.2,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5000432910580042
+0.2,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.542470604246954
+0.2,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9773111250975639
+0.2,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1997039538501988
+0.2,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6588435704777096
+0.2,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5097528207139208
+0.2,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5908391917500597
+0.2,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.010789248120596
+0.2,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4047772601685617
+0.2,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.659314713422328
+0.2,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5144389437371932
+0.2,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1927428755766019
+0.2,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9384175356806467
+0.2,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.3804192294096038
+0.2,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5365655301175591
+0.2,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5482262708323961
+0.2,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8101959058773582
+0.2,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8750601799051063
+0.2,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1171223936588817
+0.2,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.524955261614532
+0.2,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5781283444035248
+0.2,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8466022310744
+0.2,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9769605895453211
+0.2,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.400671083843395
+0.2,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5349879409432572
+0.2,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5541518382195716
+0.2,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8168078409315536
+0.2,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9382198911341814
+0.2,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2226623283817761
+0.2,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6400180495140138
+0.2,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5700246282366124
+0.2,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4707922486619838
+0.2,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.923448960753288
+0.2,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1052811820632855
+0.2,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5142203216220718
+0.2,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.546963509390054
+0.2,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9925363741151734
+0.2,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9186325810226421
+0.2,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.3681533084205886
+0.2,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5032891481347743
+0.2,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5270034189898436
+0.2,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8440130726554795
+0.2,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8774114943082204
+0.2,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9890254581731188
+0.2,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4868779187834837
+0.3,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5080675112927995
+0.3,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.051493233389087
+0.3,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.915237402558015
+0.3,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.076802821576237
+0.3,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4890092584042856
+0.3,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.44954576275957514
+0.3,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8329032249434294
+0.3,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.926968712029913
+0.3,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2597683921006015
+0.3,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5731492835664662
+0.3,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5582844893505275
+0.3,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.7328961192054377
+0.3,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0069719257685907
+0.3,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.236501034550793
+0.3,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.563020253670784
+0.3,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5001641435043002
+0.3,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8971264381150587
+0.3,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9911880985278325
+0.3,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1930405482123354
+0.3,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5639984400134654
+0.3,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5277635205881575
+0.3,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8750711029237431
+0.3,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.969756179975843
+0.3,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2668411657023353
+0.3,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5986562594107196
+0.3,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.490681501071258
+0.3,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7965949687818823
+0.3,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9219745253943581
+0.3,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1679214045291697
+0.3,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5325992663446137
+0.3,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5171213662971899
+0.3,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.3937408404009999
+0.3,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9203580861687919
+0.3,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0887988460373252
+0.3,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6899305573889067
+0.3,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5835167427059907
+0.3,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0097185281456258
+0.3,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9415490240674611
+0.3,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0852243505859231
+0.3,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.656241061425487
+0.3,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5392983982966004
+0.3,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9417721496851339
+0.3,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9547652661528048
+0.3,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.3958116371182536
+0.3,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5855723617771988
+0.3,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5102728852090428
+0.3,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.8341566534405587
+0.3,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.90038444724227
+0.3,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.076426454094079
+0.3,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.534961804513085
+0.4,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4881014923336835
+0.4,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.954329174820935
+0.4,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9878418702340033
+0.4,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1961826098595236
+0.4,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.683893542825644
+0.4,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5343849612992547
+0.4,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.111487269327604
+0.4,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9688314353421659
+0.4,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4018169174938118
+0.4,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4450245663835863
+0.4,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5149517889922345
+0.4,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2717895580371619
+0.4,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0242833153359945
+0.4,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.202832617288483
+0.4,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.7827863447482222
+0.4,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.473087275715617
+0.4,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.882401403093263
+0.4,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9816380930517288
+0.4,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.120863181278796
+0.4,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6818119508454696
+0.4,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6956042768381578
+0.4,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.922571550246096
+0.4,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.99741233202415
+0.4,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6505084178390117
+0.4,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.8194808002434586
+0.4,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5029329095998654
+0.4,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8315922680678898
+0.4,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9353713737136577
+0.4,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.097799294132501
+0.4,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5236541931372274
+0.4,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5937762144067145
+0.4,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.84872352726312
+0.4,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9588560050095085
+0.4,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0540468801858562
+0.4,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6389723962740692
+0.4,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5350458216967655
+0.4,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.7414862831612818
+0.4,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.922412958262006
+0.4,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1385193042305077
+0.4,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.579927555780503
+0.4,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5803835617815907
+0.4,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9213592826670856
+0.4,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9403392073679768
+0.4,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0257107451564282
+0.4,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.606201458766813
+0.4,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.571256636287204
+0.4,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9145731574366893
+0.4,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9568899952105328
+0.4,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.110578931173491
+0.4,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4912321672971256
+0.5,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.48908408132312464
+0.5,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1355325591398329
+0.5,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9503258400315697
+0.5,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1528593100441316
+0.5,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.594116855850404
+0.5,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5442172491927897
+0.5,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8978429812574026
+0.5,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.033513313595924
+0.5,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.115985258060188
+0.5,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.7083487585181363
+0.5,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5662937805597569
+0.5,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9640113912211687
+0.5,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9663844758883896
+0.5,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4678492207925644
+0.5,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.641511982143429
+0.5,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.578123974754173
+0.5,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9240881086295971
+0.5,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.147666760643891
+0.5,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2588464921692442
+0.5,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.9349534888825024
+0.5,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.586591074938307
+0.5,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1185917019195992
+0.5,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9812459825692232
+0.5,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1791753709672308
+0.5,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.716239426812146
+0.5,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5026815765383361
+0.5,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8723183253220396
+0.5,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9230666616562223
+0.5,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1387705270143114
+0.5,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4702859578157494
+0.5,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5142440832976409
+0.5,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.939614654312119
+0.5,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0107995506423249
+0.5,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4147059438506613
+0.5,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.9762421857120422
+0.5,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.46099781689809716
+0.5,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9683872223112728
+0.5,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.949507078539713
+0.5,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.225463197453708
+0.5,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6596349082605122
+0.5,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.44116695708735293
+0.5,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0672557938266933
+0.5,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9653921383777385
+0.5,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0642692727569842
+0.5,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5785596828968582
+0.5,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.521571925238949
+0.5,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5479858241781868
+0.5,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9307219235317131
+0.5,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2331036673688853
+0.5,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.447722103019096
+0.6,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5060521541150571
+0.6,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9975644499903162
+0.6,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9709007742371549
+0.6,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0276725044013286
+0.6,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.552879375626939
+0.6,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6184656488794154
+0.6,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9118874140659317
+0.6,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0305806609081047
+0.6,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.166125178861584
+0.6,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.713260138656712
+0.6,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.36019467987641185
+0.6,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9542976556272664
+0.6,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.016985359035426
+0.6,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1105495537318675
+0.6,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.7131216675821221
+0.6,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4661397793339394
+0.6,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9392412188281585
+0.6,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.112931395894561
+0.6,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1308538102110306
+0.6,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.918513570330858
+0.6,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.45925696992614856
+0.6,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1306194696030079
+0.6,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0225369581592356
+0.6,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9735092992108543
+0.6,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.7973504209982674
+0.6,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4460854256688902
+0.6,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9245979879867819
+0.6,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9995881692858862
+0.6,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0875110991020627
+0.6,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6184939732366077
+0.6,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.42463606933123044
+0.6,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9968987306103616
+0.6,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9600002741259541
+0.6,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1140994029284856
+0.6,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.0493689946149765
+0.6,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5811607720678875
+0.6,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9508227222556213
+0.6,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0500334515492828
+0.6,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1518799183950348
+0.6,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.7114896645609914
+0.6,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5973067507506511
+0.6,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.043894093826792
+0.6,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1031510157952429
+0.6,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0308765005674756
+0.6,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.7435018962642594
+0.6,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5071591648016359
+0.6,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.587359044997175
+0.6,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9593553524994474
+0.6,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9441721311784003
+0.6,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4674884055723254
+0.7,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5141457278798529
+0.7,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1835701086721353
+0.7,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.072287412983253
+0.7,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8713304763939955
+0.7,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6473814462900034
+0.7,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5998699507123755
+0.7,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9630781515906326
+0.7,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.121206108374471
+0.7,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0050279301309133
+0.7,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.1008252700005436
+0.7,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5704115384406772
+0.7,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.028606966307665
+0.7,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0795901455915708
+0.7,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2061016929923583
+0.7,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.0742877018562735
+0.7,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5545312566936219
+0.7,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.038765587949308
+0.7,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0321154383439868
+0.7,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9908017998247336
+0.7,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.8274935387552431
+0.7,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5050389543473073
+0.7,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.988680331303277
+0.7,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.069062126222744
+0.7,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.150927345650424
+0.7,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.8219679643461069
+0.7,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.625115173975346
+0.7,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0430637212775655
+0.7,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0739349835022731
+0.7,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9838912978536823
+0.7,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.831722763963189
+0.7,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.44285227400618943
+0.7,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.011627500239673
+0.7,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0187465082112657
+0.7,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8319827150006649
+0.7,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6275470490010961
+0.7,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3863380719646798
+0.7,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9654183187934462
+0.7,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9685732854655748
+0.7,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8520557547612182
+0.7,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.9992986893402638
+0.7,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4348175528268916
+0.7,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9199205066157299
+0.7,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.034230838159142
+0.7,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8661611778424307
+0.7,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4924618908916063
+0.7,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4848284190152239
+0.7,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1075714420568534
+0.7,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0164587255090094
+0.7,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0452097129314877
+0.7,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.537912188565445
+0.8,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.39849917531602247
+0.8,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6050487814032681
+0.8,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.017240709234453
+0.8,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8911999400771735
+0.8,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.8383519335082479
+0.8,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4538748846536148
+0.8,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0208344242281264
+0.8,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0035946276223682
+0.8,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1101873724341025
+0.8,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.8094158710943924
+0.8,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4436536802429543
+0.8,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1645297360590767
+0.8,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1297728972241354
+0.8,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.168183996502258
+0.8,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.2279812470592457
+0.8,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.42358772847149123
+0.8,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1284044162894
+0.8,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.103061907091273
+0.8,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0204490385557836
+0.8,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.9884638373275
+0.8,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4725661534869851
+0.8,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0609294164454657
+0.8,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0499015161136143
+0.8,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0001896291292445
+0.8,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.9429917990997916
+0.8,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4668109756593001
+0.8,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.025930261169442
+0.8,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0646555110754203
+0.8,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9033901045430562
+0.8,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.0486617792644046
+0.8,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7526472568017021
+0.8,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0133264075570256
+0.8,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0980555905772997
+0.8,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8048420179423852
+0.8,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.2099050675358227
+0.8,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3946034374418347
+0.8,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0481435148310787
+0.8,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9858951748258254
+0.8,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8741763017190928
+0.8,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.608028679083831
+0.8,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4396628741457641
+0.8,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0228453372644841
+0.8,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1406419548466367
+0.8,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9646280051961811
+0.8,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.0368442038229295
+0.8,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4375271902337443
+0.8,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1046408688105147
+0.8,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0787251426910638
+0.8,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8538210343717311
+0.8,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.852020259466487
+0.9,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.44611867636031693
+0.9,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0512812919069647
+0.9,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0350278219292188
+0.9,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8324567534030964
+0.9,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.9629485199507544
+0.9,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.47955893070519373
+0.9,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0728202029228437
+0.9,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1108227742907983
+0.9,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6841967283293455
+0.9,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.58367399098427
+0.9,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9888579757120617
+0.9,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0706427737570854
+0.9,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1387217273312515
+0.9,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0485436807056585
+0.9,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.9571283728156899
+0.9,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6200170417113232
+0.9,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9991780093971584
+0.9,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0866834057252004
+0.9,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9822505792379856
+0.9,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.486624387622912
+0.9,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5160858411558504
+0.9,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0710984106428507
+0.9,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.15611600304842
+0.9,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9198905657929959
+0.9,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.9898252799230445
+0.9,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5549760475169225
+0.9,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1090648553221958
+0.9,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0963319730025027
+0.9,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9357236881542521
+0.9,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.5780239521958723
+0.9,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3669971202590812
+0.9,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0225927258245093
+0.9,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0388742692472472
+0.9,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7753059883420994
+0.9,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.9752922714260261
+0.9,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.45675476670729426
+0.9,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1352821960178996
+0.9,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1154932413642507
+0.9,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7802216777950934
+0.9,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.247130190201836
+0.9,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4527342237332223
+0.9,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9902695963234802
+0.9,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0538331149932358
+0.9,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7997667705830296
+0.9,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.327313087538968
+0.9,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.39939603132446966
+0.9,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1635904778104733
+0.9,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0118608154493582
+0.9,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8021963431570753
+0.9,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.757922826640949
+1.0,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4561302757885647
+1.0,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.3076202235327992
+1.0,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.19253914586431
+1.0,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8244971193565964
+1.0,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,3.4980322141275506
+1.0,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4377503987024387
+1.0,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.150541185024586
+1.0,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0954950204570473
+1.0,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8438697491100836
+1.0,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.1377868482486884
+1.0,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.471035280378576
+1.0,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0578251719498248
+1.0,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1840475354970095
+1.0,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9592599150346475
+1.0,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,3.2280011267958866
+1.0,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.45192398488872954
+1.0,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2000117029063833
+1.0,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.132348661587926
+1.0,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8480702637980562
+1.0,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.8752884185049714
+1.0,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4464182685384389
+1.0,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0392589896596816
+1.0,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1171791560152164
+1.0,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.839722268123756
+1.0,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,3.0054000561982743
+1.0,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5261195220390449
+1.0,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.029013098251523
+1.0,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.113665454421735
+1.0,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8031513803027654
+1.0,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.583300088910081
+1.0,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.38414084797288095
+1.0,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1282931950606883
+1.0,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1006800023528431
+1.0,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9409614916099394
+1.0,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.444735717136501
+1.0,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.37929851118660035
+1.0,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0531811777203604
+1.0,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0664765320929437
+1.0,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6940174314674739
+1.0,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.5759199163827797
+1.0,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4497040259241762
+1.0,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9889667939634292
+1.0,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0461511236455125
+1.0,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.81947116505158
+1.0,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.6108472934172537
+1.0,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.37914098215581415
+1.0,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0949055632797626
+1.0,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.057788243824917
+1.0,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7273759403292084
+1.0,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.0856926454479936
+1.1,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.46763014682449544
+1.1,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.248678677219875
+1.1,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0930876495396995
+1.1,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7018094618857538
+1.1,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,3.149674343211764
+1.1,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3820828372449389
+1.1,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9856129510426386
+1.1,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.030879697431102
+1.1,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6356352446117003
+1.1,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.7222674769506607
+1.1,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.43399803338993526
+1.1,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1329972746694374
+1.1,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.118921429347495
+1.1,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7153091349186014
+1.1,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,3.051084117622316
+1.1,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5686235704270454
+1.1,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9928017724568204
+1.1,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1734296976174896
+1.1,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7406075087239374
+1.1,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.9096543050631754
+1.1,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.41193666159910264
+1.1,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0851471979367027
+1.1,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2410451016536155
+1.1,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.716920295772665
+1.1,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.9119632263670514
+1.1,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5110574395607159
+1.1,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1334229188865272
+1.1,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1101911371096644
+1.1,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7701822517162044
+1.1,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.621563064649431
+1.1,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.38153416158863207
+1.1,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0709625658665987
+1.1,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1414157716042497
+1.1,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6087496726066051
+1.1,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.7149057538335732
+1.1,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4250426608764197
+1.1,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.131184724668106
+1.1,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0524402709767378
+1.1,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6812472525840789
+1.1,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.967245542505238
+1.1,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.39037711283795073
+1.1,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9566012713749026
+1.1,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0002595553701523
+1.1,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6238211581395539
+1.1,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.4973961234183415
+1.1,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3662832997658191
+1.1,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1225539018275925
+1.1,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9619974763284926
+1.1,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6256313235079374
+1.1,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5592367688098263
+1.2,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4479262866090017
+1.2,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2049023097617018
+1.2,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.3309749755102698
+1.2,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7609711439837601
+1.2,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.9595118022825533
+1.2,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.43249402104549367
+1.2,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.09321693798562
+1.2,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0605987213633736
+1.2,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5913838479037511
+1.2,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.6785072640992285
+1.2,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.36234635052407527
+1.2,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0086105300808441
+1.2,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0382315871310448
+1.2,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7203887644243525
+1.2,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,3.014596299322174
+1.2,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.38547112809738204
+1.2,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9999923041449104
+1.2,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.098340226201015
+1.2,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.574601163900386
+1.2,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.9556037045131016
+1.2,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.37154078912063315
+1.2,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9788480956565045
+1.2,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9964041107962645
+1.2,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6639040899728035
+1.2,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.403700430484358
+1.2,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.45183704696098637
+1.2,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0108667509359062
+1.2,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.276897380996905
+1.2,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6734997827560114
+1.2,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.5598016871189118
+1.2,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.48597297186122257
+1.2,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0848743176006175
+1.2,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2368645921823664
+1.2,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5348999932726325
+1.2,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.7362490259639136
+1.2,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.34780973739223664
+1.2,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0079846945586433
+1.2,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1125296084943308
+1.2,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.671770261086591
+1.2,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.7206567645419
+1.2,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4066954538487356
+1.2,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.002092851703783
+1.2,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1258567019895263
+1.2,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5929417643094939
+1.2,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.3861044952386385
+1.2,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3958925397847564
+1.2,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0212717019193016
+1.2,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0805782482135817
+1.2,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3929893533584806
+1.2,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.9909798590906045
+1.3,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4214635304696469
+1.3,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9618227025403405
+1.3,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1939861504978684
+1.3,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6774364073310594
+1.3,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.747093917481843
+1.3,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4238364094080278
+1.3,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9741110556525432
+1.3,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.128599185355325
+1.3,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5203789271534368
+1.3,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.356103381200354
+1.3,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.36381331209228057
+1.3,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.965080088954322
+1.3,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0952440448218161
+1.3,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.582946665745788
+1.3,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.9681269909281287
+1.3,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.41070893236962747
+1.3,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8884133295231065
+1.3,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9878157160386051
+1.3,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.524003531925602
+1.3,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.3972329355782067
+1.3,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.31441779711558016
+1.3,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0241390832578785
+1.3,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.042836043034162
+1.3,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.544872796647798
+1.3,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.3468028539546704
+1.3,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3600192363601832
+1.3,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.107956851412082
+1.3,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.107025523453176
+1.3,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6136907534939651
+1.3,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.4492091832636955
+1.3,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.42470852785962543
+1.3,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0006579756298495
+1.3,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0746090895321274
+1.3,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4877024451858495
+1.3,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.4020031500507217
+1.3,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3544831599069147
+1.3,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0027132726459893
+1.3,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1314219600448474
+1.3,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.501188601117529
+1.3,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.569614573976487
+1.3,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.30136945125966164
+1.3,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.880375062842962
+1.3,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9480724856621565
+1.3,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.47517587676572715
+1.3,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.234287735439393
+1.3,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.343398772422939
+1.3,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9232974480825844
+1.3,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8896458687032369
+1.3,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.552034652781699
+1.3,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.1535091703790155
+1.4,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2757239103621299
+1.4,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9644108924402375
+1.4,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1622833748551908
+1.4,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5453840342570528
+1.4,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.1547041776154163
+1.4,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.47559955627847866
+1.4,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8802767113557304
+1.4,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1761104680869319
+1.4,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.41278658602666807
+1.4,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.11859347808737
+1.4,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.32185198476652654
+1.4,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8834268130231604
+1.4,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1022239956551285
+1.4,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5298243139156975
+1.4,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.8445309645623895
+1.4,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.44784914348581606
+1.4,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8161154211901043
+1.4,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0836458554689608
+1.4,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5291518283754308
+1.4,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.9528169565191749
+1.4,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3214156706387182
+1.4,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9360865822593263
+1.4,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1927741453330463
+1.4,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4983330224611917
+1.4,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.8411803060121457
+1.4,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.35939883723880206
+1.4,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0007841900628327
+1.4,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2631010086034833
+1.4,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5325464118317091
+1.4,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.0391986685743797
+1.4,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3275392298770974
+1.4,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8658205849815859
+1.4,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1652720204370528
+1.4,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.43865479353541414
+1.4,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.9634974437856365
+1.4,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.27811119405574836
+1.4,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9242579687249367
+1.4,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0452646858681471
+1.4,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3745554010654937
+1.4,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.7756992223084527
+1.4,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3000988078391813
+1.4,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7681545697708192
+1.4,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9564849449997455
+1.4,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.42678841100704523
+1.4,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.8660810754570045
+1.4,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.40156759489450156
+1.4,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8723892044275582
+1.4,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.028947457909624
+1.4,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.34147414195246006
+1.4,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.978996561913764
+1.5,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3228207747725298
+1.5,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.760196037349102
+1.5,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.3613434649990899
+1.5,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7864086437439493
+1.5,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.7406228141792335
+1.5,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.34873585444723476
+1.5,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7537340822488416
+1.5,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8278521635730867
+1.5,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3337181145644027
+1.5,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.4511810186711194
+1.5,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3161808816965799
+1.5,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7472631462775967
+1.5,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8635015928957369
+1.5,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6526216999306819
+1.5,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.485942449306467
+1.5,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4343226817154827
+1.5,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7431793538540741
+1.5,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0679295063385796
+1.5,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3836681071972696
+1.5,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.6935608435115466
+1.5,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2870495140161087
+1.5,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8694722561074837
+1.5,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9607104634896755
+1.5,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.39678802974467686
+1.5,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.3147336752323653
+1.5,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2417319740344806
+1.5,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8788684454155051
+1.5,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1698566510715565
+1.5,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6254799545845504
+1.5,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.8404783875354747
+1.5,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.28836946711031797
+1.5,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7470468384783777
+1.5,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8920412579953343
+1.5,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4790561340982134
+1.5,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.308690938379517
+1.5,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.23781663080468685
+1.5,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8031294343854998
+1.5,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0347798249836146
+1.5,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.31740788064326897
+1.5,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2764729811373667
+1.5,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2826955382258891
+1.5,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7239314473956977
+1.5,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9093603384083596
+1.5,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3193140001062933
+1.5,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5335149564324388
+1.5,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3120713600489882
+1.5,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8273481801098728
+1.5,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9859891217276926
+1.5,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5657604139222354
+1.5,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.7159373674265663
+1.6,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.29592404576376174
+1.6,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7015861834109023
+1.6,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9541700049096906
+1.6,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.431673298651938
+1.6,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5456491872670193
+1.6,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.19753034738649008
+1.6,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.680271041603879
+1.6,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0003234863261028
+1.6,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2190725929038983
+1.6,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.7033779819028128
+1.6,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3797976842666482
+1.6,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6754971527302132
+1.6,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9782587895175912
+1.6,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.44473807822900013
+1.6,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.3025459301456022
+1.6,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.34308392248389225
+1.6,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6507730544965453
+1.6,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9359125177804052
+1.6,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3708950432570449
+1.6,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0746894518110257
+1.6,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3602827735107847
+1.6,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7151837517732754
+1.6,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8472237763437258
+1.6,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.417112648752746
+1.6,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.3411700289690875
+1.6,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.24609806841596915
+1.6,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7369053779668645
+1.6,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2407425478318026
+1.6,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.621027713496897
+1.6,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.5289370618248797
+1.6,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.22918506514373516
+1.6,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6556619636201723
+1.6,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8587147651466147
+1.6,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.34605535853086256
+1.6,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8374945462012625
+1.6,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.21004328474717746
+1.6,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6615243167491736
+1.6,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9093449880715461
+1.6,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.358638133546592
+1.6,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1497806477088863
+1.6,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.23411942808767985
+1.6,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6053055805066827
+1.6,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8610858115825195
+1.6,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.21638870629909326
+1.6,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2754856389659461
+1.6,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.1985375056144924
+1.6,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6266508233681083
+1.6,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7959456813044629
+1.6,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2742174903298892
+1.6,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7923379949381848
+1.7,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.21162482379301312
+1.7,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6123059895577477
+1.7,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8379183086043789
+1.7,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.37295554600507863
+1.7,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.534899604779149
+1.7,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.16218207742301205
+1.7,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6162418789069959
+1.7,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8436256453555722
+1.7,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6648160489004102
+1.7,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.936680352459256
+1.7,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.24247806973810376
+1.7,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6235655750883196
+1.7,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9347485144794422
+1.7,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.38566653465375444
+1.7,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1048188042170035
+1.7,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3543032627106617
+1.7,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6706565298482621
+1.7,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1507827508938997
+1.7,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5221815799146912
+1.7,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0872010275028516
+1.7,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4045483350070126
+1.7,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6518781294924896
+1.7,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.1093790338588407
+1.7,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.39952295609185984
+1.7,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.034892172628013
+1.7,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.22728178904703406
+1.7,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.657323628066239
+1.7,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.332709261212385
+1.7,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.38779478982860305
+1.7,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.563880698443945
+1.7,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.17493969097249615
+1.7,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5769785234685986
+1.7,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.694386004400861
+1.7,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.29889682123745165
+1.7,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9392870264094108
+1.7,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2569075071916693
+1.7,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5342579407132448
+1.7,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.706962803572861
+1.7,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2241180001607537
+1.7,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6850580316194618
+1.7,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.1750993422337054
+1.7,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6007147768533595
+1.7,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9333258468808487
+1.7,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.27192110752927023
+1.7,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8468470733758884
+1.7,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.14852794148086854
+1.7,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5663401453776964
+1.7,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7032894633843048
+1.7,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2070655936615665
+1.7,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.65840694756958
+1.8,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.1742873887435773
+1.8,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5082676815033211
+1.8,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7167294018194144
+1.8,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.44188912146001386
+1.8,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8055492376293789
+1.8,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.15654892649404945
+1.8,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5607016466464545
+1.8,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7518153074956111
+1.8,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.25830147562015615
+1.8,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8641572191126696
+1.8,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2715869016946093
+1.8,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.49515440919587944
+1.8,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8326097272108467
+1.8,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3116144040517156
+1.8,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8229795339878616
+1.8,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.39550474863185414
+1.8,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5660416416115872
+1.8,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.2090621605289522
+1.8,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4622586329115044
+1.8,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.242578403975783
+1.8,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4298664938361864
+1.8,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.645403708672608
+1.8,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0700477526346615
+1.8,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.550586545731335
+1.8,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9836099575041741
+1.8,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.1398928517004504
+1.8,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.531013951946796
+1.8,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7166153388302752
+1.8,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4038333912885459
+1.8,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0789736521402005
+1.8,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.1397469325681853
+1.8,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.47630292201013413
+1.8,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.705209295288868
+1.8,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3030712960363362
+1.8,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6194682946019363
+1.8,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2141911772632184
+1.8,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.45464821212348633
+1.8,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6441727949230551
+1.8,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.22957060657652584
+1.8,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6667948767196288
+1.8,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2082867320439451
+1.8,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4659481946059443
+1.8,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5657061384221389
+1.8,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.20885209567144603
+1.8,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6475917563972085
+1.8,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.14620123706934748
+1.8,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5019516807429424
+1.8,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.609223386909738
+1.8,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3155840970158661
+1.8,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.655248978844126
+1.9,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.13591068483777166
+1.9,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.40524579994082155
+1.9,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6252410496442329
+1.9,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.32507017144862316
+1.9,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7746252708789501
+1.9,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.1261308105496378
+1.9,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.41345969466952515
+1.9,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6066901925941754
+1.9,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.19326387297833275
+1.9,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9141091276258493
+1.9,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.1624796160149158
+1.9,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.42306155447192384
+1.9,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.66785037277784
+1.9,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3127880544999338
+1.9,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.608424265606039
+1.9,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.38364588888524565
+1.9,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4828352085696604
+1.9,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,1.0175853386380067
+1.9,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3263221820943164
+1.9,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9721834316034629
+1.9,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.21795347423162725
+1.9,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5000552514008094
+1.9,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8109604136827095
+1.9,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4447739239879372
+1.9,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.0627258513343625
+1.9,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.12860662184824345
+1.9,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4486292374411497
+1.9,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7430666246639728
+1.9,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.31246319385469296
+1.9,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7459707762509749
+1.9,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.09544914729926635
+1.9,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4314054978687308
+1.9,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5966449593780423
+1.9,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.184974432806664
+1.9,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5186490660661446
+1.9,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.17438777272216652
+1.9,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.40359617405008663
+1.9,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5690595857928579
+1.9,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2044150495734252
+1.9,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5695522232771155
+1.9,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.11600786805929124
+1.9,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4055212396274086
+1.9,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5316322925576018
+1.9,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.14968035884281108
+1.9,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5459890913634695
+1.9,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2459746401664724
+1.9,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4317740232763287
+1.9,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5893387337802035
+1.9,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.1846097757956892
+1.9,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5805651384684456
+2.0,101,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.12271400534944543
+2.0,101,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3726004394772212
+2.0,101,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6625781577878121
+2.0,101,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3291728190528006
+2.0,101,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7816477115496148
+2.0,102,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.18941828747418363
+2.0,102,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.40100369842843225
+2.0,102,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7539209084907127
+2.0,102,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.30468622958488356
+2.0,102,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.9316699679766038
+2.0,103,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.12167513610715242
+2.0,103,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3804050081944492
+2.0,103,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4758957395751402
+2.0,103,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.2906420750619984
+2.0,103,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6756506210448244
+2.0,104,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.29802115177789024
+2.0,104,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.44493385350027576
+2.0,104,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7056314300046025
+2.0,104,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.29417231079746586
+2.0,104,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.7651512804943631
+2.0,105,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.11366863514994537
+2.0,105,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.39814538576552627
+2.0,105,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5308987417090659
+2.0,105,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.20977698435863945
+2.0,105,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,4.013008144676313
+2.0,106,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.12867608288690857
+2.0,106,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.39083308102430264
+2.0,106,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6128853503971141
+2.0,106,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.34816544899034574
+2.0,106,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.796456008761069
+2.0,107,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.147433799472949
+2.0,107,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4052276232355381
+2.0,107,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.5772657943228194
+2.0,107,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.1394482982649301
+2.0,107,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,2.983961975784364
+2.0,108,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.08411700246619844
+2.0,108,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.343625472903267
+2.0,108,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.40512427340988866
+2.0,108,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.1590260166045469
+2.0,108,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4235443598394546
+2.0,109,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.10593028538590249
+2.0,109,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.3467320547608778
+2.0,109,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4165093154792193
+2.0,109,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.12903625211406203
+2.0,109,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.4052188859758676
+2.0,110,iqp_parity_mse,IQP (parity),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.1745807117810392
+2.0,110,classical_nnn_fields_parity,Ising+fields (NN+NNN),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.37928899640873487
+2.0,110,classical_dense_fields_xent,Dense Ising+fields (xent),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.6877149046289605
+2.0,110,classical_transformer_mle,AR Transformer (MLE),12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.22090110502033178
+2.0,110,classical_maxent_parity,"MaxEnt parity (P,z)",12,200,1.0,512,600,600,medium,32,4,1,64,600,600,0.8322952702691688

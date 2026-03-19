@@ -1,0 +1,11 @@
+{
+  "script": "experiment_6_ablation_n_sweep_all_baselines.py",
+  "series_csv": "plots/experiment_6_ablation_n_sweep_all_baselines/experiment_6_ablation_n_sweep_all_baselines_series.csv",
+  "outdir": "plots/experiment_6_ablation_n_sweep_all_baselines",
+  "pdf": "experiment_6_ablation_n_sweep_all_baselines.pdf",
+  "pointcloud_pdf": "experiment_6_ablation_n_sweep_all_baselines_pointcloud.pdf",
+  "plot_center": "median",
+  "plot_band": "iqr",
+  "secondary_statistics": "mean_std_ci95",
+  "rerender_command": "python experiment_6_ablation_n_sweep_all_baselines.py --outdir /Users/superposition/Coding/iqp_generative/plots/experiment_6_ablation_n_sweep_all_baselines --series-csv plots/experiment_6_ablation_n_sweep_all_baselines/experiment_6_ablation_n_sweep_all_baselines_series.csv"
+}

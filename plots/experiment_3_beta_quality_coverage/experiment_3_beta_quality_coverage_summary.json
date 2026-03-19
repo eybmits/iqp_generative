@@ -1,0 +1,67 @@
+{
+  "script": "experiment_3_beta_quality_coverage.py",
+  "outdir": "plots/experiment_3_beta_quality_coverage",
+  "betas": [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    1.0,
+    1.1,
+    1.2,
+    1.3,
+    1.4,
+    1.5,
+    1.6,
+    1.7,
+    1.8,
+    1.9,
+    2.0
+  ],
+  "seed_values": [
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120
+  ],
+  "seed_count": 10,
+  "plot_center": "mean",
+  "plot_band": "iqr",
+  "secondary_statistics": "median_std_ci95",
+  "transformer_variant": {
+    "variant": "medium",
+    "d_model": 32,
+    "nhead": 4,
+    "num_layers": 1,
+    "dim_ff": 64
+  },
+  "elite_frac": 0.1,
+  "budgets": {
+    "1000": {
+      "series_csv": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q1000_series.csv",
+      "pdf": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q1000.pdf",
+      "pointcloud_pdf": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q1000_pointcloud.pdf"
+    },
+    "2000": {
+      "series_csv": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q2000_series.csv",
+      "pdf": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q2000.pdf",
+      "pointcloud_pdf": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q2000_pointcloud.pdf"
+    },
+    "5000": {
+      "series_csv": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q5000_series.csv",
+      "pdf": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q5000.pdf",
+      "pointcloud_pdf": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q5000_pointcloud.pdf"
+    }
+  }
+}

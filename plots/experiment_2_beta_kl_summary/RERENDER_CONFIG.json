@@ -2,5 +2,12 @@
   "script": "experiment_2_beta_kl_summary.py",
   "series_csv": "plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_series.csv",
   "outdir": "plots/experiment_2_beta_kl_summary",
-  "rerender_command": "MPLCONFIGDIR=/tmp/mpl-cache python experiment_2_beta_kl_summary.py --series-csv plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_series.csv --outdir plots/experiment_2_beta_kl_summary --stem experiment_2_beta_kl_summary"
+  "pdf": "experiment_2_beta_kl_summary.pdf",
+  "pointcloud_pdf": "experiment_2_beta_kl_summary_pointcloud.pdf",
+  "pointcloud_ymin": 0.0,
+  "pointcloud_ymax": 4.0,
+  "plot_center": "median",
+  "plot_band": "iqr",
+  "secondary_statistics": "mean_std_ci95",
+  "rerender_command": "python experiment_2_beta_kl_summary.py --outdir /Users/superposition/Coding/iqp_generative/plots/experiment_2_beta_kl_summary --series-csv /Users/superposition/Coding/iqp_generative/plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_series.csv"
 }

@@ -1,0 +1,7 @@
+{
+  "script": "experiment_8_fixed_beta_bucket_fit_iqp_vs_mse.py",
+  "outdir": "plots/experiment_8_fixed_beta_bucket_fit_iqp_vs_mse",
+  "pdf": "experiment_8_fixed_beta_bucket_fit_iqp_vs_mse.pdf",
+  "data_csv": "experiment_8_fixed_beta_bucket_fit_iqp_vs_mse_bucket_masses.csv",
+  "note": "Rerender currently expects recomputation because the style is coupled to the selected best parity configuration for the slice."
+}

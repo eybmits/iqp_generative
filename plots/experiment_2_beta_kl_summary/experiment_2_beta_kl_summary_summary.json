@@ -1,0 +1,81 @@
+{
+  "script": "experiment_2_beta_kl_summary.py",
+  "outdir": "plots/experiment_2_beta_kl_summary",
+  "betas": [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    1.0,
+    1.1,
+    1.2,
+    1.3,
+    1.4,
+    1.5,
+    1.6,
+    1.7,
+    1.8,
+    1.9,
+    2.0
+  ],
+  "seed_values": [
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120
+  ],
+  "seed_count": 10,
+  "plot_center": "median",
+  "plot_band": "iqr",
+  "secondary_statistics": "mean_std_ci95",
+  "transformer_variant": {
+    "variant": "medium",
+    "d_model": 32,
+    "nhead": 4,
+    "num_layers": 1,
+    "dim_ff": 64
+  },
+  "models": {
+    "iqp_parity_mse": {
+      "best_beta_by_median": 2.0,
+      "best_median_kl": 0.11266203275442709,
+      "mean_at_best_beta": 0.11672668617679546,
+      "ci95_at_best_beta": 0.017517152214979962
+    },
+    "classical_nnn_fields_parity": {
+      "best_beta_by_median": 2.0,
+      "best_median_kl": 0.363007019459985,
+      "mean_at_best_beta": 0.3610762948383136,
+      "ci95_at_best_beta": 0.015493915424511728
+    },
+    "classical_dense_fields_xent": {
+      "best_beta_by_median": 2.0,
+      "best_median_kl": 0.5541022144185859,
+      "mean_at_best_beta": 0.5523657994572394,
+      "ci95_at_best_beta": 0.06563475134663127
+    },
+    "classical_transformer_mle": {
+      "best_beta_by_median": 1.9,
+      "best_median_kl": 0.2224638889463307,
+      "mean_at_best_beta": 0.225864750118877,
+      "ci95_at_best_beta": 0.03612015336713894
+    },
+    "classical_maxent_parity": {
+      "best_beta_by_median": 2.0,
+      "best_median_kl": 0.5406587981910154,
+      "mean_at_best_beta": 0.6590763976326207,
+      "ci95_at_best_beta": 0.18115210314115335
+    }
+  }
+}

@@ -35,7 +35,7 @@ except Exception:
 
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib import colors  # noqa: E402
-from matplotlib.patches import Polygon, Rectangle  # noqa: E402
+from matplotlib.patches import Rectangle  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parent
@@ -43,18 +43,25 @@ SCRIPT_REL = "experiment_1_kl_diagnostics.py"
 
 FIG_W = 243.12 / 72.0
 FIG_H = 185.52 / 72.0
+HEATMAP_FIGSIZE = (FIG_W, FIG_H)
+BAR_FIGSIZE = (FIG_W, FIG_H)
+LOLLIPOP_FIGSIZE = (FIG_W, FIG_H)
 
-TARGET_COLOR = "#2F2A2B"
-PARITY_COLOR = "#E46C5B"
-MSE_COLOR = "#5B9BE6"
-UNIFORM_COLOR = "#C6C9CF"
-HEATMAP_LOW = "#F04B4C"
-HEATMAP_MID = "#8E111B"
-HEATMAP_HIGH = "#0D0D0F"
-ACCENT_DARK = "#171717"
-TEXT_DARK = "#222222"
-TEXT_MID = "#8A8A8A"
-AXIS_ZERO = "#C7C7C7"
+COLOR_TARGET = "#2d6a4f"
+COLOR_IQP = "#d90429"
+COLOR_IQP_MSE = "#5B9BE6"
+COLOR_NEUTRAL = "#999999"
+COLOR_TEXT = "#333333"
+COLOR_SUBTEXT = "#888888"
+COLOR_LIGHT_TEXT = "#444444"
+COLOR_DARK = "#1a0505"
+COLOR_GRID = "#FFFFFF"
+COLOR_AXIS = "#cfcfcf"
+CMAP_KL = colors.LinearSegmentedColormap.from_list(
+    "kl_red",
+    ["#ff8a8a", "#d90429", "#1a0505"],
+    N=256,
+)
 
 SIGMA_VALUES = [0.5, 1.0, 2.0, 3.0]
 K_VALUES = [128, 256, 512]
@@ -77,7 +84,7 @@ def apply_style() -> None:
             "xtick.major.size": 4,
             "ytick.major.size": 4,
             "legend.framealpha": 0.9,
-            "legend.edgecolor": "gray",
+            "legend.edgecolor": COLOR_SUBTEXT,
             "pdf.fonttype": 42,
             "ps.fonttype": 42,
             "savefig.bbox": None,
@@ -97,8 +104,9 @@ def _luminance(rgba: tuple[float, float, float, float]) -> float:
     return 0.2126 * r + 0.7152 * g + 0.0722 * b
 
 
-def _save_pdf(fig: plt.Figure, path: Path) -> None:
-    fig.savefig(path, bbox_inches="tight", pad_inches=0.03)
+def _save_fig(fig: plt.Figure, path: Path) -> None:
+    fig.savefig(path, format="pdf")
+    fig.savefig(path.with_suffix(".png"), format="png")
     plt.close(fig)
 
 
@@ -307,25 +315,22 @@ def render_heatmap_panel(
     panel_ab_best_k: int,
 ) -> Path:
     apply_style()
-    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H), constrained_layout=True)
+    fig, ax = plt.subplots(figsize=HEATMAP_FIGSIZE, constrained_layout=True)
 
     norm = colors.Normalize(vmin=float(np.min(panel_ab_grid)), vmax=float(np.max(panel_ab_grid)))
-    cmap = colors.LinearSegmentedColormap.from_list(
-        "parity_kl_red_black",
-        [HEATMAP_LOW, HEATMAP_MID, HEATMAP_HIGH],
-    )
-
-    im = ax.imshow(panel_ab_grid, cmap=cmap, norm=norm, aspect="auto")
+    im = ax.imshow(panel_ab_grid, cmap=CMAP_KL, norm=norm, aspect="auto")
     ax.set_xticks(np.arange(len(k_values)))
-    ax.set_xticklabels([str(k) for k in k_values], fontweight="bold")
+    ax.set_xticklabels([str(k) for k in k_values], fontweight="normal")
     ax.set_yticks(np.arange(len(sigma_values)))
-    ax.set_yticklabels([_fmt_sigma(s) for s in sigma_values], fontweight="bold")
+    ax.set_yticklabels([_fmt_sigma(s) for s in sigma_values], fontweight="normal")
     ax.tick_params(top=True, bottom=False, labeltop=True, labelbottom=False)
     ax.xaxis.set_ticks_position("top")
+    ax.set_xlabel(r"$K$", labelpad=8)
+    ax.xaxis.set_label_position("top")
     ax.set_ylabel(r"$\sigma$", labelpad=6)
     ax.set_xticks(np.arange(-0.5, len(k_values), 1), minor=True)
     ax.set_yticks(np.arange(-0.5, len(sigma_values), 1), minor=True)
-    ax.grid(which="minor", color="white", linewidth=1.8)
+    ax.grid(which="minor", color=COLOR_GRID, linewidth=1.2)
     ax.tick_params(which="minor", bottom=False, top=False, left=False, right=False)
     for spine in ax.spines.values():
         spine.set_visible(False)
@@ -335,8 +340,8 @@ def render_heatmap_panel(
     for i in range(len(sigma_values)):
         for j in range(len(k_values)):
             kl_val = float(panel_ab_grid[i, j])
-            rgba = cmap(norm(kl_val))
-            text_color = "#F7F7F7" if _luminance(rgba) < 0.48 else "#1A1A1A"
+            rgba = CMAP_KL(norm(kl_val))
+            text_color = COLOR_DARK if norm(kl_val) <= 0.25 else "#FFFFFF"
             is_best = i == best_i and j == best_j
             ax.text(
                 j,
@@ -344,7 +349,7 @@ def render_heatmap_panel(
                 f"{kl_val:.3f}",
                 ha="center",
                 va="center",
-                fontsize=10.9,
+                fontsize=9.5,
                 color=text_color,
                 fontweight="bold" if is_best else "normal",
             )
@@ -355,26 +360,12 @@ def render_heatmap_panel(
                         1.0,
                         1.0,
                         fill=False,
-                        linewidth=3.0,
-                        edgecolor=ACCENT_DARK,
+                        linewidth=1.0,
+                        edgecolor=COLOR_DARK,
                     )
                 )
-                ax.add_patch(
-                    Polygon(
-                        [
-                            (j + 0.32, i - 0.50),
-                            (j + 0.50, i - 0.50),
-                            (j + 0.50, i - 0.32),
-                        ],
-                        closed=True,
-                        facecolor=ACCENT_DARK,
-                        edgecolor=ACCENT_DARK,
-                        linewidth=0.0,
-                    )
-                )
-
-    cbar = fig.colorbar(im, ax=ax, orientation="horizontal", pad=0.12, fraction=0.09)
-    cbar.set_label(r"IQP Parity $D_{\mathrm{KL}}(p^{*}\,\|\,q)$", labelpad=6, fontsize=10.5)
+    cbar = fig.colorbar(im, ax=ax, orientation="horizontal", fraction=0.046, pad=0.08, shrink=0.85)
+    cbar.set_label(r"IQP Parity $D_{\mathrm{KL}}(p^{*}\,\|\,q)$", labelpad=4, fontsize=9)
     cbar.set_ticks([float(np.min(panel_ab_grid)), float(np.median(panel_ab_grid)), float(np.max(panel_ab_grid))])
     cbar.set_ticklabels(
         [
@@ -383,11 +374,11 @@ def render_heatmap_panel(
             f"{float(np.max(panel_ab_grid)):.3f}",
         ]
     )
-    cbar.outline.set_visible(False)
-    cbar.ax.tick_params(axis="x", length=3, colors="#555555")
+    cbar.ax.tick_params(axis="x", length=2.5, labelsize=7, colors=COLOR_LIGHT_TEXT)
+    cbar.outline.set_linewidth(0.4)
 
     out = outdir / "experiment_1_panel_a_sigma_k_heatmap.pdf"
-    _save_pdf(fig, out)
+    _save_fig(fig, out)
     return out
 
 
@@ -399,7 +390,7 @@ def render_rank_panel(
     panel_ab_grid: np.ndarray,
 ) -> Path:
     apply_style()
-    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H), constrained_layout=True)
+    fig, ax = plt.subplots(figsize=BAR_FIGSIZE, constrained_layout=True)
 
     entries = []
     for i, sigma in enumerate(sigma_values):
@@ -409,39 +400,40 @@ def render_rank_panel(
     y = np.arange(len(entries))[::-1]
 
     kl_min = float(min(row["kl"] for row in entries))
-    shade_vals = np.linspace(0.18, 0.95, len(entries))
-    reds = [colors.to_rgba(PARITY_COLOR, alpha=float(a)) for a in shade_vals]
+    kl_max = float(max(row["kl"] for row in entries))
+    norm = colors.Normalize(vmin=kl_min, vmax=kl_max)
 
-    ax.set_xlim(0.0, max(1.25, 1.08 * float(max(row["kl"] for row in entries))))
+    x_max = 1.08 * float(max(row["kl"] for row in entries))
+    ax.set_xlim(0.35, max(0.70, x_max))
     ax.set_ylim(-0.5, len(entries) - 0.5)
     ax.set_yticks(y)
     ax.set_yticklabels(
-        [rf"$\sigma={_fmt_sigma(row['sigma'])},\, K={int(row['K'])}$" for row in entries],
-        fontsize=9.0,
+        [rf"$\sigma\!=\!{_fmt_sigma(row['sigma'])},\; K\!=\!{int(row['K'])}$" for row in entries],
+        fontsize=8.0,
     )
     ax.set_xlabel(r"$D_{\mathrm{KL}}(p^{*}\,\|\,q)$ (lower better)")
-    ax.grid(True, axis="x", alpha=0.14, linestyle="--", dashes=(2, 2))
-    ax.grid(False, axis="y")
-    for spine in ax.spines.values():
-        spine.set_visible(False)
+    ax.grid(False)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.tick_params(axis="y", length=0)
 
-    for yi, row, rgba in zip(y, entries, reds):
+    for yi, row in zip(y, entries):
         kl_val = float(row["kl"])
-        ax.plot([0.0, kl_val], [yi, yi], color=rgba, linewidth=6.0, solid_capstyle="round", zorder=2)
-        ax.scatter(kl_val, yi, s=46, color=rgba, edgecolors="white", linewidths=1.2, zorder=3)
+        bar_color = CMAP_KL(norm(kl_val))
+        ax.barh(yi, kl_val, height=0.62, color=bar_color, edgecolor="white", linewidth=0.4, zorder=2)
         ax.text(
-            kl_val + 0.02,
+            kl_val + 0.012,
             yi,
             f"{kl_val:.3f}",
             va="center",
             ha="left",
-            fontsize=9.0,
-            color=TEXT_DARK,
+            fontsize=7.0,
+            color=COLOR_LIGHT_TEXT,
             fontweight="bold" if abs(kl_val - kl_min) < 1e-12 else "normal",
         )
 
     out = outdir / "experiment_1_panel_b_sigma_k_rank_ordering.pdf"
-    _save_pdf(fig, out)
+    _save_fig(fig, out)
     return out
 
 
@@ -455,31 +447,33 @@ def render_benchmark_panel(
     uniform_kl: float,
 ) -> Path:
     apply_style()
-    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H), constrained_layout=True)
+    fig, ax = plt.subplots(figsize=LOLLIPOP_FIGSIZE, constrained_layout=True)
 
     benchmark_entries = [
-        ("Target p*", TARGET_COLOR, 0.0, 0.0, ""),
-        ("Best IQP Parity", PARITY_COLOR, float(best_mean), float(best_ci), r"best over $\sigma,K$ per seed"),
-        ("IQP MSE", MSE_COLOR, float(mse_mean), float(mse_ci), ""),
-        ("Uniform", UNIFORM_COLOR, float(uniform_kl), 0.0, ""),
+        ("Target p*", COLOR_TARGET, 0.0, 0.0, ""),
+        ("Best IQP Parity", "#ea8a7d", float(best_mean), float(best_ci), r"best over $\sigma,K$ per seed"),
+        ("IQP MSE", "#86afe8", float(mse_mean), float(mse_ci), ""),
+        ("Uniform", "#cfd2d7", float(uniform_kl), 0.0, ""),
     ]
     y_positions = np.arange(len(benchmark_entries))[::-1]
 
     right_edge = max(val + ci for _, _, val, ci, _ in benchmark_entries)
-    ax.set_xlim(0.0, right_edge + 1.05)
+    left_pad = 0.42 * max(right_edge, 1.0)
+    ax.set_xlim(-left_pad, right_edge + 0.65)
     ax.set_ylim(-0.6, len(benchmark_entries) - 0.4)
     ax.set_yticks([])
     ax.set_xlabel(r"$D_{\mathrm{KL}}(p^{*}\,\|\,q)$ (lower better)")
     ax.grid(True, axis="x", alpha=0.14, linestyle="--", dashes=(2, 2))
     ax.grid(False, axis="y")
-    ax.axvline(0.0, color=AXIS_ZERO, linewidth=1.1)
-    for spine in ax.spines.values():
-        spine.set_visible(False)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_visible(False)
+    ax.axvline(0.0, color=COLOR_AXIS, linewidth=1.1)
 
     ytrans = ax.get_yaxis_transform()
-    metric_dx = 0.20
+
     for y_pos, (label, color, kl_val, ci_val, sublabel) in zip(y_positions, benchmark_entries):
-        ax.plot([0.0, kl_val], [y_pos, y_pos], color=color, linewidth=8.0, solid_capstyle="butt", alpha=0.78)
+        ax.plot([0.0, kl_val], [y_pos, y_pos], color=color, linewidth=8.0, alpha=0.88, solid_capstyle="butt", zorder=1)
         if ci_val > 0.0:
             ax.errorbar(
                 kl_val,
@@ -494,43 +488,44 @@ def render_benchmark_panel(
             )
         ax.scatter(kl_val, y_pos, s=58, color=color, edgecolors="white", linewidths=1.5, zorder=4)
         ax.text(
-            -0.010,
-            y_pos + 0.06,
+            -0.006,
+            y_pos + 0.02,
             label,
             transform=ytrans,
-            fontsize=10.4,
+            fontsize=9.8,
+            fontweight="normal",
             va="center",
             ha="right",
-            color=TEXT_DARK,
-            fontweight="bold",
+            color=COLOR_TEXT,
+            clip_on=False,
+        )
+        ax.text(
+            kl_val + ci_val + 0.14,
+            y_pos,
+            f"KL {kl_val:.3f}" if ci_val <= 0.0 else f"KL {kl_val:.3f} ± {ci_val:.3f}",
+            fontsize=6.9,
+            fontweight="normal",
+            va="center",
+            ha="left",
+            color=COLOR_TEXT,
             clip_on=False,
         )
         if sublabel:
             ax.text(
-                -0.010,
-                y_pos - 0.24,
+                -0.006,
+                y_pos - 0.34,
                 sublabel,
                 transform=ytrans,
-                fontsize=8.2,
-                va="center",
+                fontsize=5.5,
+                va="top",
                 ha="right",
-                color=TEXT_MID,
+                fontstyle="italic",
+                color=COLOR_SUBTEXT,
                 clip_on=False,
             )
-        metric_label = f"KL {kl_val:.3f}" if ci_val <= 0.0 else f"KL {kl_val:.3f} ± {ci_val:.3f}"
-        ax.text(
-            kl_val + ci_val + metric_dx,
-            y_pos,
-            metric_label,
-            fontsize=9.2,
-            fontweight="bold",
-            va="center",
-            ha="left",
-            color=TEXT_DARK,
-        )
 
     out = outdir / "experiment_1_panel_c_fixed_beta_comparison.pdf"
-    _save_pdf(fig, out)
+    _save_fig(fig, out)
     return out
 
 

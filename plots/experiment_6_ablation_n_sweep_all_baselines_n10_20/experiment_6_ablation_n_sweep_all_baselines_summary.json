@@ -1,0 +1,73 @@
+{
+  "script": "experiment_6_ablation_n_sweep_all_baselines.py",
+  "outdir": "plots/experiment_6_ablation_n_sweep_all_baselines_n10_20",
+  "beta": 0.9,
+  "n_values": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "seed_values": [
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120
+  ],
+  "seed_count": 10,
+  "plot_center": "median",
+  "plot_band": "iqr",
+  "secondary_statistics": "mean_std_ci95",
+  "transformer_variant": {
+    "variant": "medium",
+    "d_model": 32,
+    "nhead": 4,
+    "num_layers": 1,
+    "dim_ff": 64
+  },
+  "models": {
+    "iqp_parity_mse": {
+      "best_n_by_median": 10,
+      "best_median_kl": 0.33767619985385905,
+      "mean_at_best_n": 0.3451124300872159,
+      "ci95_at_best_n": 0.03377907642557096
+    },
+    "classical_nnn_fields_parity": {
+      "best_n_by_median": 10,
+      "best_median_kl": 0.9806494108376848,
+      "mean_at_best_n": 0.9799364986637407,
+      "ci95_at_best_n": 0.041535682131686506
+    },
+    "classical_dense_fields_xent": {
+      "best_n_by_median": 10,
+      "best_median_kl": 0.969639242820505,
+      "mean_at_best_n": 0.9737906343205351,
+      "ci95_at_best_n": 0.027179289400202707
+    },
+    "classical_transformer_mle": {
+      "best_n_by_median": 10,
+      "best_median_kl": 0.7195314868472433,
+      "mean_at_best_n": 0.7308976119345095,
+      "ci95_at_best_n": 0.05868559680689179
+    },
+    "classical_maxent_parity": {
+      "best_n_by_median": 10,
+      "best_median_kl": 1.7065294282322716,
+      "mean_at_best_n": 1.777456374170475,
+      "ci95_at_best_n": 0.3732403082785502
+    }
+  }
+}

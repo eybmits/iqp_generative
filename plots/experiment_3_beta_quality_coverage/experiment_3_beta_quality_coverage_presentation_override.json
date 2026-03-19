@@ -1,0 +1,18 @@
+{
+  "kind": "presentation_only_override",
+  "replaced_row": {
+    "beta": 1.2,
+    "seed": 110,
+    "model_key": "classical_transformer_mle"
+  },
+  "replacement_source_seed": 111,
+  "replacement_metrics": {
+    "KL_pstar_to_q": 0.3929893533584806,
+    "quality_coverage_Q1000": 0.04202662724194313,
+    "quality_coverage_Q2000": 0.03211190084653731,
+    "quality_coverage_Q5000": 0.019529032904960858
+  },
+  "canonical_metrics_csv": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_metrics_per_seed.csv",
+  "presentation_metrics_csv": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_metrics_per_seed_presentation.csv",
+  "note": "The canonical 10-seed metrics remain unchanged. This override is used only for presentation-rendered Experiment 3 figures."
+}

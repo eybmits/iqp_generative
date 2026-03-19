@@ -1,0 +1,59 @@
+{
+  "script": "experiment_7_ablation_transformer_capacity_fixed_beta.py",
+  "outdir": "plots/experiment_7_ablation_transformer_capacity_fixed_beta",
+  "beta": 0.9,
+  "n": 12,
+  "seeds": [
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120
+  ],
+  "train_m": 200,
+  "val_m": 1000,
+  "holdout_mode": "global",
+  "holdout_seed": 46,
+  "sigma": 1.0,
+  "K": 512,
+  "iqp_steps": 600,
+  "artr_epochs": 600,
+  "artr_lr": 0.001,
+  "artr_batch_size": 256,
+  "transformer_configs": [
+    {
+      "variant": "tiny",
+      "d_model": 8,
+      "nhead": 2,
+      "layers": 1,
+      "dim_ff": 16
+    },
+    {
+      "variant": "small",
+      "d_model": 16,
+      "nhead": 2,
+      "layers": 1,
+      "dim_ff": 32
+    },
+    {
+      "variant": "medium",
+      "d_model": 32,
+      "nhead": 4,
+      "layers": 1,
+      "dim_ff": 64
+    },
+    {
+      "variant": "large",
+      "d_model": 64,
+      "nhead": 4,
+      "layers": 2,
+      "dim_ff": 128
+    }
+  ],
+  "rerun_command": "MPLCONFIGDIR=/tmp/mpl-cache python experiment_7_ablation_transformer_capacity_fixed_beta.py --beta 0.9 --n 12 --seeds 111,112,113,114,115,116,117,118,119,120 --train-m 200 --val-m 1000 --holdout-mode global --iqp-steps 600 --artr-epochs 600 --outdir plots/experiment_7_ablation_transformer_capacity_fixed_beta"
+}

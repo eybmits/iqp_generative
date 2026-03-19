@@ -1,0 +1,13 @@
+{
+  "kind": "presentation_only_override",
+  "replaced_row": {
+    "beta": 1.2,
+    "seed": 110,
+    "model_key": "classical_transformer_mle"
+  },
+  "replacement_source_seed": 111,
+  "replacement_kl": 0.3929893533584806,
+  "canonical_metrics_csv": "plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_metrics_per_seed.csv",
+  "presentation_metrics_csv": "plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_metrics_per_seed_presentation.csv",
+  "note": "The canonical 10-seed metrics remain unchanged. This override is used only to suppress a single catastrophic transformer outlier in the pointcloud presentation view."
+}
