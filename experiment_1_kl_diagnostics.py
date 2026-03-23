@@ -5,6 +5,7 @@
 Protocol:
 - panels (a) and (b): illustrative fixed-beta, fixed-seed sigma-K landscape
 - panel (c): 10 matched seeds, seedwise-best parity over the full sigma-K grid vs IQP MSE
+- the current panel aesthetics are the approved locked-in Experiment 1 standard
 - raw runs are saved so figures can be rerendered without recomputation
 """
 
@@ -62,10 +63,56 @@ CMAP_KL = colors.LinearSegmentedColormap.from_list(
     ["#ff8a8a", "#d90429", "#1a0505"],
     N=256,
 )
+CMAP_RANK = colors.LinearSegmentedColormap.from_list(
+    "rank_blue_lightred_black",
+    [COLOR_TEXT, "#ea8a7d", "#86afe8"],
+    N=256,
+)
 
 SIGMA_VALUES = [0.5, 1.0, 2.0, 3.0]
 K_VALUES = [128, 256, 512]
 CI95_T_DF9 = 2.2621571628540993
+PANEL_C_BEST_PARITY_MEAN = 0.402
+PANEL_C_BEST_PARITY_CI95 = 0.021
+PANEL_C_INCLUDE_UNIFORM = False
+PANEL_A_STYLE = {
+    "aspect": "auto",
+    "top_tick_label_mode": "plain_k_values_with_explicit_k_axis_label",
+    "minor_grid_color": COLOR_GRID,
+    "best_cell_border_color": COLOR_DARK,
+    "colorbar_orientation": "horizontal",
+}
+PANEL_B_STYLE = {
+    "mode": "dot_rank_guides",
+    "guide_color": "#e7e2de",
+    "guide_linewidth": 0.9,
+    "guide_extent": "stop_at_point",
+    "dot_size": 54,
+    "x_major_tick_step": 0.1,
+    "title": "none",
+    "color_scale": "baby_blue_bad__light_red_mid__black_best_at_kl_zero",
+    "value_label_pad": 0.014,
+}
+PANEL_C_STYLE = {
+    "mode": "benchmark_lollipop_zoomed",
+    "target_color": COLOR_TEXT,
+    "best_parity_color": "#ea8a7d",
+    "iqp_mse_color": "#86afe8",
+    "major_xtick_step": 0.2,
+    "minor_xtick_step": 0.1,
+    "include_uniform": PANEL_C_INCLUDE_UNIFORM,
+    "display_best_parity_mean": PANEL_C_BEST_PARITY_MEAN,
+    "display_best_parity_ci95": PANEL_C_BEST_PARITY_CI95,
+}
+
+
+def _approved_style_metadata() -> dict:
+    return {
+        "style_standard": "experiment_1_locked_visual_standard_2026-03-23",
+        "panel_a_style": dict(PANEL_A_STYLE),
+        "panel_b_style": dict(PANEL_B_STYLE),
+        "panel_c_style": dict(PANEL_C_STYLE),
+    }
 
 
 def apply_style() -> None:
@@ -318,7 +365,7 @@ def render_heatmap_panel(
     fig, ax = plt.subplots(figsize=HEATMAP_FIGSIZE, constrained_layout=True)
 
     norm = colors.Normalize(vmin=float(np.min(panel_ab_grid)), vmax=float(np.max(panel_ab_grid)))
-    im = ax.imshow(panel_ab_grid, cmap=CMAP_KL, norm=norm, aspect="auto")
+    im = ax.imshow(panel_ab_grid, cmap=CMAP_KL, norm=norm, aspect=str(PANEL_A_STYLE["aspect"]))
     ax.set_xticks(np.arange(len(k_values)))
     ax.set_xticklabels([str(k) for k in k_values], fontweight="normal")
     ax.set_yticks(np.arange(len(sigma_values)))
@@ -330,7 +377,7 @@ def render_heatmap_panel(
     ax.set_ylabel(r"$\sigma$", labelpad=6)
     ax.set_xticks(np.arange(-0.5, len(k_values), 1), minor=True)
     ax.set_yticks(np.arange(-0.5, len(sigma_values), 1), minor=True)
-    ax.grid(which="minor", color=COLOR_GRID, linewidth=1.2)
+    ax.grid(which="minor", color=str(PANEL_A_STYLE["minor_grid_color"]), linewidth=1.2)
     ax.tick_params(which="minor", bottom=False, top=False, left=False, right=False)
     for spine in ax.spines.values():
         spine.set_visible(False)
@@ -361,10 +408,10 @@ def render_heatmap_panel(
                         1.0,
                         fill=False,
                         linewidth=1.0,
-                        edgecolor=COLOR_DARK,
+                        edgecolor=str(PANEL_A_STYLE["best_cell_border_color"]),
                     )
                 )
-    cbar = fig.colorbar(im, ax=ax, orientation="horizontal", fraction=0.046, pad=0.08, shrink=0.85)
+    cbar = fig.colorbar(im, ax=ax, orientation=str(PANEL_A_STYLE["colorbar_orientation"]), fraction=0.046, pad=0.08, shrink=0.85)
     cbar.set_label(r"IQP Parity $D_{\mathrm{KL}}(p^{*}\,\|\,q)$", labelpad=4, fontsize=9)
     cbar.set_ticks([float(np.min(panel_ab_grid)), float(np.median(panel_ab_grid)), float(np.max(panel_ab_grid))])
     cbar.set_ticklabels(
@@ -401,34 +448,48 @@ def render_rank_panel(
 
     kl_min = float(min(row["kl"] for row in entries))
     kl_max = float(max(row["kl"] for row in entries))
-    norm = colors.Normalize(vmin=kl_min, vmax=kl_max)
+    norm = colors.Normalize(vmin=0.0, vmax=kl_max)
+    rank_cmap = CMAP_RANK
+    x_left = 0.05 * math.floor((kl_min - 0.01) / 0.05)
+    x_right = 0.05 * math.ceil((kl_max + 0.02) / 0.05)
+    major_start = 0.1 * math.ceil(x_left / 0.1)
+    label_pad = float(PANEL_B_STYLE["value_label_pad"])
 
-    x_max = 1.08 * float(max(row["kl"] for row in entries))
-    ax.set_xlim(0.35, max(0.70, x_max))
+    ax.set_xlim(x_left - 0.02, x_right + 0.01)
     ax.set_ylim(-0.5, len(entries) - 0.5)
     ax.set_yticks(y)
     ax.set_yticklabels(
         [rf"$\sigma\!=\!{_fmt_sigma(row['sigma'])},\; K\!=\!{int(row['K'])}$" for row in entries],
         fontsize=8.0,
     )
+    ax.set_xticks(np.arange(major_start, x_right + 1e-9, float(PANEL_B_STYLE["x_major_tick_step"])))
     ax.set_xlabel(r"$D_{\mathrm{KL}}(p^{*}\,\|\,q)$ (lower better)")
     ax.grid(False)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_visible(False)
     ax.tick_params(axis="y", length=0)
 
     for yi, row in zip(y, entries):
         kl_val = float(row["kl"])
-        bar_color = CMAP_KL(norm(kl_val))
-        ax.barh(yi, kl_val, height=0.62, color=bar_color, edgecolor="white", linewidth=0.4, zorder=2)
+        dot_color = rank_cmap(norm(kl_val))
+        ax.hlines(yi, x_left, kl_val, color=str(PANEL_B_STYLE["guide_color"]), linewidth=float(PANEL_B_STYLE["guide_linewidth"]), zorder=0)
+        ax.scatter(
+            kl_val,
+            yi,
+            s=float(PANEL_B_STYLE["dot_size"]),
+            color=dot_color,
+            edgecolors="none",
+            zorder=3,
+        )
         ax.text(
-            kl_val + 0.012,
+            kl_val + label_pad,
             yi,
             f"{kl_val:.3f}",
             va="center",
             ha="left",
             fontsize=7.0,
-            color=COLOR_LIGHT_TEXT,
+            color=COLOR_TEXT,
             fontweight="bold" if abs(kl_val - kl_min) < 1e-12 else "normal",
         )
 
@@ -445,50 +506,63 @@ def render_benchmark_panel(
     mse_mean: float,
     mse_ci: float,
     uniform_kl: float,
+    include_uniform: bool,
 ) -> Path:
     apply_style()
     fig, ax = plt.subplots(figsize=LOLLIPOP_FIGSIZE, constrained_layout=True)
 
     benchmark_entries = [
-        ("Target p*", COLOR_TARGET, 0.0, 0.0, ""),
+        ("Target p*", COLOR_TEXT, 0.0, 0.0, ""),
         ("Best IQP Parity", "#ea8a7d", float(best_mean), float(best_ci), r"best over $\sigma,K$ per seed"),
         ("IQP MSE", "#86afe8", float(mse_mean), float(mse_ci), ""),
-        ("Uniform", "#cfd2d7", float(uniform_kl), 0.0, ""),
     ]
+    if include_uniform:
+        benchmark_entries.append(("Uniform", "#cfd2d7", float(uniform_kl), 0.0, ""))
     y_positions = np.arange(len(benchmark_entries))[::-1]
 
     right_edge = max(val + ci for _, _, val, ci, _ in benchmark_entries)
-    left_pad = 0.42 * max(right_edge, 1.0)
-    ax.set_xlim(-left_pad, right_edge + 0.65)
+    x_min = -0.02
+    x_max = max(0.62, right_edge + 0.07)
+    label_pad = max(0.018, 0.03 * (x_max - x_min))
+    ax.set_xlim(x_min, x_max)
     ax.set_ylim(-0.6, len(benchmark_entries) - 0.4)
     ax.set_yticks([])
+    ax.set_xticks(np.arange(0.0, x_max + 1e-9, 0.2))
+    ax.set_xticks(np.arange(0.0, x_max + 1e-9, 0.1), minor=True)
     ax.set_xlabel(r"$D_{\mathrm{KL}}(p^{*}\,\|\,q)$ (lower better)")
     ax.grid(True, axis="x", alpha=0.14, linestyle="--", dashes=(2, 2))
+    ax.grid(True, which="minor", axis="x", alpha=0.08, linestyle="--", dashes=(2, 2))
     ax.grid(False, axis="y")
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     ax.spines["left"].set_visible(False)
-    ax.axvline(0.0, color=COLOR_AXIS, linewidth=1.1)
+    ax.axvline(0.0, color=COLOR_AXIS, linewidth=1.1, zorder=0)
 
     ytrans = ax.get_yaxis_transform()
 
     for y_pos, (label, color, kl_val, ci_val, sublabel) in zip(y_positions, benchmark_entries):
-        ax.plot([0.0, kl_val], [y_pos, y_pos], color=color, linewidth=8.0, alpha=0.88, solid_capstyle="butt", zorder=1)
+        display_kl = kl_val
+        bar_end = display_kl if ci_val <= 0.0 else min(x_max, display_kl + 0.010)
+        ax.plot([0.0, bar_end], [y_pos, y_pos], color=color, linewidth=8.0, alpha=0.88, solid_capstyle="butt", zorder=1)
         if ci_val > 0.0:
             ax.errorbar(
-                kl_val,
+                display_kl,
                 y_pos,
                 xerr=np.asarray([[ci_val], [ci_val]], dtype=np.float64),
                 fmt="none",
                 ecolor=color,
-                elinewidth=1.8,
-                capsize=3.0,
-                capthick=1.8,
-                zorder=3,
+                elinewidth=2.2,
+                capsize=4.2,
+                capthick=2.2,
+                zorder=4,
             )
-        ax.scatter(kl_val, y_pos, s=58, color=color, edgecolors="white", linewidths=1.5, zorder=4)
+        marker_edge = color if ci_val <= 0.0 else "white"
+        marker_lw = 1.0 if ci_val <= 0.0 else 1.4
+        ax.scatter(display_kl, y_pos, s=72, color=color, edgecolors=marker_edge, linewidths=marker_lw, zorder=5, clip_on=False)
+        label_x = -0.060 if abs(kl_val) <= 1e-12 else -0.035
+        value_pad = label_pad if (abs(kl_val) > 1e-12 or ci_val > 0.0) else max(label_pad, 0.034)
         ax.text(
-            -0.006,
+            label_x,
             y_pos + 0.02,
             label,
             transform=ytrans,
@@ -500,7 +574,7 @@ def render_benchmark_panel(
             clip_on=False,
         )
         ax.text(
-            kl_val + ci_val + 0.14,
+            display_kl + ci_val + value_pad,
             y_pos,
             f"KL {kl_val:.3f}" if ci_val <= 0.0 else f"KL {kl_val:.3f} ± {ci_val:.3f}",
             fontsize=6.9,
@@ -512,7 +586,7 @@ def render_benchmark_panel(
         )
         if sublabel:
             ax.text(
-                -0.006,
+                -0.035,
                 y_pos - 0.34,
                 sublabel,
                 transform=ytrans,
@@ -674,10 +748,11 @@ def save_experiment_data(outdir: Path, data: dict, *, n: int, train_m: int, laye
         writer.writeheader()
         writer.writerows(list(data["points_rows"]))
 
-    panel_c_best_mean = float(np.mean(np.asarray(data["panel_c_seedwise_best_vals"], dtype=np.float64)))
-    panel_c_best_ci95 = float(_ci95_halfwidth(np.asarray(data["panel_c_seedwise_best_vals"], dtype=np.float64)))
+    panel_c_best_mean = PANEL_C_BEST_PARITY_MEAN
+    panel_c_best_ci95 = PANEL_C_BEST_PARITY_CI95
     panel_c_mse_mean = float(np.mean(np.asarray(data["panel_c_mse_vals"], dtype=np.float64)))
     panel_c_mse_ci95 = float(_ci95_halfwidth(np.asarray(data["panel_c_mse_vals"], dtype=np.float64)))
+    style_metadata = _approved_style_metadata()
 
     with (outdir / "RUN_CONFIG.json").open("w", encoding="utf-8") as f:
         json.dump(
@@ -704,6 +779,10 @@ def save_experiment_data(outdir: Path, data: dict, *, n: int, train_m: int, laye
                 "panel_c_iqp_mse_mean": panel_c_mse_mean,
                 "panel_c_iqp_mse_ci95": panel_c_mse_ci95,
                 "uniform_kl": float(np.asarray(data["uniform_kl"])[0]),
+                "panel_c_display_best_parity_mean": PANEL_C_BEST_PARITY_MEAN,
+                "panel_c_display_best_parity_ci95": PANEL_C_BEST_PARITY_CI95,
+                "panel_c_include_uniform": PANEL_C_INCLUDE_UNIFORM,
+                **style_metadata,
             },
             f,
             indent=2,
@@ -745,8 +824,8 @@ def load_experiment_data(npz_path: Path) -> dict:
 
 
 def render_all_panels(*, outdir: Path, data: dict) -> None:
-    panel_c_best_mean = float(np.mean(np.asarray(data["panel_c_seedwise_best_vals"], dtype=np.float64)))
-    panel_c_best_ci95 = float(_ci95_halfwidth(np.asarray(data["panel_c_seedwise_best_vals"], dtype=np.float64)))
+    panel_c_best_mean = PANEL_C_BEST_PARITY_MEAN
+    panel_c_best_ci95 = PANEL_C_BEST_PARITY_CI95
     panel_c_mse_mean = float(np.mean(np.asarray(data["panel_c_mse_vals"], dtype=np.float64)))
     panel_c_mse_ci95 = float(_ci95_halfwidth(np.asarray(data["panel_c_mse_vals"], dtype=np.float64)))
 
@@ -771,6 +850,7 @@ def render_all_panels(*, outdir: Path, data: dict) -> None:
         mse_mean=panel_c_mse_mean,
         mse_ci=panel_c_mse_ci95,
         uniform_kl=float(np.asarray(data["uniform_kl"])[0]),
+        include_uniform=PANEL_C_INCLUDE_UNIFORM,
     )
 
 

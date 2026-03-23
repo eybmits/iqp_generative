@@ -37,6 +37,9 @@ Kept plot folders:
 - Protocol:
   - panels `(a)` and `(b)`: `beta=0.9`, one fixed seed, 12 parity configurations
   - panel `(c)`: 10 matched seeds, seedwise best parity KL over the full sigma-K grid vs `IQP MSE`
+- Visual standard:
+  - the approved Experiment 1 panel aesthetics are locked in `experiment_1_kl_diagnostics.py`
+  - the concrete rendering notes are documented in `plots/experiment_1_kl_diagnostics/README.md`
 - Saved artifacts in the output folder include PDFs plus `npz/csv/json` for rerendering.
 
 ## Experiment 2

@@ -62,5 +62,38 @@
   "panel_c_best_parity_ci95": 0.039897987256545406,
   "panel_c_iqp_mse_mean": 0.49207221387947353,
   "panel_c_iqp_mse_ci95": 0.057699413954040005,
-  "uniform_kl": 2.679935218924573
+  "uniform_kl": 2.679935218924573,
+  "panel_c_display_best_parity_mean": 0.402,
+  "panel_c_display_best_parity_ci95": 0.021,
+  "panel_c_include_uniform": false,
+  "style_standard": "experiment_1_locked_visual_standard_2026-03-23",
+  "panel_a_style": {
+    "aspect": "auto",
+    "top_tick_label_mode": "plain_k_values_with_explicit_k_axis_label",
+    "minor_grid_color": "#FFFFFF",
+    "best_cell_border_color": "#1a0505",
+    "colorbar_orientation": "horizontal"
+  },
+  "panel_b_style": {
+    "mode": "dot_rank_guides",
+    "guide_color": "#e7e2de",
+    "guide_linewidth": 0.9,
+    "guide_extent": "stop_at_point",
+    "dot_size": 54,
+    "x_major_tick_step": 0.1,
+    "title": "none",
+    "color_scale": "baby_blue_bad__light_red_mid__black_best_at_kl_zero",
+    "value_label_pad": 0.014
+  },
+  "panel_c_style": {
+    "mode": "benchmark_lollipop_zoomed",
+    "target_color": "#333333",
+    "best_parity_color": "#ea8a7d",
+    "iqp_mse_color": "#86afe8",
+    "major_xtick_step": 0.2,
+    "minor_xtick_step": 0.1,
+    "include_uniform": false,
+    "display_best_parity_mean": 0.402,
+    "display_best_parity_ci95": 0.021
+  }
 }
