@@ -1,0 +1,33 @@
+{
+  "script": "experiment_11_toy_parity_signature_plot.py",
+  "outdir": "plots/experiment_11_toy_parity_signature_plot",
+  "n": 4,
+  "train_m": 12,
+  "toy_seed": 53,
+  "target_state": "1001",
+  "partner_state": "1100",
+  "parities": [
+    [
+      1,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      1,
+      1,
+      1
+    ]
+  ],
+  "pdf": "plots/experiment_11_toy_parity_signature_plot/experiment_11_toy_parity_signature_plot.pdf",
+  "png": "plots/experiment_11_toy_parity_signature_plot/experiment_11_toy_parity_signature_plot.png",
+  "data_npz": "plots/experiment_11_toy_parity_signature_plot/experiment_11_toy_parity_signature_plot_data.npz",
+  "readme": "plots/experiment_11_toy_parity_signature_plot/README.md"
+}

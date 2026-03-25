@@ -27,6 +27,8 @@ Saved artifacts:
 - aggregated beta series: `plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_series.csv`
 - saved data cube: `plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_data.npz`
 - final PDF: `plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary.pdf`
+- pointcloud PDF: `plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_pointcloud.pdf`
+- paper export alias: `plots/experiment_2_beta_kl_summary/fig6_beta_kl_summary.pdf`
 - local protocol doc: `TRAINING_PROTOCOL.md`
 
 - source driver: `experiment_2_beta_kl_summary.py`

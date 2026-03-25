@@ -21,6 +21,7 @@ import csv
 import json
 import math
 import os
+import shutil
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Sequence
@@ -105,6 +106,14 @@ MEDIUM_TRANSFORMER = {
 
 FIG_W = 270.0 / 72.0
 FIG_H = 185.52 / 72.0
+POINTCLOUD_FIG_W = 320.0 / 72.0
+POINTCLOUD_FIG_H = FIG_H
+POINTCLOUD_LEFT = 0.17
+POINTCLOUD_RIGHT = 0.985
+POINTCLOUD_BOTTOM = 0.22
+POINTCLOUD_TOP = 0.93
+POINTCLOUD_XPAD_IN_STEPS = 0.35
+PAPER_POINTCLOUD_Q1000_PDF = "fig7_beta_quality_coverage_q1000.pdf"
 
 LEGEND_FONTSIZE = 7.2
 BAND_ALPHA = 0.14
@@ -125,30 +134,35 @@ MODEL_STYLE = {
         "color": "#D62728",
         "ls": "-",
         "lw": 2.35,
+        "marker": "o",
     },
     "classical_nnn_fields_parity": {
         "label": "Ising+fields (NN+NNN)",
         "color": "#1f77b4",
         "ls": "-",
         "lw": 1.85,
+        "marker": "o",
     },
     "classical_dense_fields_xent": {
         "label": "Dense Ising+fields (xent)",
         "color": "#8c564b",
         "ls": (0, (5, 2)),
         "lw": 1.85,
+        "marker": "o",
     },
     "classical_transformer_mle": {
         "label": "AR Transformer (MLE)",
         "color": "#17becf",
         "ls": "--",
         "lw": 1.90,
+        "marker": "o",
     },
     "classical_maxent_parity": {
         "label": "MaxEnt parity (P,z)",
         "color": "#9467bd",
         "ls": "-.",
         "lw": 1.90,
+        "marker": "o",
     },
 }
 
@@ -706,7 +720,7 @@ def quality_coverage_for_q(q: np.ndarray, elite_unseen_mask: np.ndarray, budget_
     return float(np.sum(1.0 - np.power(1.0 - p, int(budget_q))) / float(int(budget_q)))
 
 
-def _legend_handles() -> List[Line2D]:
+def _legend_handles(*, with_markers: bool = False) -> List[Line2D]:
     handles: List[Line2D] = []
     for model_key in MODEL_ORDER:
         style = MODEL_STYLE[model_key]
@@ -718,6 +732,11 @@ def _legend_handles() -> List[Line2D]:
                 lw=float(style["lw"]),
                 ls=style["ls"],
                 label=str(style["label"]),
+                marker=str(style.get("marker", "o")) if with_markers else "None",
+                markersize=6.8 if with_markers else 0.0,
+                markerfacecolor=str(style["color"]),
+                markeredgecolor="white",
+                markeredgewidth=0.8 if with_markers else 0.0,
             )
         )
     return handles
@@ -917,7 +936,13 @@ def _render_pointcloud(metrics_rows: Sequence[Dict[str, object]], *, budget_q: i
         grouped[str(row["model_key"])][float(row["beta"])].append(float(row[metric_key]))
 
     major_xticks = _major_beta_ticks(all_betas)
-    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H), constrained_layout=True)
+    fig, ax = plt.subplots(figsize=(POINTCLOUD_FIG_W, POINTCLOUD_FIG_H))
+    fig.subplots_adjust(
+        left=POINTCLOUD_LEFT,
+        right=POINTCLOUD_RIGHT,
+        bottom=POINTCLOUD_BOTTOM,
+        top=POINTCLOUD_TOP,
+    )
     rng = np.random.default_rng(0)
     ymin = float("inf")
     ymax = float("-inf")
@@ -984,9 +1009,14 @@ def _render_pointcloud(metrics_rows: Sequence[Dict[str, object]], *, budget_q: i
                 zorder=5,
             )
 
-    ax.set_xlabel(r"$\beta$")
-    ax.set_ylabel(rf"$C_q(Q={int(budget_q):,})$")
-    ax.set_xlim(float(min(all_betas)), float(max(all_betas)))
+    ax.set_xlabel(r"$\beta$", labelpad=2.0)
+    ax.set_ylabel(rf"$C_q(Q={int(budget_q):,})$", labelpad=4.0)
+    if len(all_betas) > 1:
+        beta_step = min(abs(all_betas[idx + 1] - all_betas[idx]) for idx in range(len(all_betas) - 1))
+    else:
+        beta_step = 0.1
+    x_pad = POINTCLOUD_XPAD_IN_STEPS * beta_step
+    ax.set_xlim(float(min(all_betas)) - x_pad, float(max(all_betas)) + x_pad)
     ax.set_xticks(major_xticks)
     ax.set_xticklabels([f"{tick:.1f}" for tick in major_xticks])
     if np.isfinite(ymin) and np.isfinite(ymax):
@@ -1018,6 +1048,8 @@ def _write_readme(
     data_npz: Path,
     budget_series: Dict[int, Path],
     budget_pdfs: Dict[int, Path],
+    budget_pointcloud_pdfs: Dict[int, Path],
+    paper_pointcloud_q1000_pdf: Path,
     args: argparse.Namespace,
 ) -> None:
     lines = [
@@ -1061,8 +1093,10 @@ def _write_readme(
     for budget_q in DEFAULT_BUDGETS:
         lines.append(f"- series Q={int(budget_q)}: `{_try_rel(budget_series[int(budget_q)])}`")
         lines.append(f"- PDF Q={int(budget_q)}: `{_try_rel(budget_pdfs[int(budget_q)])}`")
+        lines.append(f"- pointcloud PDF Q={int(budget_q)}: `{_try_rel(budget_pointcloud_pdfs[int(budget_q)])}`")
     lines.extend(
         [
+            f"- paper export alias (Q=1000 pointcloud): `{_try_rel(paper_pointcloud_q1000_pdf)}`",
             "- manifest: `experiment_3_beta_quality_coverage_manifest.csv`",
             "- local protocol doc: `TRAINING_PROTOCOL.md`",
             "",
@@ -1290,6 +1324,7 @@ def run() -> None:
         2000: outdir / f"{OUTPUT_STEM}_q2000_pointcloud.pdf",
         5000: outdir / f"{OUTPUT_STEM}_q5000_pointcloud.pdf",
     }
+    paper_pointcloud_q1000_pdf = outdir / PAPER_POINTCLOUD_Q1000_PDF
 
     if int(args.recompute) == 1 or not all(path.exists() for path in budget_series_paths.values()):
         series_by_budget = _recompute_series(
@@ -1321,6 +1356,7 @@ def run() -> None:
                 "series_csv": _try_rel(budget_series_paths[int(budget_q)]),
             }
         )
+    shutil.copyfile(budget_pointcloud_pdf_paths[1000], paper_pointcloud_q1000_pdf)
 
     summary_payload = {
         "script": SCRIPT_REL,
@@ -1333,6 +1369,7 @@ def run() -> None:
         "secondary_statistics": "median_std_ci95",
         "transformer_variant": dict(MEDIUM_TRANSFORMER),
         "elite_frac": float(args.elite_frac),
+        "paper_pointcloud_q1000_pdf": _try_rel(paper_pointcloud_q1000_pdf),
         "budgets": {
             str(int(budget_q)): {
                 "series_csv": _try_rel(budget_series_paths[int(budget_q)]),
@@ -1376,6 +1413,7 @@ def run() -> None:
             "series_csvs": {str(k): _try_rel(v) for k, v in budget_series_paths.items()},
             "pdfs": {str(k): _try_rel(v) for k, v in budget_pdf_paths.items()},
             "pointcloud_pdfs": {str(k): _try_rel(v) for k, v in budget_pointcloud_pdf_paths.items()},
+            "paper_pointcloud_q1000_pdf": _try_rel(paper_pointcloud_q1000_pdf),
             "plot_center": "mean",
             "plot_band": "iqr",
             "secondary_statistics": "median_std_ci95",
@@ -1409,6 +1447,8 @@ def run() -> None:
         data_npz=data_npz,
         budget_series=budget_series_paths,
         budget_pdfs=budget_pdf_paths,
+        budget_pointcloud_pdfs=budget_pointcloud_pdf_paths,
+        paper_pointcloud_q1000_pdf=paper_pointcloud_q1000_pdf,
         args=args,
     )
     write_training_protocol(

@@ -1,7 +1,7 @@
 {
   "script": "experiment_3_beta_quality_coverage.py",
   "outdir": "plots/experiment_3_beta_quality_coverage",
-  "input_mode": "recompute",
+  "input_mode": "series_csv",
   "betas": [
     0.1,
     0.2,
@@ -78,6 +78,7 @@
     "2000": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q2000_pointcloud.pdf",
     "5000": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q5000_pointcloud.pdf"
   },
+  "paper_pointcloud_q1000_pdf": "plots/experiment_3_beta_quality_coverage/fig7_beta_quality_coverage_q1000.pdf",
   "plot_center": "mean",
   "plot_band": "iqr",
   "secondary_statistics": "median_std_ci95",

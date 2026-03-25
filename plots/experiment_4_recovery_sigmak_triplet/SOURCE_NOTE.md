@@ -1,10 +1,21 @@
 # Experiment 4 Source Note
 
-This reduced repository keeps the rendered Experiment 4 PDFs and the final
-standalone script:
+This directory now contains both the rendered Experiment 4 PDFs and a local
+regenerated NPZ payload:
 
 - `experiment_4_recovery_sigmak_triplet.py`
+- `coverage_sigmak_triplet_data.npz`
 
-The original source NPZ that was used to rerender these three recovery panels
-is not bundled in the reduced layout anymore. The PDFs in this folder are the
-retained final artifacts.
+The payload was rebuilt from the current fixed-beta helpers at:
+
+- `beta = 0.9`
+- `seed = 45`
+- `n = 12`
+- `train_m = 200`
+- `sigma in {0.5, 1, 2, 3}`
+- `K in {128, 256, 512}`
+
+Selection rule:
+
+- `best spectral` is defined explicitly as the spectral setting with maximal
+  recovery `R(Q)` at `Q = 1000`

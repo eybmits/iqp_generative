@@ -138,6 +138,10 @@ def _render_plot(
     ax.set_ylabel(r"$p(\ell = s)$")
     ax.grid(True, axis="y", ls="--", lw=0.5, alpha=0.25, zorder=0)
     ax.grid(False, axis="x")
+    ax.spines["bottom"].set_color(TEXT_DARK)
+    ax.spines["bottom"].set_linewidth(1.2)
+    ax.spines["bottom"].set_zorder(10)
+    ax.axhline(0.0, color=TEXT_DARK, lw=1.2, zorder=9, clip_on=False)
 
     ymax = float(max(np.max(target_masses), np.max(parity_masses), np.max(mse_masses)))
     ax.set_ylim(0.0, ymax * 1.24)

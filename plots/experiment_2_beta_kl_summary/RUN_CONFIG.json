@@ -1,7 +1,7 @@
 {
   "script": "experiment_2_beta_kl_summary.py",
   "outdir": "plots/experiment_2_beta_kl_summary",
-  "input_mode": "recompute",
+  "input_mode": "series_csv",
   "betas": [
     0.1,
     0.2,
@@ -64,6 +64,7 @@
   "summary_json": "plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_summary.json",
   "pdf": "plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary.pdf",
   "pointcloud_pdf": "plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_pointcloud.pdf",
+  "paper_pointcloud_pdf": "plots/experiment_2_beta_kl_summary/fig6_beta_kl_summary.pdf",
   "pointcloud_ymin": 0.0,
   "pointcloud_ymax": 4.0,
   "plot_center": "median",

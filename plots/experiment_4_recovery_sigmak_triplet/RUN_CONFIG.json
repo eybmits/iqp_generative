@@ -7,8 +7,9 @@
   "metric": "recovery",
   "comparison_spectral_key": "sigma=1, K=512",
   "best_parity_key": "sigma=1, K=512",
-  "best_spectral_key": "sigma=3, K=512",
-  "elite_unseen_count": 138,
-  "pdf_only": true,
-  "source_note": "The original source NPZ is not bundled in the reduced repo layout; the rendered PDFs are retained."
+  "best_spectral_key": "sigma=1, K=512",
+  "best_spectral_selection_metric": "max_recovery_at_Q",
+  "best_spectral_selection_budget_q": 1000,
+  "elite_unseen_count": 137,
+  "pdf_only": true
 }

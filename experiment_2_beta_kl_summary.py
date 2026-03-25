@@ -20,6 +20,7 @@ import csv
 import json
 import math
 import os
+import shutil
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Sequence
@@ -102,6 +103,14 @@ MEDIUM_TRANSFORMER = {
 
 FIG_W = 270.0 / 72.0
 FIG_H = 185.52 / 72.0
+POINTCLOUD_FIG_W = 320.0 / 72.0
+POINTCLOUD_FIG_H = FIG_H
+POINTCLOUD_LEFT = 0.17
+POINTCLOUD_RIGHT = 0.985
+POINTCLOUD_BOTTOM = 0.22
+POINTCLOUD_TOP = 0.93
+POINTCLOUD_XPAD_IN_STEPS = 0.35
+PAPER_POINTCLOUD_PDF = "fig6_beta_kl_summary.pdf"
 
 LEGEND_FONTSIZE = 7.2
 BAND_ALPHA = 0.14
@@ -122,30 +131,35 @@ MODEL_STYLE = {
         "color": "#D62728",
         "ls": "-",
         "lw": 2.35,
+        "marker": "o",
     },
     "classical_nnn_fields_parity": {
         "label": "Ising+fields (NN+NNN)",
         "color": "#1f77b4",
         "ls": "-",
         "lw": 1.85,
+        "marker": "o",
     },
     "classical_dense_fields_xent": {
         "label": "Dense Ising+fields (xent)",
         "color": "#8c564b",
         "ls": (0, (5, 2)),
         "lw": 1.85,
+        "marker": "o",
     },
     "classical_transformer_mle": {
         "label": "AR Transformer (MLE)",
         "color": "#17becf",
         "ls": "--",
         "lw": 1.90,
+        "marker": "o",
     },
     "classical_maxent_parity": {
         "label": "MaxEnt parity (P,z)",
         "color": "#9467bd",
         "ls": "-.",
         "lw": 1.90,
+        "marker": "o",
     },
 }
 
@@ -684,7 +698,7 @@ def _kl_pstar_to_q(p_star: np.ndarray, q: np.ndarray, eps: float = 1e-12) -> flo
     return float(np.sum(pv * np.log(pv / qv)))
 
 
-def _legend_handles() -> List[Line2D]:
+def _legend_handles(*, with_markers: bool = False) -> List[Line2D]:
     handles: List[Line2D] = []
     for model_key in MODEL_ORDER:
         style = MODEL_STYLE[model_key]
@@ -696,6 +710,11 @@ def _legend_handles() -> List[Line2D]:
                 lw=float(style["lw"]),
                 ls=style["ls"],
                 label=str(style["label"]),
+                marker=str(style.get("marker", "o")) if with_markers else "None",
+                markersize=6.8 if with_markers else 0.0,
+                markerfacecolor=str(style["color"]),
+                markeredgecolor="white",
+                markeredgewidth=0.8 if with_markers else 0.0,
             )
         )
     return handles
@@ -888,7 +907,13 @@ def _render_pointcloud(
         grouped[str(row["model_key"])][float(row["beta"])].append(float(row["KL_pstar_to_q"]))
 
     major_xticks = _major_beta_ticks(all_betas)
-    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H), constrained_layout=True)
+    fig, ax = plt.subplots(figsize=(POINTCLOUD_FIG_W, POINTCLOUD_FIG_H))
+    fig.subplots_adjust(
+        left=POINTCLOUD_LEFT,
+        right=POINTCLOUD_RIGHT,
+        bottom=POINTCLOUD_BOTTOM,
+        top=POINTCLOUD_TOP,
+    )
     rng = np.random.default_rng(0)
     ymin = float("inf")
     ymax = float("-inf")
@@ -955,9 +980,14 @@ def _render_pointcloud(
                 zorder=5,
             )
 
-    ax.set_xlabel(r"$\beta$")
-    ax.set_ylabel(r"$D_{\mathrm{KL}}(p^* \parallel q)$")
-    ax.set_xlim(float(min(all_betas)), float(max(all_betas)))
+    ax.set_xlabel(r"$\beta$", labelpad=2.0)
+    ax.set_ylabel(r"$D_{\mathrm{KL}}(p^* \parallel q)$", labelpad=4.0)
+    if len(all_betas) > 1:
+        beta_step = min(abs(all_betas[idx + 1] - all_betas[idx]) for idx in range(len(all_betas) - 1))
+    else:
+        beta_step = 0.1
+    x_pad = POINTCLOUD_XPAD_IN_STEPS * beta_step
+    ax.set_xlim(float(min(all_betas)) - x_pad, float(max(all_betas)) + x_pad)
     ax.set_xticks(major_xticks)
     ax.set_xticklabels([f"{tick:.1f}" for tick in major_xticks])
     if ymin_override is not None or ymax_override is not None:
@@ -993,6 +1023,8 @@ def _write_readme(
     series_csv: Path,
     data_npz: Path,
     out_pdf: Path,
+    out_pointcloud_pdf: Path,
+    paper_pointcloud_pdf: Path,
     args: argparse.Namespace,
 ) -> None:
     lines = [
@@ -1031,6 +1063,8 @@ def _write_readme(
         f"- aggregated beta series: `{_try_rel(series_csv)}`",
         f"- saved data cube: `{_try_rel(data_npz)}`",
         f"- final PDF: `{_try_rel(out_pdf)}`",
+        f"- pointcloud PDF: `{_try_rel(out_pointcloud_pdf)}`",
+        f"- paper export alias: `{_try_rel(paper_pointcloud_pdf)}`",
         "- local protocol doc: `TRAINING_PROTOCOL.md`",
         "",
         f"- source driver: `{SCRIPT_REL}`",
@@ -1219,6 +1253,7 @@ def run() -> None:
     data_npz = Path(args.data_npz).expanduser() if str(args.data_npz).strip() else (outdir / f"{OUTPUT_STEM}_data.npz")
     out_pdf = outdir / f"{OUTPUT_STEM}.pdf"
     out_pointcloud_pdf = outdir / f"{OUTPUT_STEM}_pointcloud.pdf"
+    paper_pointcloud_pdf = outdir / PAPER_POINTCLOUD_PDF
     summary_json = outdir / f"{OUTPUT_STEM}_summary.json"
     readme_md = outdir / "README.md"
 
@@ -1246,6 +1281,7 @@ def run() -> None:
         ymin_override=float(args.pointcloud_ymin),
         ymax_override=float(args.pointcloud_ymax),
     )
+    shutil.copyfile(out_pointcloud_pdf, paper_pointcloud_pdf)
 
     grouped = _group_series(series_rows)
     summary_payload = {
@@ -1305,6 +1341,7 @@ def run() -> None:
             "summary_json": _try_rel(summary_json),
             "pdf": _try_rel(out_pdf),
             "pointcloud_pdf": _try_rel(out_pointcloud_pdf),
+            "paper_pointcloud_pdf": _try_rel(paper_pointcloud_pdf),
             "pointcloud_ymin": float(args.pointcloud_ymin),
             "pointcloud_ymax": float(args.pointcloud_ymax),
             "plot_center": "median",
@@ -1321,6 +1358,7 @@ def run() -> None:
             "outdir": _try_rel(outdir),
             "pdf": out_pdf.name,
             "pointcloud_pdf": out_pointcloud_pdf.name,
+            "paper_pointcloud_pdf": paper_pointcloud_pdf.name,
             "pointcloud_ymin": float(args.pointcloud_ymin),
             "pointcloud_ymax": float(args.pointcloud_ymax),
             "plot_center": "median",
@@ -1338,6 +1376,8 @@ def run() -> None:
         series_csv=series_csv,
         data_npz=data_npz,
         out_pdf=out_pdf,
+        out_pointcloud_pdf=out_pointcloud_pdf,
+        paper_pointcloud_pdf=paper_pointcloud_pdf,
         args=args,
     )
     write_training_protocol(

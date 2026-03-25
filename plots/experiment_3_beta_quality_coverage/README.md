@@ -30,10 +30,14 @@ Saved artifacts:
 - saved data cube: `plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_data.npz`
 - series Q=1000: `plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q1000_series.csv`
 - PDF Q=1000: `plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q1000.pdf`
+- pointcloud PDF Q=1000: `plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q1000_pointcloud.pdf`
 - series Q=2000: `plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q2000_series.csv`
 - PDF Q=2000: `plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q2000.pdf`
+- pointcloud PDF Q=2000: `plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q2000_pointcloud.pdf`
 - series Q=5000: `plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q5000_series.csv`
 - PDF Q=5000: `plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q5000.pdf`
+- pointcloud PDF Q=5000: `plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q5000_pointcloud.pdf`
+- paper export alias (Q=1000 pointcloud): `plots/experiment_3_beta_quality_coverage/fig7_beta_quality_coverage_q1000.pdf`
 - manifest: `experiment_3_beta_quality_coverage_manifest.csv`
 - local protocol doc: `TRAINING_PROTOCOL.md`
 

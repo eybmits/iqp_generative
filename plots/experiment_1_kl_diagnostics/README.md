@@ -22,7 +22,8 @@ The source of truth is `experiment_1_kl_diagnostics.py`. The values below are no
 
 ## Panel C: Benchmark Comparison
 
-- use the zoomed lollipop layout
+- use the zoomed single-axis lollipop layout
+- keep the axis continuous and simply tighten the right edge around the plotted benchmark values
 - `Target p*` is dark neutral text/color
 - `Best IQP Parity` uses the paper display value `0.402 +- 0.021`
 - `IQP MSE` remains plotted from the saved matched-seed data

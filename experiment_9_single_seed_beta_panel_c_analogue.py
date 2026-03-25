@@ -24,6 +24,8 @@ from experiment_1_kl_diagnostics import (
     COLOR_IQP_MSE,
     COLOR_NEUTRAL,
     COLOR_TARGET,
+    K_VALUES,
+    SIGMA_VALUES,
     apply_style,
     build_parity_matrix,
     build_target_distribution_paper,
@@ -63,7 +65,7 @@ def _write_json(path: Path, payload: Dict[str, object]) -> None:
         f.write("\n")
 
 
-def _render(rows: List[Dict[str, object]], out_pdf: Path, out_png: Path) -> None:
+def _render(rows: List[Dict[str, object]], out_pdf: Path, out_png: Path, *, parity_label: str) -> None:
     import matplotlib.pyplot as plt
 
     apply_style()
@@ -71,7 +73,7 @@ def _render(rows: List[Dict[str, object]], out_pdf: Path, out_png: Path) -> None
 
     families = [
         ("target", "Target p*", COLOR_TARGET, "-"),
-        ("iqp_parity", "IQP parity", COLOR_IQP, "-"),
+        ("iqp_parity", parity_label, COLOR_IQP, "-"),
         ("iqp_mse", "IQP MSE", COLOR_IQP_MSE, "-"),
         ("uniform", "Uniform", COLOR_NEUTRAL, "-."),
     ]
@@ -109,6 +111,7 @@ def run() -> None:
     ap.add_argument("--layers", type=int, default=1)
     ap.add_argument("--steps", type=int, default=600)
     ap.add_argument("--lr", type=float, default=0.05)
+    ap.add_argument("--parity-mode", type=str, default="fixed", choices=["fixed", "best_grid"])
     args = ap.parse_args()
 
     outdir = Path(args.outdir).expanduser()
@@ -124,19 +127,35 @@ def run() -> None:
         p_star, _support, _scores = build_target_distribution_paper(int(args.n), float(beta))
         idxs_train = sample_indices(p_star, int(args.train_m), seed=int(args.seed))
         emp = empirical_dist(idxs_train, 2 ** int(args.n))
-        alphas = sample_alphas(int(args.n), float(args.sigma), int(args.K), seed=int(args.seed) + 222)
-        P = build_parity_matrix(alphas, bits_table)
-        z_data = P @ emp
+        best_sigma = float(args.sigma)
+        best_k = int(args.K)
+        best_parity_kl = float("inf")
+        best_q_parity = None
+        sigma_grid = [float(args.sigma)] if str(args.parity_mode) == "fixed" else [float(x) for x in SIGMA_VALUES]
+        k_grid = [int(args.K)] if str(args.parity_mode) == "fixed" else [int(x) for x in K_VALUES]
 
-        q_parity = train_iqp_qcbm(
-            n=int(args.n),
-            layers=int(args.layers),
-            steps=int(args.steps),
-            lr=float(args.lr),
-            P=P,
-            z_data=z_data,
-            seed_init=int(args.seed) + 10000 + 7 * int(args.K),
-        )
+        for sigma in sigma_grid:
+            for kval in k_grid:
+                alphas = sample_alphas(int(args.n), float(sigma), int(kval), seed=int(args.seed) + 222)
+                P = build_parity_matrix(alphas, bits_table)
+                z_data = P @ emp
+                q_candidate = train_iqp_qcbm(
+                    n=int(args.n),
+                    layers=int(args.layers),
+                    steps=int(args.steps),
+                    lr=float(args.lr),
+                    P=P,
+                    z_data=z_data,
+                    seed_init=int(args.seed) + 10000 + 7 * int(kval),
+                )
+                kl_candidate = float(forward_kl(p_star, q_candidate))
+                if kl_candidate < best_parity_kl:
+                    best_parity_kl = kl_candidate
+                    best_sigma = float(sigma)
+                    best_k = int(kval)
+                    best_q_parity = q_candidate
+
+        assert best_q_parity is not None
         q_mse = train_iqp_qcbm_prob_mse(
             n=int(args.n),
             layers=int(args.layers),
@@ -149,35 +168,54 @@ def run() -> None:
 
         rows.extend(
             [
-                {"beta": float(beta), "family": "target", "label": "Target p*", "KL_pstar_to_q": 0.0},
+                {
+                    "beta": float(beta),
+                    "family": "target",
+                    "label": "Target p*",
+                    "KL_pstar_to_q": 0.0,
+                    "sigma": "",
+                    "K": "",
+                },
                 {
                     "beta": float(beta),
                     "family": "iqp_parity",
-                    "label": "IQP parity",
-                    "KL_pstar_to_q": float(forward_kl(p_star, q_parity)),
+                    "label": "Best IQP parity" if str(args.parity_mode) == "best_grid" else "IQP parity",
+                    "KL_pstar_to_q": float(best_parity_kl),
+                    "sigma": float(best_sigma),
+                    "K": int(best_k),
                 },
                 {
                     "beta": float(beta),
                     "family": "iqp_mse",
                     "label": "IQP MSE",
                     "KL_pstar_to_q": float(forward_kl(p_star, q_mse)),
+                    "sigma": "",
+                    "K": "",
                 },
                 {
                     "beta": float(beta),
                     "family": "uniform",
                     "label": "Uniform",
                     "KL_pstar_to_q": float(forward_kl(p_star, q_uniform)),
+                    "sigma": "",
+                    "K": "",
                 },
             ]
         )
 
-    csv_path = outdir / f"{OUTPUT_STEM}.csv"
-    pdf_path = outdir / f"{OUTPUT_STEM}.pdf"
-    png_path = outdir / f"{OUTPUT_STEM}.png"
+    suffix = "best_grid" if str(args.parity_mode) == "best_grid" else "fixed"
+    csv_path = outdir / f"{OUTPUT_STEM}_{suffix}.csv"
+    pdf_path = outdir / f"{OUTPUT_STEM}_{suffix}.pdf"
+    png_path = outdir / f"{OUTPUT_STEM}_{suffix}.png"
     _write_csv(csv_path, rows)
-    _render(rows, pdf_path, png_path)
+    _render(
+        rows,
+        pdf_path,
+        png_path,
+        parity_label="Best IQP parity" if str(args.parity_mode) == "best_grid" else "IQP parity",
+    )
     _write_json(
-        outdir / "RUN_CONFIG.json",
+        outdir / f"RUN_CONFIG_{suffix}.json",
         {
             "script": SCRIPT_REL,
             "seed": int(args.seed),
@@ -189,6 +227,7 @@ def run() -> None:
             "layers": int(args.layers),
             "steps": int(args.steps),
             "lr": float(args.lr),
+            "parity_mode": str(args.parity_mode),
             "csv": str(csv_path.relative_to(ROOT)),
             "pdf": str(pdf_path.relative_to(ROOT)),
             "png": str(png_path.relative_to(ROOT)),

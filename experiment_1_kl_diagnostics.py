@@ -98,6 +98,9 @@ PANEL_C_STYLE = {
     "target_color": COLOR_TEXT,
     "best_parity_color": "#ea8a7d",
     "iqp_mse_color": "#86afe8",
+    "x_min": -0.015,
+    "x_floor": 0.59,
+    "x_max_padding": 0.035,
     "major_xtick_step": 0.2,
     "minor_xtick_step": 0.1,
     "include_uniform": PANEL_C_INCLUDE_UNIFORM,
@@ -521,14 +524,17 @@ def render_benchmark_panel(
     y_positions = np.arange(len(benchmark_entries))[::-1]
 
     right_edge = max(val + ci for _, _, val, ci, _ in benchmark_entries)
-    x_min = -0.02
-    x_max = max(0.62, right_edge + 0.07)
-    label_pad = max(0.018, 0.03 * (x_max - x_min))
+    x_min = float(PANEL_C_STYLE["x_min"])
+    x_max = max(float(PANEL_C_STYLE["x_floor"]), right_edge + float(PANEL_C_STYLE["x_max_padding"]))
+    label_pad = max(0.014, 0.026 * (x_max - x_min))
+    major_tick_step = float(PANEL_C_STYLE["major_xtick_step"])
+    minor_tick_step = float(PANEL_C_STYLE["minor_xtick_step"])
+
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(-0.6, len(benchmark_entries) - 0.4)
     ax.set_yticks([])
-    ax.set_xticks(np.arange(0.0, x_max + 1e-9, 0.2))
-    ax.set_xticks(np.arange(0.0, x_max + 1e-9, 0.1), minor=True)
+    ax.set_xticks(np.arange(0.0, x_max + 1e-9, major_tick_step))
+    ax.set_xticks(np.arange(0.0, x_max + 1e-9, minor_tick_step), minor=True)
     ax.set_xlabel(r"$D_{\mathrm{KL}}(p^{*}\,\|\,q)$ (lower better)")
     ax.grid(True, axis="x", alpha=0.14, linestyle="--", dashes=(2, 2))
     ax.grid(True, which="minor", axis="x", alpha=0.08, linestyle="--", dashes=(2, 2))
@@ -560,7 +566,7 @@ def render_benchmark_panel(
         marker_lw = 1.0 if ci_val <= 0.0 else 1.4
         ax.scatter(display_kl, y_pos, s=72, color=color, edgecolors=marker_edge, linewidths=marker_lw, zorder=5, clip_on=False)
         label_x = -0.060 if abs(kl_val) <= 1e-12 else -0.035
-        value_pad = label_pad if (abs(kl_val) > 1e-12 or ci_val > 0.0) else max(label_pad, 0.034)
+        value_pad = label_pad if (abs(kl_val) > 1e-12 or ci_val > 0.0) else max(label_pad, 0.032)
         ax.text(
             label_x,
             y_pos + 0.02,
