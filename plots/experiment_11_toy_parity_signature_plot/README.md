@@ -25,5 +25,9 @@ Saved artifacts:
 - data NPZ: `plots/experiment_11_toy_parity_signature_plot/experiment_11_toy_parity_signature_plot_data.npz`
 - run config: `plots/experiment_11_toy_parity_signature_plot/RUN_CONFIG.json`
 
+Reproduce:
+
+- from repo root: `python experiment_11_toy_parity_signature_plot.py --outdir plots/experiment_11_toy_parity_signature_plot --train-m 12`
+
 - source driver: `experiment_11_toy_parity_signature_plot.py`
 - outdir: `plots/experiment_11_toy_parity_signature_plot`

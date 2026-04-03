@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Sequence, Tuple
 
@@ -81,6 +82,12 @@ HEADER_Y = 0.875
 TARGET_BAR_W = 0.08
 TARGET_BAR_MAX_H = 0.27
 TARGET_BAR_LW = 2.45
+SVG_HASH_SALT = OUTPUT_STEM
+REPRO_BUILD_DATETIME = datetime(2026, 4, 1, 0, 0, 0, tzinfo=timezone.utc)
+REPRO_SVG_DATE = REPRO_BUILD_DATETIME.isoformat().replace("+00:00", "Z")
+REPRO_COMMAND = (
+    f"python {SCRIPT_REL} --outdir plots/{OUTPUT_STEM} --train-m {TOY_TRAIN_M}"
+)
 
 
 def _try_rel(path: Path) -> str:
@@ -231,6 +238,7 @@ def _apply_card_style() -> None:
             "figure.dpi": 300,
             "pdf.fonttype": 42,
             "ps.fonttype": 42,
+            "svg.hashsalt": SVG_HASH_SALT,
         }
     )
 
@@ -573,8 +581,27 @@ def _render_plot(*, out_pdf: Path, out_png: Path, out_svg: Path, payload: Dict[s
 
     fig.subplots_adjust(left=0.012, right=0.988, top=0.985, bottom=0.035)
     fig.savefig(out_png, format="png", dpi=300, bbox_inches="tight", facecolor=BG)
-    fig.savefig(out_pdf, format="pdf", bbox_inches="tight", facecolor=BG)
-    fig.savefig(out_svg, format="svg", bbox_inches="tight", facecolor=BG)
+    fig.savefig(
+        out_pdf,
+        format="pdf",
+        bbox_inches="tight",
+        facecolor=BG,
+        metadata={
+            "Creator": SCRIPT_REL,
+            "Producer": "Matplotlib pdf backend",
+            "CreationDate": REPRO_BUILD_DATETIME,
+        },
+    )
+    fig.savefig(
+        out_svg,
+        format="svg",
+        bbox_inches="tight",
+        facecolor=BG,
+        metadata={
+            "Date": REPRO_SVG_DATE,
+            "Creator": SCRIPT_REL,
+        },
+    )
     plt.close(fig)
 
 
@@ -615,6 +642,10 @@ def _write_readme(
         f"- SVG: `{_try_rel(out_svg)}`",
         f"- data NPZ: `{_try_rel(data_npz)}`",
         f"- run config: `{_try_rel(run_json)}`",
+        "",
+        "Reproduce:",
+        "",
+        f"- from repo root: `{REPRO_COMMAND}`",
         "",
         f"- source driver: `{SCRIPT_REL}`",
         f"- outdir: `{_try_rel(path.parent)}`",
@@ -670,6 +701,7 @@ def run() -> None:
         {
             "script": SCRIPT_REL,
             "outdir": _try_rel(outdir),
+            "command": REPRO_COMMAND,
             "n": TOY_N,
             "train_m": int(args.train_m),
             "toy_seed": int(payload["toy_seed"]),
