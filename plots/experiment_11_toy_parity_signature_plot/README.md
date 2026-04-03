@@ -1,13 +1,13 @@
 # Experiment 11 toy parity signature plot
 
-This directory contains a small n=4 explainer for why a parity-based fit can assign
-positive mass to an unseen state such as `1001`.
+This directory contains a three-card n=4 explainer for why a parity-based fit can
+assign positive mass to an unseen state such as `1001`.
 
 Story:
 
-- panel 1: target mass versus `D_train`, with only the seen state shown at its target height
-- panel 2: both states share the same sampled parity signature, but only `1100` comes from `D_train`
-- panel 3: `IQP MSE` stays on the seen state, while `IQP Parity` puts positive mass on `1001`
+- card 1: target mass versus `D_train`, highlighting that `1001` has zero train support
+- card 2: `1001` and `1100` share the same sampled parity signature
+- card 3: `IQP MSE` stays on the seen state, while `IQP Parity` restores mass on `1001`
 
 Key values:
 
@@ -21,6 +21,7 @@ Saved artifacts:
 
 - PDF: `plots/experiment_11_toy_parity_signature_plot/experiment_11_toy_parity_signature_plot.pdf`
 - PNG: `plots/experiment_11_toy_parity_signature_plot/experiment_11_toy_parity_signature_plot.png`
+- SVG: `plots/experiment_11_toy_parity_signature_plot/experiment_11_toy_parity_signature_plot.svg`
 - data NPZ: `plots/experiment_11_toy_parity_signature_plot/experiment_11_toy_parity_signature_plot_data.npz`
 - run config: `plots/experiment_11_toy_parity_signature_plot/RUN_CONFIG.json`
 

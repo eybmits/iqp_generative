@@ -28,6 +28,7 @@
   ],
   "pdf": "plots/experiment_11_toy_parity_signature_plot/experiment_11_toy_parity_signature_plot.pdf",
   "png": "plots/experiment_11_toy_parity_signature_plot/experiment_11_toy_parity_signature_plot.png",
+  "svg": "plots/experiment_11_toy_parity_signature_plot/experiment_11_toy_parity_signature_plot.svg",
   "data_npz": "plots/experiment_11_toy_parity_signature_plot/experiment_11_toy_parity_signature_plot_data.npz",
   "readme": "plots/experiment_11_toy_parity_signature_plot/README.md"
 }
