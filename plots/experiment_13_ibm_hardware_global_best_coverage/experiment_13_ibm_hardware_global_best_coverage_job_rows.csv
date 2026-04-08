@@ -1,0 +1,21 @@
+seed,model_key,model_label,backend_name,job_id,shots,transpiled_depth,transpiled_size,two_qubit_ops,quantum_seconds
+111,parity_global_best,IQP (parity) global-best,ibm_fez,d7an0qqk86tc73a1ssg0,10000,260,426,99,4.0
+111,iqp_mse,IQP MSE,ibm_fez,d7an0t1q1efs73d4c5jg,10000,256,438,102,4.0
+112,parity_global_best,IQP (parity) global-best,ibm_fez,d7an0vbc6das739kg280,10000,259,396,93,4.0
+112,iqp_mse,IQP MSE,ibm_fez,d7an11ik86tc73a1sso0,10000,255,462,105,4.0
+113,parity_global_best,IQP (parity) global-best,ibm_fez,d7an142k86tc73a1ssrg,10000,253,404,90,4.0
+113,iqp_mse,IQP MSE,ibm_fez,d7an169q1efs73d4c61g,10000,255,462,105,4.0
+114,parity_global_best,IQP (parity) global-best,ibm_fez,d7an18jc6das739kg2ig,10000,268,443,105,5.0
+114,iqp_mse,IQP MSE,ibm_fez,d7an1b1q1efs73d4c670,10000,253,415,96,4.0
+115,parity_global_best,IQP (parity) global-best,ibm_fez,d7an1d9q1efs73d4c6b0,10000,275,441,102,4.0
+115,iqp_mse,IQP MSE,ibm_fez,d7b87j15a5qc73dn58h0,10000,252,457,105,4.0
+116,parity_global_best,IQP (parity),ibm_fez,d7b87ljklj2c73eutnl0,10000,255,462,105,4.0
+116,iqp_mse,IQP MSE,ibm_fez,d7b87nu5nvhs73a30jng,10000,253,442,105,4.0
+117,parity_global_best,IQP (parity),ibm_fez,d7b87q65nvhs73a30jr0,10000,250,399,90,4.0
+117,iqp_mse,IQP MSE,ibm_fez,d7b87se5nvhs73a30jug,10000,259,435,99,4.0
+118,parity_global_best,IQP (parity),ibm_fez,d7b87um5nvhs73a30k1g,10000,266,423,102,4.0
+118,iqp_mse,IQP MSE,ibm_fez,d7b88165nvhs73a30k4g,10000,265,472,108,4.0
+119,parity_global_best,IQP (parity),ibm_fez,d7b8833klj2c73euto6g,10000,256,416,96,4.0
+119,iqp_mse,IQP MSE,ibm_fez,d7b88595a5qc73dn599g,10000,267,475,111,4.0
+120,parity_global_best,IQP (parity),ibm_fez,d7b88c15a5qc73dn59gg,10000,256,425,99,4.0
+120,iqp_mse,IQP MSE,ibm_fez,d7b88ebklj2c73eutomg,10000,262,416,96,4.0

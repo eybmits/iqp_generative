@@ -1,0 +1,47 @@
+{
+  "status": "partial",
+  "reason": "IBM open-instance usage limit blocked the remaining jobs",
+  "backend_name": "ibm_fez",
+  "completed_pairs": 9,
+  "expected_pairs": 20,
+  "completed_quantum_seconds": 37.0,
+  "per_job_mean_quantum_seconds": 4.111111111111111,
+  "projected_full_20_job_quantum_seconds": 82.22222222222221,
+  "common_seeds": [
+    111,
+    112,
+    113,
+    114
+  ],
+  "pairwise_rows": [
+    {
+      "metric": "hardware_coverage_Q1000",
+      "n_common_seeds": 4,
+      "parity_mean": 0.05961546257107532,
+      "mse_mean": 0.059733631309288035,
+      "delta_mean": -0.00011816873821272368,
+      "parity_seed_wins": 2,
+      "mse_seed_wins": 2
+    },
+    {
+      "metric": "hardware_coverage_Q2000",
+      "n_common_seeds": 4,
+      "parity_mean": 0.04112133367782856,
+      "mse_mean": 0.04180768767971428,
+      "delta_mean": -0.0006863540018857226,
+      "parity_seed_wins": 2,
+      "mse_seed_wins": 2
+    },
+    {
+      "metric": "hardware_coverage_Q5000",
+      "n_common_seeds": 4,
+      "parity_mean": 0.021531709806823274,
+      "mse_mean": 0.021952502221704688,
+      "delta_mean": -0.0004207924148814154,
+      "parity_seed_wins": 1,
+      "mse_seed_wins": 3
+    }
+  ],
+  "per_seed_csv": "plots/experiment_13_ibm_hardware_global_best_coverage/experiment_13_ibm_hardware_global_best_coverage_per_seed_metrics.csv",
+  "job_rows_csv": "plots/experiment_13_ibm_hardware_global_best_coverage/experiment_13_ibm_hardware_global_best_coverage_job_rows.csv"
+}

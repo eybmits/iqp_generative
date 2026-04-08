@@ -1,0 +1,29 @@
+{
+  "script": "experiment_14_hardware_recovery_curve.py",
+  "experiment12_dir": "plots/experiment_12_global_best_iqp_vs_mse",
+  "experiment13_dir": "plots/experiment_13_ibm_hardware_global_best_coverage",
+  "outdir": "plots/experiment_14_hardware_recovery_curve",
+  "seed": null,
+  "aggregated_seeds": [
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120
+  ],
+  "average_common_seeds": true,
+  "qmax": 2000,
+  "elite_frac": 0.1,
+  "hardware_only": false,
+  "hide_spectral": true,
+  "paper": true,
+  "curve_csv": "plots/experiment_14_hardware_recovery_curve/experiment_14_hardware_recovery_curve_avg_common_seeds_no_spectral_paper.csv",
+  "curve_npz": "plots/experiment_14_hardware_recovery_curve/experiment_14_hardware_recovery_curve_avg_common_seeds_no_spectral_paper.npz",
+  "plot_pdf": "plots/experiment_14_hardware_recovery_curve/experiment_14_hardware_recovery_curve_avg_common_seeds_no_spectral_paper.pdf",
+  "plot_png": "plots/experiment_14_hardware_recovery_curve/experiment_14_hardware_recovery_curve_avg_common_seeds_no_spectral_paper.png"
+}

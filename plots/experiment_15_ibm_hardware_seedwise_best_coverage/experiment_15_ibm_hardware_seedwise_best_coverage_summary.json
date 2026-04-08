@@ -1,0 +1,189 @@
+{
+  "script": "experiment_15_ibm_hardware_seedwise_best_coverage.py",
+  "experiment12_dir": "plots/experiment_12_global_best_iqp_vs_mse",
+  "experiment12_summary": "plots/experiment_12_global_best_iqp_vs_mse/experiment_12_global_best_iqp_vs_mse_summary.json",
+  "experiment12_data": "plots/experiment_12_global_best_iqp_vs_mse/experiment_12_global_best_iqp_vs_mse_data.npz",
+  "backend_name": "ibm_marrakesh",
+  "backend_selection": {
+    "selection_mode": "auto",
+    "candidates": [
+      {
+        "name": "ibm_marrakesh",
+        "num_qubits": 156,
+        "pending_jobs": 0
+      },
+      {
+        "name": "ibm_kingston",
+        "num_qubits": 156,
+        "pending_jobs": 2
+      },
+      {
+        "name": "ibm_fez",
+        "num_qubits": 156,
+        "pending_jobs": 6
+      }
+    ]
+  },
+  "account_name_used": "seedwise-open-plan",
+  "saved_accounts": [
+    "default-ibm-quantum-platform",
+    "seedwise-open-plan"
+  ],
+  "beta": 0.9,
+  "n": 12,
+  "train_m": 200,
+  "layers": 1,
+  "shots": 10000,
+  "budgets": [
+    1000,
+    2000,
+    5000
+  ],
+  "elite_frac": 0.1,
+  "elite_total_count": 204,
+  "seeds": [
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120
+  ],
+  "completed_pairs": [
+    [
+      111,
+      "iqp_mse"
+    ],
+    [
+      111,
+      "parity_seedwise_best"
+    ],
+    [
+      112,
+      "iqp_mse"
+    ],
+    [
+      112,
+      "parity_seedwise_best"
+    ],
+    [
+      113,
+      "iqp_mse"
+    ],
+    [
+      113,
+      "parity_seedwise_best"
+    ],
+    [
+      114,
+      "iqp_mse"
+    ],
+    [
+      114,
+      "parity_seedwise_best"
+    ],
+    [
+      115,
+      "iqp_mse"
+    ],
+    [
+      115,
+      "parity_seedwise_best"
+    ],
+    [
+      116,
+      "iqp_mse"
+    ],
+    [
+      116,
+      "parity_seedwise_best"
+    ],
+    [
+      117,
+      "iqp_mse"
+    ],
+    [
+      117,
+      "parity_seedwise_best"
+    ],
+    [
+      118,
+      "iqp_mse"
+    ],
+    [
+      118,
+      "parity_seedwise_best"
+    ],
+    [
+      119,
+      "iqp_mse"
+    ],
+    [
+      119,
+      "parity_seedwise_best"
+    ],
+    [
+      120,
+      "iqp_mse"
+    ],
+    [
+      120,
+      "parity_seedwise_best"
+    ]
+  ],
+  "n_completed_pairs": 20,
+  "n_common_seeds": 10,
+  "selection_mode": "seedwise_best_oracle",
+  "seedwise_sigma": [
+    2.0,
+    1.0,
+    2.0,
+    0.5,
+    2.0,
+    1.0,
+    3.0,
+    2.0,
+    1.0,
+    3.0
+  ],
+  "seedwise_k": [
+    512,
+    512,
+    512,
+    512,
+    256,
+    512,
+    512,
+    512,
+    256,
+    512
+  ],
+  "seedwise_best_kl": [
+    0.4294578709698199,
+    0.40839129050969847,
+    0.3351818838430996,
+    0.4181219588356595,
+    0.38739293627811544,
+    0.40983808455563076,
+    0.466854114146555,
+    0.3534852438248862,
+    0.4468499200029651,
+    0.42388287487074344
+  ],
+  "estimated_executions": 200000,
+  "estimated_quantum_seconds": 72.0,
+  "observed_quantum_seconds_sum": 90.0,
+  "per_seed_csv": "plots/experiment_15_ibm_hardware_seedwise_best_coverage/experiment_15_ibm_hardware_seedwise_best_coverage_per_seed_metrics.csv",
+  "summary_csv": "plots/experiment_15_ibm_hardware_seedwise_best_coverage/experiment_15_ibm_hardware_seedwise_best_coverage_summary.csv",
+  "pairwise_summary_csv": "plots/experiment_15_ibm_hardware_seedwise_best_coverage/experiment_15_ibm_hardware_seedwise_best_coverage_pairwise_summary.csv",
+  "job_rows_csv": "plots/experiment_15_ibm_hardware_seedwise_best_coverage/experiment_15_ibm_hardware_seedwise_best_coverage_job_rows.csv",
+  "jobs_json": "plots/experiment_15_ibm_hardware_seedwise_best_coverage/experiment_15_ibm_hardware_seedwise_best_coverage_jobs.json",
+  "data_npz": "plots/experiment_15_ibm_hardware_seedwise_best_coverage/experiment_15_ibm_hardware_seedwise_best_coverage_data.npz",
+  "circuits_json": "plots/experiment_15_ibm_hardware_seedwise_best_coverage/experiment_15_ibm_hardware_seedwise_best_coverage_circuits.json",
+  "plot_pdf": "plots/experiment_15_ibm_hardware_seedwise_best_coverage/experiment_15_ibm_hardware_seedwise_best_coverage.pdf",
+  "plot_png": "plots/experiment_15_ibm_hardware_seedwise_best_coverage/experiment_15_ibm_hardware_seedwise_best_coverage.png"
+}

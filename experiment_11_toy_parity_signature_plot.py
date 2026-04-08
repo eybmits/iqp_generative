@@ -350,6 +350,78 @@ def _dashed_group(ax: plt.Axes, *, x: float, y: float, w: float, h: float) -> No
     )
 
 
+def _text_width_axes(ax: plt.Axes, *, text: str, fontsize: float, fontweight: str = "normal") -> float:
+    ax.figure.canvas.draw()
+    tmp = ax.text(
+        0.0,
+        0.0,
+        text,
+        transform=ax.transAxes,
+        fontsize=fontsize,
+        fontweight=fontweight,
+        color=TEXT,
+        alpha=0.0,
+    )
+    renderer = ax.figure.canvas.get_renderer()
+    bbox = tmp.get_window_extent(renderer=renderer)
+    tmp.remove()
+    x0 = ax.transAxes.inverted().transform((bbox.x0, bbox.y0))[0]
+    x1 = ax.transAxes.inverted().transform((bbox.x1, bbox.y0))[0]
+    return float(x1 - x0)
+
+
+def _draw_centered_legend_row(
+    ax: plt.Axes,
+    *,
+    center_x: float = 0.5,
+    y: float,
+    items: Sequence[Dict[str, object]],
+    marker_w: float,
+    marker_h: float,
+    marker_gap: float,
+    item_gap: float,
+    fontsize: float,
+) -> None:
+    text_widths = [
+        _text_width_axes(ax, text=str(item["label"]), fontsize=fontsize, fontweight=str(item.get("fontweight", "normal")))
+        for item in items
+    ]
+    total_width = sum(marker_w + marker_gap + width for width in text_widths)
+    total_width += item_gap * max(0, len(items) - 1)
+    cursor_x = float(center_x) - total_width / 2.0
+
+    for item, text_width in zip(items, text_widths):
+        fill = item.get("fill")
+        edge = str(item["edge"])
+        lw = float(item.get("lw", 1.5))
+        if fill is None:
+            _outlined_bar(ax, x=cursor_x, y=y, w=marker_w, h=marker_h, color=edge, lw=lw, zorder=8)
+        else:
+            _filled_bar(
+                ax,
+                x=cursor_x,
+                y=y,
+                w=marker_w,
+                h=marker_h,
+                color=str(fill),
+                edge_color=edge,
+                lw=lw,
+                zorder=8,
+            )
+        ax.text(
+            cursor_x + marker_w + marker_gap,
+            y + marker_h / 2.0,
+            str(item["label"]),
+            ha="left",
+            va="center",
+            fontsize=fontsize,
+            fontweight=str(item.get("fontweight", "normal")),
+            color=TEXT,
+            zorder=9,
+        )
+        cursor_x += marker_w + marker_gap + text_width + item_gap
+
+
 def _state_label(ax: plt.Axes, *, x: float, y: float, label: str, unseen: bool, show_status: bool = True) -> None:
     ax.text(
         x,
@@ -497,21 +569,30 @@ def _add_panel3(ax: plt.Axes, payload: Dict[str, object]) -> None:
     state_gap = 0.20
     state_centers_left = [group_centers[0] - state_gap / 2.0, group_centers[0] + state_gap / 2.0]
     state_centers_right = [group_centers[1] - state_gap / 2.0, group_centers[1] + state_gap / 2.0]
+    legend_center_x = (
+        (state_centers_left[0] - 0.045 - TARGET_BAR_W / 2.0)
+        + (state_centers_right[1] + 0.045 + TARGET_BAR_W / 2.0)
+    ) / 2.0 + 0.02
 
-    ax.text(group_centers[0], 0.76, "IQP-MSE", ha="center", va="center", fontsize=16.5, fontweight="bold", color=TEXT)
-    ax.text(group_centers[1], 0.76, "IQP-Parity", ha="center", va="center", fontsize=16.5, fontweight="bold", color=TEXT)
+    ax.text(group_centers[0], 0.752, "IQP-MSE", ha="center", va="center", fontsize=16.5, fontweight="bold", color=TEXT)
+    ax.text(group_centers[1], 0.752, "IQP-Parity", ha="center", va="center", fontsize=16.5, fontweight="bold", color=TEXT)
 
-    legend_y = 0.688
-    legend_w = 0.058
-    legend_h = 0.030
-    text_gap = 0.012
-    legend_fs = 14.1
-    _outlined_bar(ax, x=0.055, y=legend_y, w=legend_w, h=legend_h, color=TARGET_EDGE, lw=2.0)
-    ax.text(0.055 + legend_w + text_gap, legend_y + legend_h / 2.0, "target", ha="left", va="center", fontsize=legend_fs, color=TEXT)
-    _filled_bar(ax, x=0.300, y=legend_y, w=legend_w, h=legend_h, color=MSE_COLOR, edge_color=MSE_EDGE, lw=1.5)
-    ax.text(0.300 + legend_w + text_gap, legend_y + legend_h / 2.0, "MSE mass", ha="left", va="center", fontsize=legend_fs, color=TEXT)
-    _filled_bar(ax, x=0.630, y=legend_y, w=legend_w, h=legend_h, color=PARITY_COLOR, edge_color=PARITY_EDGE, lw=1.5)
-    ax.text(0.630 + legend_w + text_gap, legend_y + legend_h / 2.0, "Parity mass", ha="left", va="center", fontsize=legend_fs, color=TEXT)
+    legend_fs = 13.0
+    _draw_centered_legend_row(
+        ax,
+        center_x=legend_center_x,
+        y=0.645,
+        marker_w=0.052,
+        marker_h=0.028,
+        marker_gap=0.010,
+        item_gap=0.035,
+        fontsize=legend_fs,
+        items=[
+            {"label": "target", "fill": None, "edge": TARGET_EDGE, "lw": 2.0},
+            {"label": "MSE mass", "fill": MSE_COLOR, "edge": MSE_EDGE, "lw": 1.5},
+            {"label": "Parity mass", "fill": PARITY_COLOR, "edge": PARITY_EDGE, "lw": 1.5},
+        ],
+    )
 
     baseline = 0.34
     fill_bar_w = TARGET_BAR_W
@@ -569,7 +650,7 @@ def _add_panel3(ax: plt.Axes, payload: Dict[str, object]) -> None:
 def _render_plot(*, out_pdf: Path, out_png: Path, out_svg: Path, payload: Dict[str, object]) -> None:
     _apply_card_style()
     fig = plt.figure(figsize=(13.6, 4.75), facecolor=BG)
-    gs = fig.add_gridspec(1, 3, width_ratios=[1.0, 1.0, 1.0], wspace=CARD_WSPACE)
+    gs = fig.add_gridspec(1, 3, width_ratios=[1.0, 1.0, 1.10], wspace=CARD_WSPACE)
 
     ax1 = fig.add_subplot(gs[0, 0])
     ax2 = fig.add_subplot(gs[0, 1])

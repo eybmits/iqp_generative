@@ -1,0 +1,32 @@
+{
+  "script": "experiment_14_hardware_recovery_curve.py",
+  "status": "partial",
+  "seed": 111,
+  "aggregated_seeds": [
+    111
+  ],
+  "n_aggregated_seeds": 1,
+  "common_completed_seeds": [
+    111,
+    112,
+    113,
+    114
+  ],
+  "selected_seed_reason": "explicit_or_first_completed",
+  "beta": 0.9,
+  "n": 12,
+  "train_m": 200,
+  "elite_frac": 0.1,
+  "elite_unseen_count": 135,
+  "global_best_sigma": 1.0,
+  "global_best_k": 512,
+  "experiment12_dir": "plots/experiment_12_global_best_iqp_vs_mse",
+  "experiment13_dir": "plots/experiment_13_ibm_hardware_global_best_coverage",
+  "curve_csv": "plots/experiment_14_hardware_recovery_curve/experiment_14_hardware_recovery_curve_seed111_hardware_only_no_spectral_paper.csv",
+  "curve_npz": "plots/experiment_14_hardware_recovery_curve/experiment_14_hardware_recovery_curve_seed111_hardware_only_no_spectral_paper.npz",
+  "plot_pdf": "plots/experiment_14_hardware_recovery_curve/experiment_14_hardware_recovery_curve_seed111_hardware_only_no_spectral_paper.pdf",
+  "plot_png": "plots/experiment_14_hardware_recovery_curve/experiment_14_hardware_recovery_curve_seed111_hardware_only_no_spectral_paper.png",
+  "hardware_only": true,
+  "hide_spectral": true,
+  "paper": true
+}

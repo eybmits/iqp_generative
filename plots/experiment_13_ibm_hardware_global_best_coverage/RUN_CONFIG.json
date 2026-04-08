@@ -1,0 +1,31 @@
+{
+  "script": "experiment_13_ibm_hardware_global_best_coverage.py",
+  "outdir": "plots/experiment_13_ibm_hardware_global_best_coverage",
+  "experiment12_dir": "plots/experiment_12_global_best_iqp_vs_mse",
+  "backend": "auto",
+  "account_name": "seedwise-open-plan",
+  "shots": 10000,
+  "optimization_level": 1,
+  "max_execution_time": 540,
+  "budgets": [
+    1000,
+    2000,
+    5000
+  ],
+  "elite_frac": 0.1,
+  "saved_accounts": [
+    "default-ibm-quantum-platform",
+    "seedwise-open-plan"
+  ],
+  "summary_json": "plots/experiment_13_ibm_hardware_global_best_coverage/experiment_13_ibm_hardware_global_best_coverage_summary.json",
+  "per_seed_csv": "plots/experiment_13_ibm_hardware_global_best_coverage/experiment_13_ibm_hardware_global_best_coverage_per_seed_metrics.csv",
+  "summary_csv": "plots/experiment_13_ibm_hardware_global_best_coverage/experiment_13_ibm_hardware_global_best_coverage_summary.csv",
+  "pairwise_summary_csv": "plots/experiment_13_ibm_hardware_global_best_coverage/experiment_13_ibm_hardware_global_best_coverage_pairwise_summary.csv",
+  "job_rows_csv": "plots/experiment_13_ibm_hardware_global_best_coverage/experiment_13_ibm_hardware_global_best_coverage_job_rows.csv",
+  "jobs_json": "plots/experiment_13_ibm_hardware_global_best_coverage/experiment_13_ibm_hardware_global_best_coverage_jobs.json",
+  "data_npz": "plots/experiment_13_ibm_hardware_global_best_coverage/experiment_13_ibm_hardware_global_best_coverage_data.npz",
+  "circuits_json": "plots/experiment_13_ibm_hardware_global_best_coverage/experiment_13_ibm_hardware_global_best_coverage_circuits.json",
+  "plot_pdf": "plots/experiment_13_ibm_hardware_global_best_coverage/experiment_13_ibm_hardware_global_best_coverage.pdf",
+  "plot_png": "plots/experiment_13_ibm_hardware_global_best_coverage/experiment_13_ibm_hardware_global_best_coverage.png",
+  "command": "python experiment_13_ibm_hardware_global_best_coverage.py --experiment12-dir plots/experiment_12_global_best_iqp_vs_mse --outdir plots/experiment_13_ibm_hardware_global_best_coverage --backend auto --shots 10000 --optimization-level 1 --max-execution-time 540 --budgets 1000,2000,5000 --elite-frac 0.1"
+}

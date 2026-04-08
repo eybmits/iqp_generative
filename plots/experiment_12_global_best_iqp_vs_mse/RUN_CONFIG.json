@@ -1,0 +1,42 @@
+{
+  "script": "experiment_12_global_best_iqp_vs_mse.py",
+  "outdir": "plots/experiment_12_global_best_iqp_vs_mse",
+  "beta": 0.9,
+  "n": 12,
+  "seeds": [
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120
+  ],
+  "train_m": 200,
+  "layers": 1,
+  "iqp_steps": 600,
+  "iqp_lr": 0.05,
+  "selection_metric": "mean",
+  "sigma_values": [
+    0.5,
+    1.0,
+    2.0,
+    3.0
+  ],
+  "k_values": [
+    128,
+    256,
+    512
+  ],
+  "grid_metrics_csv": "plots/experiment_12_global_best_iqp_vs_mse/experiment_12_global_best_iqp_vs_mse_grid_metrics_per_seed.csv",
+  "grid_summary_csv": "plots/experiment_12_global_best_iqp_vs_mse/experiment_12_global_best_iqp_vs_mse_grid_summary.csv",
+  "global_best_vs_mse_csv": "plots/experiment_12_global_best_iqp_vs_mse/experiment_12_global_best_iqp_vs_mse_global_best_vs_mse_per_seed.csv",
+  "summary_json": "plots/experiment_12_global_best_iqp_vs_mse/experiment_12_global_best_iqp_vs_mse_summary.json",
+  "data_npz": "plots/experiment_12_global_best_iqp_vs_mse/experiment_12_global_best_iqp_vs_mse_data.npz",
+  "plot_pdf": "plots/experiment_12_global_best_iqp_vs_mse/experiment_12_global_best_iqp_vs_mse.pdf",
+  "plot_png": "plots/experiment_12_global_best_iqp_vs_mse/experiment_12_global_best_iqp_vs_mse.png",
+  "command": "python experiment_12_global_best_iqp_vs_mse.py --beta 0.9 --n 12 --seeds 111,112,113,114,115,116,117,118,119,120 --train-m 200 --layers 1 --iqp-steps 600 --iqp-lr 0.05 --selection-metric mean --outdir plots/experiment_12_global_best_iqp_vs_mse"
+}
