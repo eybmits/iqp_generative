@@ -33,5 +33,7 @@
   ],
   "pdf": "plots/experiment_10_target_mass_beta_sweep/experiment_10_target_mass_beta_sweep.pdf",
   "png": "plots/experiment_10_target_mass_beta_sweep/experiment_10_target_mass_beta_sweep.png",
+  "publication_pdf": "plots/experiment_10_target_mass_beta_sweep/fig1_target_sharpness_beta_sweep_4x3.pdf",
+  "publication_png": "plots/experiment_10_target_mass_beta_sweep/fig1_target_sharpness_beta_sweep_4x3.png",
   "csv": "plots/experiment_10_target_mass_beta_sweep/experiment_10_target_mass_beta_sweep.csv"
 }

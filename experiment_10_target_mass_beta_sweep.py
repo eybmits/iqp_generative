@@ -28,6 +28,7 @@ DEFAULT_OUTDIR = ROOT / "plots" / OUTPUT_STEM
 
 FIG_W = 320.0 / 72.0
 FIG_H = 185.52 / 72.0
+FIG_4X3 = (4.0, 3.0)
 PLOT_LEFT = 0.17
 PLOT_RIGHT = 0.985
 PLOT_BOTTOM = 0.22
@@ -71,7 +72,7 @@ def _render_plot(
     *,
     out_pdf: Path,
     out_png: Path,
-    n: int,
+    figsize: tuple[float, float],
     all_betas: np.ndarray,
     highlight_betas: np.ndarray,
     score_display: np.ndarray,
@@ -81,7 +82,7 @@ def _render_plot(
     from matplotlib.lines import Line2D
 
     apply_final_style()
-    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
+    fig, ax = plt.subplots(figsize=figsize)
     fig.subplots_adjust(left=PLOT_LEFT, right=PLOT_RIGHT, bottom=PLOT_BOTTOM, top=PLOT_TOP)
 
     for beta in all_betas.tolist():
@@ -97,7 +98,6 @@ def _render_plot(
 
     for beta, color in zip(highlight_betas.tolist(), HIGHLIGHT_COLORS):
         y = masses_by_beta[float(beta)]
-        label = rf"$\beta = {beta:g}$"
         ax.plot(
             score_display,
             y,
@@ -105,12 +105,12 @@ def _render_plot(
             lw=2.1,
             marker="o",
             markersize=5.0,
-            label=label,
+            label=rf"$\beta = {beta:g}$",
             zorder=3,
         )
 
     ax.set_xlabel(r"Score level $s$", labelpad=2.0)
-    ax.set_ylabel(r"Target mass $p^*(S=s)$", labelpad=4.0)
+    ax.set_ylabel(r"Target mass $p^*(\ell = s)$", labelpad=4.0)
     ax.set_xlim(float(score_display.min()) - 0.15, float(score_display.max()) + 0.15)
     ax.set_xticks(score_display.tolist())
     ymax = max(float(np.max(vals)) for vals in masses_by_beta.values())
@@ -187,6 +187,8 @@ def run() -> None:
 
     out_pdf = outdir / f"{OUTPUT_STEM}.pdf"
     out_png = outdir / f"{OUTPUT_STEM}.png"
+    out_fig1_4x3_pdf = outdir / "fig1_target_sharpness_beta_sweep_4x3.pdf"
+    out_fig1_4x3_png = outdir / "fig1_target_sharpness_beta_sweep_4x3.png"
     data_csv = outdir / f"{OUTPUT_STEM}.csv"
     run_json = outdir / "RUN_CONFIG.json"
 
@@ -194,7 +196,16 @@ def run() -> None:
     _render_plot(
         out_pdf=out_pdf,
         out_png=out_png,
-        n=int(args.n),
+        figsize=(FIG_W, FIG_H),
+        all_betas=all_betas,
+        highlight_betas=highlight_betas,
+        score_display=score_display,
+        masses_by_beta=masses_by_beta,
+    )
+    _render_plot(
+        out_pdf=out_fig1_4x3_pdf,
+        out_png=out_fig1_4x3_png,
+        figsize=FIG_4X3,
         all_betas=all_betas,
         highlight_betas=highlight_betas,
         score_display=score_display,
@@ -210,10 +221,13 @@ def run() -> None:
             "highlight_betas": [float(x) for x in highlight_betas.tolist()],
             "pdf": str(out_pdf.relative_to(ROOT) if out_pdf.is_relative_to(ROOT) else out_pdf),
             "png": str(out_png.relative_to(ROOT) if out_png.is_relative_to(ROOT) else out_png),
+            "publication_pdf": str(out_fig1_4x3_pdf.relative_to(ROOT) if out_fig1_4x3_pdf.is_relative_to(ROOT) else out_fig1_4x3_pdf),
+            "publication_png": str(out_fig1_4x3_png.relative_to(ROOT) if out_fig1_4x3_png.is_relative_to(ROOT) else out_fig1_4x3_png),
             "csv": str(data_csv.relative_to(ROOT) if data_csv.is_relative_to(ROOT) else data_csv),
         },
     )
     print(f"[experiment10] wrote {out_pdf}", flush=True)
+    print(f"[experiment10] wrote {out_fig1_4x3_pdf}", flush=True)
 
 
 if __name__ == "__main__":

@@ -45,6 +45,7 @@ SCRIPT_REL = "experiment_1_kl_diagnostics.py"
 FIG_W = 243.12 / 72.0
 FIG_H = 185.52 / 72.0
 HEATMAP_FIGSIZE = (FIG_W, FIG_H)
+HEATMAP_SQUARE_CELLS_FIGSIZE = (FIG_W, FIG_H * 1.55)
 BAR_FIGSIZE = (FIG_W, FIG_H)
 LOLLIPOP_FIGSIZE = (FIG_W, FIG_H)
 
@@ -61,6 +62,11 @@ COLOR_AXIS = "#cfcfcf"
 CMAP_KL = colors.LinearSegmentedColormap.from_list(
     "kl_red",
     ["#ff8a8a", "#d90429", "#1a0505"],
+    N=256,
+)
+CMAP_KL_CONSISTENT = colors.LinearSegmentedColormap.from_list(
+    "kl_softred_babyblue",
+    ["#ea8a7d", "#f6f1ee", "#86afe8"],
     N=256,
 )
 CMAP_RANK = colors.LinearSegmentedColormap.from_list(
@@ -363,19 +369,30 @@ def render_heatmap_panel(
     panel_ab_grid: np.ndarray,
     panel_ab_best_sigma: float,
     panel_ab_best_k: int,
+    square_cells: bool = False,
+    outname: str = "experiment_1_panel_a_sigma_k_heatmap.pdf",
+    figsize: tuple[float, float] | None = None,
+    target_cell_width_height_ratio: float | None = None,
 ) -> Path:
     apply_style()
-    fig, ax = plt.subplots(figsize=HEATMAP_FIGSIZE, constrained_layout=True)
+    fig, ax = plt.subplots(
+        figsize=figsize if figsize is not None else (HEATMAP_SQUARE_CELLS_FIGSIZE if square_cells else HEATMAP_FIGSIZE),
+        constrained_layout=True,
+    )
 
     norm = colors.Normalize(vmin=float(np.min(panel_ab_grid)), vmax=float(np.max(panel_ab_grid)))
     im = ax.imshow(panel_ab_grid, cmap=CMAP_KL, norm=norm, aspect=str(PANEL_A_STYLE["aspect"]))
+    if square_cells or target_cell_width_height_ratio is not None:
+        target_ratio = 1.0 if square_cells else float(target_cell_width_height_ratio)
+        # Convert desired per-cell width/height into the enclosing axes box aspect.
+        ax.set_box_aspect(len(sigma_values) / max(1e-9, target_ratio * len(k_values)))
     ax.set_xticks(np.arange(len(k_values)))
     ax.set_xticklabels([str(k) for k in k_values], fontweight="normal")
     ax.set_yticks(np.arange(len(sigma_values)))
     ax.set_yticklabels([_fmt_sigma(s) for s in sigma_values], fontweight="normal")
     ax.tick_params(top=True, bottom=False, labeltop=True, labelbottom=False)
     ax.xaxis.set_ticks_position("top")
-    ax.set_xlabel(r"$K$", labelpad=8)
+    ax.set_xlabel(r"$K$", labelpad=8.5)
     ax.xaxis.set_label_position("top")
     ax.set_ylabel(r"$\sigma$", labelpad=6)
     ax.set_xticks(np.arange(-0.5, len(k_values), 1), minor=True)
@@ -427,7 +444,7 @@ def render_heatmap_panel(
     cbar.ax.tick_params(axis="x", length=2.5, labelsize=7, colors=COLOR_LIGHT_TEXT)
     cbar.outline.set_linewidth(0.4)
 
-    out = outdir / "experiment_1_panel_a_sigma_k_heatmap.pdf"
+    out = outdir / str(outname)
     _save_fig(fig, out)
     return out
 
@@ -497,6 +514,92 @@ def render_rank_panel(
         )
 
     out = outdir / "experiment_1_panel_b_sigma_k_rank_ordering.pdf"
+    _save_fig(fig, out)
+    return out
+
+
+def render_heatmap_panel_legacy_consistent(
+    *,
+    outdir: Path,
+    sigma_values: list[float],
+    k_values: list[int],
+    panel_ab_grid: np.ndarray,
+    panel_ab_best_sigma: float,
+    panel_ab_best_k: int,
+    outname: str = "fig2_kl_summary_panels_heatmap_only_legacy_consistent_palette.pdf",
+) -> Path:
+    apply_style()
+    fig = plt.figure(figsize=HEATMAP_FIGSIZE, constrained_layout=False)
+    # Pin the heatmap/cbar geometry so the visible plot height matches the
+    # neighboring paper panels instead of shrinking under constrained_layout.
+    # Match the Experiment 1 panel-B/panel-C axes geometry so the heatmap's
+    # visible plot box has the same height and x-axis baseline in composites.
+    ax = fig.add_axes([0.12, 0.2266, 0.66, 0.7572])
+    cax = fig.add_axes([0.80, 0.2266, 0.032, 0.7572])
+
+    vmin = float(np.min(panel_ab_grid))
+    vmax = float(np.max(panel_ab_grid))
+    tick_lo = math.floor(vmin / 0.05) * 0.05
+    tick_hi = math.floor(vmax / 0.05) * 0.05
+    # Align the norm lower edge with the displayed lowest tick so the colorbar
+    # does not show an empty under-range sliver below the first valid color.
+    norm = colors.Normalize(vmin=tick_lo, vmax=vmax)
+    im = ax.imshow(panel_ab_grid, cmap=CMAP_KL_CONSISTENT, norm=norm, aspect="auto")
+
+    ax.set_xticks(np.arange(len(k_values)))
+    ax.set_xticklabels([str(k) for k in k_values], fontweight="normal")
+    ax.set_yticks(np.arange(len(sigma_values)))
+    ax.set_yticklabels([_fmt_sigma(s) for s in sigma_values], fontweight="normal")
+    ax.tick_params(axis="x", pad=3.6)
+    ax.tick_params(axis="y", pad=2)
+    ax.tick_params(top=False, bottom=True, labeltop=False, labelbottom=True)
+    ax.set_xlabel(r"$K$", labelpad=8)
+    ax.set_ylabel(r"$\sigma$", labelpad=4)
+    ax.yaxis.set_label_coords(-0.07, 0.5)
+
+    best_i = sigma_values.index(float(panel_ab_best_sigma))
+    best_j = k_values.index(int(panel_ab_best_k))
+    best_rgba = CMAP_KL_CONSISTENT(norm(float(panel_ab_grid[best_i, best_j])))
+    best_border_color = "#FFFFFF" if _luminance(best_rgba) < 0.62 else COLOR_DARK
+    ax.add_patch(
+        Rectangle(
+            (best_j - 0.5, best_i - 0.5),
+            1.0,
+            1.0,
+            fill=False,
+            linewidth=1.4,
+            linestyle="--",
+            edgecolor=best_border_color,
+        )
+    )
+
+    for i in range(len(sigma_values)):
+        for j in range(len(k_values)):
+            kl_val = float(panel_ab_grid[i, j])
+            rgba = CMAP_KL_CONSISTENT(norm(kl_val))
+            text_color = COLOR_DARK if _luminance(rgba) > 0.64 else "#FFFFFF"
+            ax.text(
+                j,
+                i,
+                f"{kl_val:.3f}",
+                ha="center",
+                va="center",
+                fontsize=9.5,
+                color=text_color,
+                fontweight="bold" if (i == best_i and j == best_j) else "normal",
+            )
+
+    cbar_ticks = np.arange(tick_lo, tick_hi + 1e-9, 0.05)
+    cbar = fig.colorbar(im, cax=cax, orientation="vertical")
+    cbar.set_ticks(cbar_ticks.tolist())
+    if cbar.solids is not None:
+        # Avoid renderer seam artifacts that show up as white slivers in the colorbar.
+        cbar.solids.set_edgecolor("face")
+        cbar.solids.set_linewidth(0.0)
+    cbar.ax.tick_params(axis="y", length=3.0, labelsize=8, colors=COLOR_LIGHT_TEXT)
+    cbar.outline.set_linewidth(0.8)
+
+    out = outdir / str(outname)
     _save_fig(fig, out)
     return out
 

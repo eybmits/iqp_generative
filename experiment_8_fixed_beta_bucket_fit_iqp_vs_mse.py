@@ -95,6 +95,7 @@ def _render_plot(
     apply_final_style()
     fig, ax = plt.subplots(figsize=(FIG_W, FIG_H), constrained_layout=True)
 
+    score_display = np.asarray(score_vals - int(np.min(score_vals)), dtype=np.int64)
     x = np.arange(score_vals.size, dtype=np.float64)
     width = 0.26
 
@@ -133,7 +134,7 @@ def _render_plot(
     )
 
     ax.set_xticks(x)
-    ax.set_xticklabels([str(int(s)) for s in score_vals.tolist()])
+    ax.set_xticklabels([str(int(s)) for s in score_display.tolist()])
     ax.set_xlabel(r"Score level $s$")
     ax.set_ylabel(r"$p(\ell = s)$")
     ax.grid(True, axis="y", ls="--", lw=0.5, alpha=0.25, zorder=0)
