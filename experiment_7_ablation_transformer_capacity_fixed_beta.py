@@ -26,6 +26,8 @@ import numpy as np
 os.environ.setdefault("MPLBACKEND", "Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
+from model_labels import AR_TRANSFORMER_LABEL, IQP_PARITY_LABEL
+
 ROOT = Path(__file__).resolve().parent
 
 from experiment_3_beta_quality_coverage import (  # noqa: E402
@@ -384,7 +386,7 @@ def _render_plots(
             marker="o",
             linewidth=2.0,
             capsize=3.0,
-            label="Transformer sweep",
+            label=AR_TRANSFORMER_LABEL,
             zorder=10,
         )
         if mean_key == "val_nll_mean":
@@ -444,11 +446,11 @@ def _render_plots(
                 markersize=6,
                 linewidth=1.6,
                 capsize=3.0,
-                label="IQP parity",
+                label=IQP_PARITY_LABEL,
                 zorder=12,
             )
             ax.annotate(
-                "IQP parity",
+                IQP_PARITY_LABEL,
                 xy=(iqp_x, iqp_y),
                 xycoords="data",
                 xytext=(8, 0),

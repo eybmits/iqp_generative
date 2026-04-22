@@ -42,6 +42,7 @@ from final_plot_style import (
     apply_final_style,
     save_pdf,
 )
+from model_labels import IQP_MSE_LABEL, IQP_PARITY_LABEL
 
 
 ROOT = Path(__file__).resolve().parent
@@ -66,6 +67,29 @@ def _write_json(path: Path, payload: Dict[str, object]) -> None:
     with path.open("w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
         f.write("\n")
+
+
+def _load_csv(path: Path) -> List[Dict[str, object]]:
+    rows: List[Dict[str, object]] = []
+    with path.open("r", encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            rows.append(
+                {
+                    "beta": float(row["beta"]),
+                    "seed": int(float(row["seed"])),
+                    "n": int(float(row["n"])),
+                    "score_level": int(float(row["score_level"])),
+                    "target_mass": float(row["target_mass"]),
+                    "iqp_parity_mass": float(row["iqp_parity_mass"]),
+                    "iqp_mse_mass": float(row["iqp_mse_mass"]),
+                    "best_sigma": float(row["best_sigma"]),
+                    "best_K": int(float(row["best_K"])),
+                    "parity_kl": float(row["parity_kl"]),
+                    "mse_kl": float(row["mse_kl"]),
+                }
+            )
+    return rows
 
 
 def _bucket_masses(dist: np.ndarray, scores: np.ndarray, support: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -118,7 +142,7 @@ def _render_plot(
         alpha=0.88,
         edgecolor="white",
         linewidth=0.8,
-        label=rf"IQP parity ($KL={parity_kl:.3f}$)",
+        label=rf"{IQP_PARITY_LABEL} ($KL={parity_kl:.3f}$)",
         zorder=3,
     )
     ax.bar(
@@ -129,7 +153,7 @@ def _render_plot(
         alpha=0.90,
         edgecolor="white",
         linewidth=0.8,
-        label=rf"IQP MSE ($KL={mse_kl:.3f}$)",
+        label=rf"{IQP_MSE_LABEL} ($KL={mse_kl:.3f}$)",
         zorder=3,
     )
 
@@ -164,6 +188,8 @@ def _render_plot(
 def run() -> None:
     ap = argparse.ArgumentParser(description="Illustrative fixed-beta score-bucket fit: best IQP parity vs IQP MSE.")
     ap.add_argument("--outdir", type=str, default=str(DEFAULT_OUTDIR))
+    ap.add_argument("--data-csv", type=str, default="")
+    ap.add_argument("--rerender-only", action="store_true")
     ap.add_argument("--beta", type=float, default=0.9)
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--n", type=int, default=12)
@@ -182,6 +208,34 @@ def run() -> None:
     run_json = outdir / "RUN_CONFIG.json"
     rerender_json = outdir / "RERENDER_CONFIG.json"
     out_pdf = outdir / f"{OUTPUT_STEM}.pdf"
+
+    if bool(args.rerender_only):
+        source_csv = Path(args.data_csv).expanduser() if str(args.data_csv).strip() else data_csv
+        if not source_csv.is_absolute():
+            source_csv = ROOT / source_csv
+        rows = _load_csv(source_csv)
+        if not rows:
+            raise RuntimeError(f"No rows found in {source_csv}")
+        score_vals = np.asarray([int(row["score_level"]) for row in rows], dtype=np.int64)
+        target_masses = np.asarray([float(row["target_mass"]) for row in rows], dtype=np.float64)
+        parity_masses = np.asarray([float(row["iqp_parity_mass"]) for row in rows], dtype=np.float64)
+        mse_masses = np.asarray([float(row["iqp_mse_mass"]) for row in rows], dtype=np.float64)
+        ref = rows[0]
+        _render_plot(
+            out_pdf=out_pdf,
+            beta=float(ref["beta"]),
+            seed=int(ref["seed"]),
+            score_vals=score_vals,
+            target_masses=target_masses,
+            parity_masses=parity_masses,
+            mse_masses=mse_masses,
+            best_sigma=float(ref["best_sigma"]),
+            best_k=int(ref["best_K"]),
+            parity_kl=float(ref["parity_kl"]),
+            mse_kl=float(ref["mse_kl"]),
+        )
+        print(f"[experiment8] rerendered {out_pdf} from {source_csv}", flush=True)
+        return
 
     p_star, support, scores = build_target_distribution_paper(int(args.n), float(args.beta))
     bits_table = make_bits_table(int(args.n))
@@ -274,7 +328,10 @@ def run() -> None:
             "outdir": str(outdir.relative_to(ROOT)),
             "pdf": out_pdf.name,
             "data_csv": data_csv.name,
-            "note": "Rerender currently expects recomputation because the style is coupled to the selected best parity configuration for the slice.",
+            "rerender_command": (
+                f"python {SCRIPT_REL} --outdir {str(outdir.relative_to(ROOT))} "
+                f"--rerender-only --data-csv {str(data_csv.relative_to(ROOT))}"
+            ),
         },
     )
 

@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from final_plot_style import apply_final_style, save_pdf
+from model_labels import IQP_MSE_LABEL, IQP_PARITY_LABEL
 from training_protocol import write_training_protocol
 
 from experiment_3_beta_quality_coverage import (
@@ -54,8 +55,8 @@ DEFAULT_BUDGETS = (1000, 2000, 5000)
 DEFAULT_SHOTS = 10_000
 MODEL_KEYS = ("parity_global_best", "iqp_mse")
 MODEL_LABELS = {
-    "parity_global_best": "IQP (parity)",
-    "iqp_mse": "IQP MSE",
+    "parity_global_best": IQP_PARITY_LABEL,
+    "iqp_mse": IQP_MSE_LABEL,
 }
 MODEL_COLORS = {
     "parity_global_best": str(MODEL_STYLE["iqp_parity_mse"]["color"]),

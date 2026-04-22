@@ -1,0 +1,16 @@
+{
+  "script": "experiment_4_recovery_sigmak_triplet.py",
+  "data_npz": "plots/experiment_4_recovery_sigmak_triplet_seed46/coverage_sigmak_triplet_data.npz",
+  "outdir": "plots/experiment_4_recovery_sigmak_triplet_seed46_best_vs_best",
+  "beta": 0.9,
+  "seed": 46,
+  "metric": "recovery",
+  "comparison_spectral_key": "sigma=2, K=512",
+  "parity_key_mode": "best",
+  "best_parity_key": "sigma=2, K=512",
+  "best_spectral_key": "sigma=2, K=512",
+  "best_spectral_selection_metric": "max_recovery_at_Q",
+  "best_spectral_selection_budget_q": 1000,
+  "elite_unseen_count": 142,
+  "pdf_only": true
+}

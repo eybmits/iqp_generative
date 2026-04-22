@@ -19,6 +19,8 @@ from typing import Dict, List
 
 import numpy as np
 
+from model_labels import IQP_MSE_LABEL, IQP_PARITY_LABEL
+
 from experiment_1_kl_diagnostics import (
     COLOR_IQP,
     COLOR_IQP_MSE,
@@ -74,7 +76,7 @@ def _render(rows: List[Dict[str, object]], out_pdf: Path, out_png: Path, *, pari
     families = [
         ("target", "Target p*", COLOR_TARGET, "-"),
         ("iqp_parity", parity_label, COLOR_IQP, "-"),
-        ("iqp_mse", "IQP MSE", COLOR_IQP_MSE, "-"),
+        ("iqp_mse", IQP_MSE_LABEL, COLOR_IQP_MSE, "-"),
         ("uniform", "Uniform", COLOR_NEUTRAL, "-."),
     ]
 
@@ -179,7 +181,7 @@ def run() -> None:
                 {
                     "beta": float(beta),
                     "family": "iqp_parity",
-                    "label": "Best IQP parity" if str(args.parity_mode) == "best_grid" else "IQP parity",
+                    "label": f"Best {IQP_PARITY_LABEL}" if str(args.parity_mode) == "best_grid" else IQP_PARITY_LABEL,
                     "KL_pstar_to_q": float(best_parity_kl),
                     "sigma": float(best_sigma),
                     "K": int(best_k),
@@ -187,7 +189,7 @@ def run() -> None:
                 {
                     "beta": float(beta),
                     "family": "iqp_mse",
-                    "label": "IQP MSE",
+                    "label": IQP_MSE_LABEL,
                     "KL_pstar_to_q": float(forward_kl(p_star, q_mse)),
                     "sigma": "",
                     "K": "",
@@ -212,7 +214,7 @@ def run() -> None:
         rows,
         pdf_path,
         png_path,
-        parity_label="Best IQP parity" if str(args.parity_mode) == "best_grid" else "IQP parity",
+        parity_label=f"Best {IQP_PARITY_LABEL}" if str(args.parity_mode) == "best_grid" else IQP_PARITY_LABEL,
     )
     _write_json(
         outdir / f"RUN_CONFIG_{suffix}.json",

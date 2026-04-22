@@ -1,0 +1,6 @@
+seed,target_R1000,iqp_parity_sigma1K512_R1000,spectral_sigma1K512_R1000,iqp_mse_R1000,spectral_minus_parity_R1000,target_R2000,iqp_parity_sigma1K512_R2000,spectral_sigma1K512_R2000,iqp_mse_R2000,spectral_minus_parity_R2000,best_parity_at_1000_key,best_parity_at_1000_R,best_spectral_at_1000_key,best_spectral_at_1000_R,saved_best_parity_key,saved_best_spectral_key
+45,0.6854,0.5243,0.5124,0.4985,-0.0119,0.8626,0.6784,0.7064,0.633,0.028,"sigma=3, K=512",0.572,"sigma=1, K=512",0.5124,"sigma=1, K=512","sigma=1, K=512"
+46,0.6836,0.4566,0.4932,0.4878,0.0365,0.8637,0.5691,0.6871,0.6307,0.118,"sigma=2, K=512",0.5201,"sigma=2, K=512",0.5006,"sigma=1, K=512","sigma=2, K=512"
+47,0.6693,0.5004,0.5332,0.4968,0.0328,0.8577,0.6592,0.7457,0.657,0.0866,"sigma=2, K=128",0.5227,"sigma=1, K=512",0.5332,"sigma=1, K=512","sigma=1, K=512"
+48,0.6637,0.5021,0.5234,0.5077,0.0213,0.8531,0.6351,0.7386,0.6642,0.1035,"sigma=2, K=512",0.5396,"sigma=1, K=512",0.5234,"sigma=1, K=512","sigma=1, K=512"
+49,0.6761,0.4725,0.4825,0.4716,0.0101,0.8588,0.6087,0.6738,0.6112,0.065,"sigma=1, K=512",0.4725,"sigma=2, K=512",0.4893,"sigma=1, K=512","sigma=2, K=512"

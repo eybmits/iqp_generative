@@ -1,0 +1,11 @@
+{
+  "script": "experiment_4_recovery_sigmak_triplet.py",
+  "data_npz": "plots/experiment_4_recovery_sigmak_triplet_seed112/coverage_sigmak_triplet_data.npz",
+  "outdir": "plots/experiment_4_recovery_sigmak_triplet_seed112",
+  "rerender_command": "MPLCONFIGDIR=/tmp/mpl-cache python experiment_4_recovery_sigmak_triplet.py --data-npz plots/experiment_4_recovery_sigmak_triplet_seed112/coverage_sigmak_triplet_data.npz --outdir plots/experiment_4_recovery_sigmak_triplet_seed112 --parity-key-mode reference --comparison-spectral-key \"sigma=1, K=512\" --best-budget-q 1000",
+  "pdfs": [
+    "plots/experiment_4_recovery_sigmak_triplet_seed112/experiment_4_recovery_best_iqp_vs_best_spectral.pdf",
+    "plots/experiment_4_recovery_sigmak_triplet_seed112/experiment_4_recovery_parity_sigmak_vs_iqp_mse.pdf",
+    "plots/experiment_4_recovery_sigmak_triplet_seed112/experiment_4_recovery_spectral_sigmak_only.pdf"
+  ]
+}

@@ -38,6 +38,8 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib import colors  # noqa: E402
 from matplotlib.patches import Rectangle  # noqa: E402
 
+from model_labels import IQP_MSE_LABEL, IQP_PARITY_LABEL
+
 
 ROOT = Path(__file__).resolve().parent
 SCRIPT_REL = "experiment_1_kl_diagnostics.py"
@@ -619,8 +621,8 @@ def render_benchmark_panel(
 
     benchmark_entries = [
         ("Target p*", COLOR_TEXT, 0.0, 0.0, ""),
-        ("Best IQP Parity", "#ea8a7d", float(best_mean), float(best_ci), r"best over $\sigma,K$ per seed"),
-        ("IQP MSE", "#86afe8", float(mse_mean), float(mse_ci), ""),
+        (f"Best {IQP_PARITY_LABEL}", "#ea8a7d", float(best_mean), float(best_ci), r"best over $\sigma,K$ per seed"),
+        (IQP_MSE_LABEL, "#86afe8", float(mse_mean), float(mse_ci), ""),
     ]
     if include_uniform:
         benchmark_entries.append(("Uniform", "#cfd2d7", float(uniform_kl), 0.0, ""))

@@ -26,6 +26,14 @@ os.environ.setdefault("MPLBACKEND", "Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 
+from model_labels import (
+    AR_TRANSFORMER_LABEL,
+    DENSE_ISING_FIELDS_LABEL,
+    IQP_PARITY_LABEL,
+    ISING_FIELDS_NNN_LABEL,
+    MAXENT_PARITY_LABEL,
+)
+
 
 ROOT = Path(__file__).resolve().parent
 SCRIPT_REL = "experiment_5_kl_coverage_scatter.py"
@@ -40,32 +48,32 @@ FIG_W = 270.0 / 72.0
 FIG_H = 185.52 / 72.0
 
 MODEL_ORDER = [
-    "classical_transformer_mle",
-    "classical_dense_fields_xent",
     "iqp_parity_mse",
     "classical_nnn_fields_parity",
+    "classical_dense_fields_xent",
+    "classical_transformer_mle",
     "classical_maxent_parity",
 ]
 
 MODEL_STYLE = {
     "iqp_parity_mse": {
-        "label": "IQP (parity)",
+        "label": IQP_PARITY_LABEL,
         "color": "#D62728",
     },
     "classical_nnn_fields_parity": {
-        "label": "Ising+fields (NN+NNN)",
+        "label": ISING_FIELDS_NNN_LABEL,
         "color": "#1f77b4",
     },
     "classical_dense_fields_xent": {
-        "label": "Dense Ising+fields (xent)",
+        "label": DENSE_ISING_FIELDS_LABEL,
         "color": "#8c564b",
     },
     "classical_transformer_mle": {
-        "label": "AR Transformer (MLE)",
+        "label": AR_TRANSFORMER_LABEL,
         "color": "#17becf",
     },
     "classical_maxent_parity": {
-        "label": "MaxEnt parity (P,z)",
+        "label": MAXENT_PARITY_LABEL,
         "color": "#9467bd",
     },
 }

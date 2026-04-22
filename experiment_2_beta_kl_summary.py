@@ -31,6 +31,14 @@ os.environ.setdefault("MPLBACKEND", "Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 
+from model_labels import (
+    AR_TRANSFORMER_LABEL,
+    DENSE_ISING_FIELDS_LABEL,
+    IQP_PARITY_LABEL,
+    ISING_FIELDS_NNN_LABEL,
+    MAXENT_PARITY_LABEL,
+)
+
 HAS_PENNYLANE = False
 try:
     import pennylane as qml  # type: ignore
@@ -127,35 +135,35 @@ MODEL_ORDER = [
 
 MODEL_STYLE = {
     "iqp_parity_mse": {
-        "label": "IQP (parity)",
+        "label": IQP_PARITY_LABEL,
         "color": "#D62728",
         "ls": "-",
         "lw": 2.35,
         "marker": "o",
     },
     "classical_nnn_fields_parity": {
-        "label": "Ising+fields (NN+NNN)",
+        "label": ISING_FIELDS_NNN_LABEL,
         "color": "#1f77b4",
         "ls": "-",
         "lw": 1.85,
         "marker": "o",
     },
     "classical_dense_fields_xent": {
-        "label": "Dense Ising+fields (xent)",
+        "label": DENSE_ISING_FIELDS_LABEL,
         "color": "#8c564b",
         "ls": (0, (5, 2)),
         "lw": 1.85,
         "marker": "o",
     },
     "classical_transformer_mle": {
-        "label": "AR Transformer (MLE)",
+        "label": AR_TRANSFORMER_LABEL,
         "color": "#17becf",
         "ls": "--",
         "lw": 1.90,
         "marker": "o",
     },
     "classical_maxent_parity": {
-        "label": "MaxEnt parity (P,z)",
+        "label": MAXENT_PARITY_LABEL,
         "color": "#9467bd",
         "ls": "-.",
         "lw": 1.90,

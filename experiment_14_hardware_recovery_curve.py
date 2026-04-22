@@ -12,6 +12,7 @@ from typing import Dict, List, Sequence
 import numpy as np
 
 from final_plot_style import apply_final_style, save_pdf
+from model_labels import IQP_MSE_LABEL, IQP_PARITY_LABEL
 from training_protocol import write_training_protocol
 
 from experiment_1_kl_diagnostics import build_parity_matrix
@@ -340,10 +341,10 @@ def main() -> None:
         "target": r"Target $p^*$",
         "uniform": "Uniform",
         "spectral": f"Spectral completion (sigma={global_best_sigma:g}, K={global_best_k})",
-        "parity_sim": "IQP (parity) simulation",
-        "parity_hw": "IQP (parity) hardware",
-        "mse_sim": "IQP MSE simulation",
-        "mse_hw": "IQP MSE hardware",
+        "parity_sim": f"{IQP_PARITY_LABEL} simulation",
+        "parity_hw": f"{IQP_PARITY_LABEL} hardware",
+        "mse_sim": f"{IQP_MSE_LABEL} simulation",
+        "mse_hw": f"{IQP_MSE_LABEL} hardware",
     }
     if len(selected_seeds) > 1:
         title = f"Recovery curve (mean over {len(selected_seeds)} seeds)"

@@ -14,6 +14,7 @@ import numpy as np
 from matplotlib.lines import Line2D
 
 from final_plot_style import apply_final_style, save_pdf
+from model_labels import IQP_MSE_LABEL, IQP_PARITY_LABEL
 from training_protocol import write_training_protocol
 
 from experiment_1_kl_diagnostics import build_parity_matrix
@@ -121,7 +122,7 @@ def _render_plot(
                 linewidth=0.0,
             )
 
-    ax.plot(q_grid, curve_mean["parity_hw"], color=PARITY_COLOR, lw=2.5, label="IQP parity hardware", zorder=5)
+    ax.plot(q_grid, curve_mean["parity_hw"], color=PARITY_COLOR, lw=2.5, label=f"{IQP_PARITY_LABEL} hardware", zorder=5)
     ax.fill_between(
         q_grid,
         np.maximum(0.0, curve_mean["parity_hw"] - curve_std["parity_hw"]),
@@ -130,7 +131,7 @@ def _render_plot(
         alpha=0.12,
         linewidth=0.0,
     )
-    ax.plot(q_grid, curve_mean["mse_hw"], color=MSE_COLOR, lw=2.3, label="IQP MSE hardware", zorder=4)
+    ax.plot(q_grid, curve_mean["mse_hw"], color=MSE_COLOR, lw=2.3, label=f"{IQP_MSE_LABEL} hardware", zorder=4)
     ax.fill_between(
         q_grid,
         np.maximum(0.0, curve_mean["mse_hw"] - curve_std["mse_hw"]),
@@ -141,7 +142,7 @@ def _render_plot(
     )
 
     if not hardware_only:
-        ax.plot(q_grid, curve_mean["parity_sim"], color=PARITY_COLOR, lw=2.0, ls="--", alpha=0.85, label="IQP parity simulation", zorder=3)
+        ax.plot(q_grid, curve_mean["parity_sim"], color=PARITY_COLOR, lw=2.0, ls="--", alpha=0.85, label=f"{IQP_PARITY_LABEL} simulation", zorder=3)
         ax.fill_between(
             q_grid,
             np.maximum(0.0, curve_mean["parity_sim"] - curve_std["parity_sim"]),
@@ -150,7 +151,7 @@ def _render_plot(
             alpha=0.07,
             linewidth=0.0,
         )
-        ax.plot(q_grid, curve_mean["mse_sim"], color=MSE_COLOR, lw=1.9, ls="--", alpha=0.85, label="IQP MSE simulation", zorder=3)
+        ax.plot(q_grid, curve_mean["mse_sim"], color=MSE_COLOR, lw=1.9, ls="--", alpha=0.85, label=f"{IQP_MSE_LABEL} simulation", zorder=3)
         ax.fill_between(
             q_grid,
             np.maximum(0.0, curve_mean["mse_sim"] - curve_std["mse_sim"]),
@@ -168,10 +169,10 @@ def _render_plot(
     if paper:
         handles = [
             Line2D([0], [0], color=TARGET_COLOR, lw=2.1, label=r"Target $p^*$"),
-            Line2D([0], [0], color=PARITY_COLOR, lw=2.5, label="IQP parity (hw)"),
-            Line2D([0], [0], color=MSE_COLOR, lw=2.3, label="IQP MSE (hw)"),
-            Line2D([0], [0], color=PARITY_COLOR, lw=2.0, ls="--", label="IQP parity (sim)"),
-            Line2D([0], [0], color=MSE_COLOR, lw=1.9, ls="--", label="IQP MSE (sim)"),
+            Line2D([0], [0], color=PARITY_COLOR, lw=2.5, label=f"{IQP_PARITY_LABEL} hardware"),
+            Line2D([0], [0], color=MSE_COLOR, lw=2.3, label=f"{IQP_MSE_LABEL} hardware"),
+            Line2D([0], [0], color=PARITY_COLOR, lw=2.0, ls="--", label=f"{IQP_PARITY_LABEL} simulation"),
+            Line2D([0], [0], color=MSE_COLOR, lw=1.9, ls="--", label=f"{IQP_MSE_LABEL} simulation"),
             Line2D([0], [0], color=UNIFORM_COLOR, lw=1.7, ls=":", label="Uniform"),
         ]
         ax.legend(

@@ -33,6 +33,10 @@ PLOT_LEFT = 0.17
 PLOT_RIGHT = 0.985
 PLOT_BOTTOM = 0.22
 PLOT_TOP = 0.93
+PLOT_4X3_LEFT = 0.125
+PLOT_4X3_RIGHT = 0.992
+PLOT_4X3_BOTTOM = 0.165
+PLOT_4X3_TOP = 0.988
 
 ALL_BETAS = np.asarray([x / 10.0 for x in range(1, 21)], dtype=np.float64)
 HIGHLIGHT_BETAS = np.asarray([0.6, 0.8, 1.0, 1.2, 1.4], dtype=np.float64)
@@ -77,13 +81,15 @@ def _render_plot(
     highlight_betas: np.ndarray,
     score_display: np.ndarray,
     masses_by_beta: Dict[float, np.ndarray],
+    subplot_adjust: tuple[float, float, float, float] = (PLOT_LEFT, PLOT_RIGHT, PLOT_BOTTOM, PLOT_TOP),
 ) -> None:
     import matplotlib.pyplot as plt
     from matplotlib.lines import Line2D
 
     apply_final_style()
     fig, ax = plt.subplots(figsize=figsize)
-    fig.subplots_adjust(left=PLOT_LEFT, right=PLOT_RIGHT, bottom=PLOT_BOTTOM, top=PLOT_TOP)
+    left, right, bottom, top = subplot_adjust
+    fig.subplots_adjust(left=left, right=right, bottom=bottom, top=top)
 
     for beta in all_betas.tolist():
         y = masses_by_beta[float(beta)]
@@ -140,8 +146,8 @@ def _render_plot(
     ax.spines["bottom"].set_linewidth(1.2)
     ax.spines["bottom"].set_zorder(10)
 
-    fig.savefig(out_pdf, format="pdf")
-    fig.savefig(out_png, format="png", dpi=300)
+    fig.savefig(out_pdf, format="pdf", bbox_inches="tight", pad_inches=0.015)
+    fig.savefig(out_png, format="png", dpi=300, bbox_inches="tight", pad_inches=0.015)
     plt.close(fig)
 
 
@@ -201,6 +207,7 @@ def run() -> None:
         highlight_betas=highlight_betas,
         score_display=score_display,
         masses_by_beta=masses_by_beta,
+        subplot_adjust=(PLOT_LEFT, PLOT_RIGHT, PLOT_BOTTOM, PLOT_TOP),
     )
     _render_plot(
         out_pdf=out_fig1_4x3_pdf,
@@ -210,6 +217,7 @@ def run() -> None:
         highlight_betas=highlight_betas,
         score_display=score_display,
         masses_by_beta=masses_by_beta,
+        subplot_adjust=(PLOT_4X3_LEFT, PLOT_4X3_RIGHT, PLOT_4X3_BOTTOM, PLOT_4X3_TOP),
     )
     _write_json(
         run_json,

@@ -1,7 +1,7 @@
 {
   "script": "experiment_5_kl_coverage_scatter.py",
-  "input_mode": "paired_metrics_csv",
-  "source_path": "plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_metrics_per_seed.csv",
+  "input_mode": "scatter_csv",
+  "source_path": "plots/experiment_5_kl_coverage_scatter/experiment_5_kl_coverage_scatter_scatter.csv",
   "kl_metrics_csv": "plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_metrics_per_seed.csv",
   "coverage_metrics_csv": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_metrics_per_seed.csv",
   "outdir": "plots/experiment_5_kl_coverage_scatter",
@@ -10,10 +10,10 @@
   "figure_width_in": 3.75,
   "figure_height_in": 2.5766666666666667,
   "model_order": [
-    "classical_transformer_mle",
-    "classical_dense_fields_xent",
     "iqp_parity_mse",
     "classical_nnn_fields_parity",
+    "classical_dense_fields_xent",
+    "classical_transformer_mle",
     "classical_maxent_parity"
   ],
   "pdf_only": true

@@ -24,6 +24,8 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.ticker import FuncFormatter, MaxNLocator  # noqa: E402
 
+from model_labels import IQP_MSE_LABEL, IQP_PARITY_LABEL
+
 from experiment_1_kl_diagnostics import (  # noqa: E402
     HAS_PENNYLANE,
     build_parity_matrix,
@@ -231,6 +233,16 @@ def _resolve_reference_parity_key(payload: Dict[str, object]) -> str:
     if DEFAULT_PARITY_REFERENCE_KEY in parity_by_key:
         return DEFAULT_PARITY_REFERENCE_KEY
     return str(payload["best_parity_key"])
+
+
+def _resolve_parity_key(payload: Dict[str, object], *, mode: str) -> str:
+    if str(mode) == "best":
+        return _select_best_key_by_budget(
+            payload["parity_by_key"],
+            payload["Q"],
+            int(payload["best_selection_budget_q"]),
+        )
+    return _resolve_reference_parity_key(payload)
 
 
 def _style_ax(ax: plt.Axes, Q: np.ndarray, ylabel: str = r"$R(Q)$") -> None:
@@ -450,7 +462,7 @@ def render_triplet(
     ax1.legend(
         handles=[
             Line2D([0], [0], color=TARGET_COLOR, lw=2.1, label=r"Target $p^*$"),
-            Line2D([0], [0], color=PARITY_BEST_COLOR, lw=2.8, label=f"IQP parity ({best_parity_key})"),
+            Line2D([0], [0], color=PARITY_BEST_COLOR, lw=2.8, label=f"{IQP_PARITY_LABEL} ({best_parity_key})"),
             Line2D([0], [0], color=SPECTRAL_BEST_COLOR, lw=2.0, ls="-.", label=f"Spectral completion ({comparison_spectral_key})"),
             Line2D([0], [0], color=UNIFORM_COLOR, lw=1.7, ls=":", label="Uniform"),
         ],
@@ -477,9 +489,9 @@ def render_triplet(
     ax2.legend(
         handles=[
             Line2D([0], [0], color=TARGET_COLOR, lw=2.1, label=r"Target $p^*$"),
-            Line2D([0], [0], color=PARITY_BEST_COLOR, lw=2.8, label=f"IQP parity ({best_parity_key})"),
-            Line2D([0], [0], color=red_shades[-1], lw=1.4, label="IQP parity (other σ,K)"),
-            Line2D([0], [0], color=PARITY_MSE_COLOR, lw=2.0, label="IQP MSE"),
+            Line2D([0], [0], color=PARITY_BEST_COLOR, lw=2.8, label=f"{IQP_PARITY_LABEL} ({best_parity_key})"),
+            Line2D([0], [0], color=red_shades[-1], lw=1.4, label=f"{IQP_PARITY_LABEL} (other σ,K)"),
+            Line2D([0], [0], color=PARITY_MSE_COLOR, lw=2.0, label=IQP_MSE_LABEL),
             Line2D([0], [0], color=UNIFORM_COLOR, lw=1.7, ls=":", label="Uniform"),
         ],
         loc="upper left",
@@ -545,6 +557,7 @@ def run() -> None:
     ap.add_argument("--Ks", type=str, default="128,256,512")
     ap.add_argument("--qmax", type=int, default=2000)
     ap.add_argument("--best-budget-q", type=int, default=DEFAULT_BEST_BUDGET)
+    ap.add_argument("--parity-key-mode", type=str, default="reference", choices=["reference", "best"])
     args = ap.parse_args()
 
     data_npz = Path(args.data_npz)
@@ -568,7 +581,7 @@ def run() -> None:
     else:
         payload = _load_recovery_payload(data_npz)
 
-    payload["best_parity_key"] = _resolve_reference_parity_key(payload)
+    payload["best_parity_key"] = _resolve_parity_key(payload, mode=str(args.parity_key_mode))
     comparison_spectral_key = str(args.comparison_spectral_key).strip() or str(payload["best_parity_key"])
     if comparison_spectral_key not in payload["spectral_by_key"]:
         raise ValueError(f"Unknown spectral key: {comparison_spectral_key}")
@@ -587,6 +600,7 @@ def run() -> None:
         "seed": int(payload["seed"]),
         "metric": "recovery",
         "comparison_spectral_key": comparison_spectral_key,
+        "parity_key_mode": str(args.parity_key_mode),
         "best_parity_key": str(payload["best_parity_key"]),
         "best_spectral_key": str(payload["best_spectral_key"]),
         "best_spectral_selection_metric": "max_recovery_at_Q",
@@ -606,6 +620,7 @@ def run() -> None:
         "rerender_command": (
             f"MPLCONFIGDIR=/tmp/mpl-cache python {SCRIPT_REL} "
             f"--data-npz {_try_rel(data_npz)} --outdir {_try_rel(outdir)} "
+            f"--parity-key-mode {str(args.parity_key_mode)} "
             f"--comparison-spectral-key \"{comparison_spectral_key}\" "
             f"--best-budget-q {int(payload['best_selection_budget_q'])}"
         ),

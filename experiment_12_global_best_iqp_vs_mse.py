@@ -24,6 +24,8 @@ import numpy as np
 from matplotlib import colors
 from matplotlib.patches import Rectangle
 
+from model_labels import IQP_MSE_LABEL, IQP_PARITY_LABEL
+
 from experiment_1_kl_diagnostics import (
     CMAP_KL,
     HAS_PENNYLANE,
@@ -255,8 +257,8 @@ def _render_summary_plot(
     mse_vals = np.asarray([float(row["mse_kl"]) for row in per_seed_rows], dtype=np.float64)
     for yi, pval, mval in zip(y, parity_vals, mse_vals):
         ax_seed.plot([pval, mval], [yi, yi], color="#CFCFCF", lw=1.0, zorder=1)
-    ax_seed.scatter(parity_vals, y, color=PARITY_COLOR, label=f"Parity global-best ({best_sigma:g}, {best_k})", zorder=3)
-    ax_seed.scatter(mse_vals, y, color=MSE_COLOR, label="IQP MSE", zorder=3)
+    ax_seed.scatter(parity_vals, y, color=PARITY_COLOR, label=f"{IQP_PARITY_LABEL} global-best ({best_sigma:g}, {best_k})", zorder=3)
+    ax_seed.scatter(mse_vals, y, color=MSE_COLOR, label=IQP_MSE_LABEL, zorder=3)
     ax_seed.set_yticks(y)
     ax_seed.set_yticklabels(seed_labels)
     ax_seed.invert_yaxis()
