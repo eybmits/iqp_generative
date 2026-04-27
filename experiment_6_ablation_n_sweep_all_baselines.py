@@ -33,7 +33,6 @@ from experiment_2_beta_kl_summary import (
     HAS_PENNYLANE,
     HAS_TORCH,
     IQP_INIT_OFFSET,
-    LEGEND_FONTSIZE,
     MAXENT_INIT_OFFSET,
     MAX_LABELED_X_TICKS,
     MEDIUM_TRANSFORMER,
@@ -43,7 +42,6 @@ from experiment_2_beta_kl_summary import (
     TRAIN_SAMPLE_OFFSET,
     TRANSFORMER_INIT_OFFSET,
     _kl_pstar_to_q,
-    _legend_handles,
     _parse_int_list,
     _reduce_seed_stats,
     _train_classical_boltzmann,
@@ -52,7 +50,6 @@ from experiment_2_beta_kl_summary import (
     _try_rel,
     _write_csv,
     _write_json,
-    apply_final_style,
     build_parity_matrix,
     build_target_distribution_paper,
     empirical_dist,
@@ -61,6 +58,13 @@ from experiment_2_beta_kl_summary import (
     sample_indices,
     train_iqp_qcbm,
 )
+from final_plot_style import (
+    IEEE_TWOUP_PANEL_H_IN,
+    IEEE_TWOUP_PANEL_W_IN,
+    apply_ieee_latex_style,
+    save_exact_figure,
+)
+from matplotlib.lines import Line2D
 
 
 ROOT = Path(__file__).resolve().parent
@@ -69,8 +73,15 @@ OUTPUT_STEM = "experiment_6_ablation_n_sweep_all_baselines"
 DEFAULT_OUTDIR = ROOT / "plots" / OUTPUT_STEM
 DEFAULT_N_VALUES = ",".join(str(n) for n in range(8, 21))
 
-FIG_W = 270.0 / 72.0
-FIG_H = 185.52 / 72.0
+FIG_W = IEEE_TWOUP_PANEL_W_IN
+FIG_H = IEEE_TWOUP_PANEL_H_IN
+PLOT_LEFT = 0.19
+PLOT_RIGHT = 0.985
+PLOT_BOTTOM = 0.24
+PLOT_TOP = 0.95
+LEGEND_LABELS = {
+    "classical_nnn_fields_parity": "Ising+fields",
+}
 
 
 def _major_n_ticks(n_values: Sequence[int]) -> List[int]:
@@ -128,6 +139,23 @@ def _load_series_csv(series_csv: Path) -> List[Dict[str, object]]:
     if not rows_out:
         raise ValueError(f"No usable rows found in {series_csv}")
     return rows_out
+
+
+def _n_sweep_legend_handles() -> List[Line2D]:
+    handles: List[Line2D] = []
+    for model_key in MODEL_ORDER:
+        style = MODEL_STYLE[model_key]
+        handles.append(
+            Line2D(
+                [0],
+                [0],
+                color=str(style["color"]),
+                lw=float(style["lw"]) * 0.90,
+                ls=style["ls"],
+                label=LEGEND_LABELS.get(str(model_key), str(style["label"])),
+            )
+        )
+    return handles
 
 
 def _load_metrics_csv(metrics_csv: Path) -> List[Dict[str, object]]:
@@ -252,16 +280,24 @@ def _group_series(series_rows: Sequence[Dict[str, object]]) -> Dict[str, Dict[st
 
 
 def _render_pointcloud(metrics_rows: Sequence[Dict[str, object]], out_pdf: Path) -> None:
-    apply_final_style()
+    apply_ieee_latex_style(use_tex=True)
+    import matplotlib.pyplot as plt
+
+    plt.rcParams.update(
+        {
+            "legend.fontsize": 8.2,
+            "lines.linewidth": 1.35,
+        }
+    )
     grouped: Dict[str, Dict[int, List[float]]] = defaultdict(lambda: defaultdict(list))
     all_n = sorted({int(row["n"]) for row in metrics_rows})
     for row in metrics_rows:
         grouped[str(row["model_key"])][int(row["n"])].append(float(row["KL_pstar_to_q"]))
 
     major_xticks = _major_n_ticks(all_n)
-    import matplotlib.pyplot as plt
 
-    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H), constrained_layout=True)
+    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H), constrained_layout=False)
+    fig.subplots_adjust(left=PLOT_LEFT, right=PLOT_RIGHT, bottom=PLOT_BOTTOM, top=PLOT_TOP)
     rng = np.random.default_rng(0)
     ymin = float("inf")
     ymax = float("-inf")
@@ -280,10 +316,11 @@ def _render_pointcloud(metrics_rows: Sequence[Dict[str, object]], out_pdf: Path)
             ax.scatter(
                 np.full(vals.size, float(n)) + jitter,
                 vals,
-                s=16,
+                s=18,
                 color=color,
-                alpha=0.18,
-                edgecolors="none",
+                alpha=0.16,
+                edgecolors="white",
+                linewidths=0.25,
                 zorder=2,
             )
             mean_x.append(float(n))
@@ -302,10 +339,10 @@ def _render_pointcloud(metrics_rows: Sequence[Dict[str, object]], out_pdf: Path)
                 yerr=sd_arr,
                 fmt="none",
                 ecolor=color,
-                elinewidth=1.15,
-                capsize=2.6,
-                capthick=1.15,
-                alpha=0.55,
+                elinewidth=1.0,
+                capsize=2.2,
+                capthick=1.0,
+                alpha=0.52,
                 zorder=3,
             )
             ax.plot(
@@ -313,14 +350,14 @@ def _render_pointcloud(metrics_rows: Sequence[Dict[str, object]], out_pdf: Path)
                 y_arr,
                 color=color,
                 ls=style["ls"],
-                lw=float(style["lw"]) * 0.85,
+                lw=float(style["lw"]) * 0.78,
                 alpha=0.9,
                 zorder=4,
             )
             ax.scatter(
                 x_arr,
                 y_arr,
-                s=28,
+                s=24,
                 color=color,
                 alpha=0.95,
                 edgecolors="white",
@@ -329,12 +366,12 @@ def _render_pointcloud(metrics_rows: Sequence[Dict[str, object]], out_pdf: Path)
             )
 
     ax.set_xlabel(r"$n$")
-    ax.set_ylabel(r"$D_{\mathrm{KL}}(p^* \parallel q)$")
+    ax.set_ylabel(r"$D_{\mathrm{KL}}(p^* \parallel q)$", labelpad=4.0)
     if len(all_n) == 1:
         x0 = float(all_n[0])
         ax.set_xlim(x0 - 0.5, x0 + 0.5)
     else:
-        ax.set_xlim(float(min(all_n)), float(max(all_n)))
+        ax.set_xlim(float(min(all_n)) - 0.25, float(max(all_n)) + 0.25)
     ax.set_xticks(major_xticks)
     ax.set_xticklabels([str(int(tick)) for tick in major_xticks])
     if np.isfinite(ymin) and np.isfinite(ymax):
@@ -343,29 +380,41 @@ def _render_pointcloud(metrics_rows: Sequence[Dict[str, object]], out_pdf: Path)
     ax.grid(True, ls="--", lw=0.5, alpha=0.25)
 
     legend = ax.legend(
-        handles=_legend_handles(),
+        handles=_n_sweep_legend_handles(),
         loc="upper right",
+        alignment="right",
         frameon=True,
-        borderpad=0.25,
-        labelspacing=0.25,
-        handlelength=1.65,
-        handletextpad=0.5,
-        fontsize=LEGEND_FONTSIZE,
+        framealpha=1.0,
+        facecolor="white",
+        edgecolor="#BFBFBF",
+        fontsize=8.0,
+        borderpad=0.18,
+        labelspacing=0.14,
+        handlelength=1.35,
+        handletextpad=0.4,
     )
     legend.set_zorder(100)
-    fig.savefig(out_pdf, format="pdf")
+    save_exact_figure(fig, out_pdf)
+    save_exact_figure(fig, out_pdf.with_suffix(".png"), dpi=300)
     plt.close(fig)
 
 
 def _render_plot(series_rows: Sequence[Dict[str, object]], out_pdf: Path) -> None:
-    apply_final_style()
+    apply_ieee_latex_style(use_tex=True)
+    import matplotlib.pyplot as plt
+
+    plt.rcParams.update(
+        {
+            "legend.fontsize": 8.2,
+            "lines.linewidth": 1.35,
+        }
+    )
     grouped = _group_series(series_rows)
     sample_ns = grouped[MODEL_ORDER[0]]["n_values"]
     major_xticks = _major_n_ticks(sample_ns.tolist())
 
-    import matplotlib.pyplot as plt
-
-    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H), constrained_layout=True)
+    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H), constrained_layout=False)
+    fig.subplots_adjust(left=PLOT_LEFT, right=PLOT_RIGHT, bottom=PLOT_BOTTOM, top=PLOT_TOP)
     ymin = float("inf")
     ymax = float("-inf")
 
@@ -380,17 +429,17 @@ def _render_plot(series_rows: Sequence[Dict[str, object]], out_pdf: Path) -> Non
         if not np.any(mask):
             continue
         ax.fill_between(x[mask], q1[mask], q3[mask], color=str(style["color"]), alpha=BAND_ALPHA, lw=0.0)
-        ax.plot(x[mask], y[mask], color=str(style["color"]), ls=style["ls"], lw=float(style["lw"]))
+        ax.plot(x[mask], y[mask], color=str(style["color"]), ls=style["ls"], lw=float(style["lw"]) * 0.88)
         ymin = min(ymin, float(np.nanmin(q1[mask])))
         ymax = max(ymax, float(np.nanmax(q3[mask])))
 
     ax.set_xlabel(r"$n$")
-    ax.set_ylabel(r"$D_{\mathrm{KL}}(p^* \parallel q)$")
+    ax.set_ylabel(r"$D_{\mathrm{KL}}(p^* \parallel q)$", labelpad=4.0)
     if sample_ns.size == 1:
         x0 = float(sample_ns[0])
         ax.set_xlim(x0 - 0.5, x0 + 0.5)
     else:
-        ax.set_xlim(float(sample_ns.min()), float(sample_ns.max()))
+        ax.set_xlim(float(sample_ns.min()) - 0.25, float(sample_ns.max()) + 0.25)
     ax.set_xticks(major_xticks)
     ax.set_xticklabels([str(int(tick)) for tick in major_xticks])
     if np.isfinite(ymin) and np.isfinite(ymax):
@@ -399,17 +448,22 @@ def _render_plot(series_rows: Sequence[Dict[str, object]], out_pdf: Path) -> Non
     ax.grid(True, ls="--", lw=0.5, alpha=0.25)
 
     legend = ax.legend(
-        handles=_legend_handles(),
+        handles=_n_sweep_legend_handles(),
         loc="upper right",
+        alignment="right",
         frameon=True,
-        borderpad=0.25,
-        labelspacing=0.25,
-        handlelength=1.65,
-        handletextpad=0.5,
-        fontsize=LEGEND_FONTSIZE,
+        framealpha=1.0,
+        facecolor="white",
+        edgecolor="#BFBFBF",
+        fontsize=8.0,
+        borderpad=0.18,
+        labelspacing=0.14,
+        handlelength=1.35,
+        handletextpad=0.4,
     )
     legend.set_zorder(100)
-    fig.savefig(out_pdf, format="pdf")
+    save_exact_figure(fig, out_pdf)
+    save_exact_figure(fig, out_pdf.with_suffix(".png"), dpi=300)
     plt.close(fig)
 
 
@@ -465,7 +519,9 @@ def _write_readme(
         f"- aggregated n-series: `{_try_rel(series_csv)}`",
         f"- saved data cube: `{_try_rel(data_npz)}`",
         f"- final PDF: `{_try_rel(out_pdf)}`",
+        f"- final PNG: `{_try_rel(out_pdf.with_suffix('.png'))}`",
         f"- pointcloud PDF: `{_try_rel(out_pointcloud_pdf)}`",
+        f"- pointcloud PNG: `{_try_rel(out_pointcloud_pdf.with_suffix('.png'))}`",
         "- local protocol doc: `TRAINING_PROTOCOL.md`",
         "",
         f"- source driver: `{SCRIPT_REL}`",
@@ -787,7 +843,9 @@ def run() -> None:
             "data_npz": _try_rel(data_npz),
             "summary_json": _try_rel(summary_json),
             "pdf": _try_rel(out_pdf),
+            "png": _try_rel(out_pdf.with_suffix(".png")),
             "pointcloud_pdf": _try_rel(out_pointcloud_pdf),
+            "pointcloud_png": _try_rel(out_pointcloud_pdf.with_suffix(".png")),
             "plot_center": "median",
             "plot_band": "iqr",
             "secondary_statistics": "mean_std_ci95",
@@ -802,7 +860,9 @@ def run() -> None:
             "series_csv": _try_rel(series_csv),
             "outdir": _try_rel(outdir),
             "pdf": out_pdf.name,
+            "png": out_pdf.with_suffix(".png").name,
             "pointcloud_pdf": out_pointcloud_pdf.name,
+            "pointcloud_png": out_pointcloud_pdf.with_suffix(".png").name,
             "plot_center": "median",
             "plot_band": "iqr",
             "secondary_statistics": "mean_std_ci95",

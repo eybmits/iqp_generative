@@ -3,9 +3,11 @@
   "series_csv": "plots/experiment_6_ablation_n_sweep_all_baselines_n10_20/experiment_6_ablation_n_sweep_all_baselines_series.csv",
   "outdir": "plots/experiment_6_ablation_n_sweep_all_baselines_n10_20",
   "pdf": "experiment_6_ablation_n_sweep_all_baselines.pdf",
+  "png": "experiment_6_ablation_n_sweep_all_baselines.png",
   "pointcloud_pdf": "experiment_6_ablation_n_sweep_all_baselines_pointcloud.pdf",
+  "pointcloud_png": "experiment_6_ablation_n_sweep_all_baselines_pointcloud.png",
   "plot_center": "median",
   "plot_band": "iqr",
   "secondary_statistics": "mean_std_ci95",
-  "rerender_command": "python experiment_6_ablation_n_sweep_all_baselines.py --outdir /Users/superposition/Coding/iqp_generative/plots/experiment_6_ablation_n_sweep_all_baselines_n10_20 --series-csv /Users/superposition/Coding/iqp_generative/plots/experiment_6_ablation_n_sweep_all_baselines_n10_20/experiment_6_ablation_n_sweep_all_baselines_series.csv"
+  "rerender_command": "python experiment_6_ablation_n_sweep_all_baselines.py --outdir /Users/superposition/Coding/iqp_generative/plots/experiment_6_ablation_n_sweep_all_baselines_n10_20 --series-csv plots/experiment_6_ablation_n_sweep_all_baselines_n10_20/experiment_6_ablation_n_sweep_all_baselines_series.csv"
 }

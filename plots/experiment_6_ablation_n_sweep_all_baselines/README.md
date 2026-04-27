@@ -29,7 +29,9 @@ Saved artifacts:
 - aggregated n-series: `plots/experiment_6_ablation_n_sweep_all_baselines/experiment_6_ablation_n_sweep_all_baselines_series.csv`
 - saved data cube: `plots/experiment_6_ablation_n_sweep_all_baselines/experiment_6_ablation_n_sweep_all_baselines_data.npz`
 - final PDF: `plots/experiment_6_ablation_n_sweep_all_baselines/experiment_6_ablation_n_sweep_all_baselines.pdf`
+- final PNG: `plots/experiment_6_ablation_n_sweep_all_baselines/experiment_6_ablation_n_sweep_all_baselines.png`
 - pointcloud PDF: `plots/experiment_6_ablation_n_sweep_all_baselines/experiment_6_ablation_n_sweep_all_baselines_pointcloud.pdf`
+- pointcloud PNG: `plots/experiment_6_ablation_n_sweep_all_baselines/experiment_6_ablation_n_sweep_all_baselines_pointcloud.png`
 - local protocol doc: `TRAINING_PROTOCOL.md`
 
 - source driver: `experiment_6_ablation_n_sweep_all_baselines.py`
