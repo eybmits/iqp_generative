@@ -1,0 +1,28 @@
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4.5pt}
+\caption{
+Full fixed-$\beta$ system-size sweep at $\beta=0.9$.
+Values are median forward KL divergences $D_{\mathrm{KL}}(p^*\Vert q)$ across
+10 matched seeds; lower is better. Bold indicates the best model for each $n$.
+}
+\label{tab:appendix_n_sweep_full}
+\begin{tabular}{rccccc}
+\toprule
+$n$ & IQP-parity & AR Transformer & Ising+fields & Dense Ising+fields & MaxEnt-parity \\
+\midrule
+10 & \textbf{0.338} & 0.720 & 0.981 & 0.970 & 1.707 \\
+11 & \textbf{0.401} & 0.788 & 1.028 & 1.034 & 2.160 \\
+12 & \textbf{0.447} & 0.824 & 1.052 & 1.078 & 2.189 \\
+13 & \textbf{0.529} & 0.929 & 1.087 & 1.153 & 2.297 \\
+14 & \textbf{0.600} & 0.992 & 1.186 & 1.209 & 2.652 \\
+15 & \textbf{0.638} & 0.957 & 1.266 & 1.266 & 2.251 \\
+16 & \textbf{0.811} & 1.078 & 1.332 & 1.381 & 2.641 \\
+17 & \textbf{0.871} & 1.106 & 1.450 & 1.501 & 2.431 \\
+18 & \textbf{0.924} & 1.065 & 1.525 & 1.559 & 2.393 \\
+19 & \textbf{1.110} & 1.165 & 1.707 & 1.686 & 2.628 \\
+20 & \textbf{1.256} & 1.318 & 1.670 & 1.828 & 2.633 \\
+\bottomrule
+\end{tabular}
+\end{table}
