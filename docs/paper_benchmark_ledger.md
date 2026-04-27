@@ -1,29 +1,28 @@
 # Paper Benchmark Ledger
 
-_Auto-generated from `experiments/analysis/paper_benchmark_ledger.py`. Last updated: 2026-03-18T11:39:29Z_
+_Auto-generated from `paper_benchmark_ledger.py`. Last updated: 2026-04-27T17:07:31Z_
 
 This file is the central paper-side benchmark note for the current repository state.
-It combines the static disclosure needed by the manuscript with the live registry of benchmark-standard 20-seed experiment runs.
+It combines the static disclosure needed by the manuscript with the live registry of active benchmark-standard experiment runs.
 
 ## Draft Sync
 
-- Current repository benchmark standard: `20` matched seeds `101..120`.
-- Current matched-instance count for the wide beta sweep: `20 betas x 20 seeds = 400`.
-- Any paper draft that still says `10` seeds or `200` matched instances is out of sync with the current repo standard.
-- Frozen final artifacts under `outputs/final_plots/` remain historical snapshots and are not the benchmark-standard source of truth.
+- Current repository benchmark standard: `10` matched seeds `111..120`.
+- Current matched-instance count for the wide beta sweep: `20 betas x 10 seeds = 200`.
+- Historical 5-seed, 12-seed, and 20-seed snapshots are legacy artifacts and do not override the active final-reporting standard.
+- The source of truth is the script plus each experiment-local `RUN_CONFIG.json` under `plots/`.
 
-## Current 20-Seed Experiment Status
+## Current Active Experiment Status
 
 | Experiment | Paper Target | Status | Artifact |
 | --- | --- | --- | --- |
-| `fig2_fixed_beta_sigmak_kl_20seed` | Fig. 3 / Table III fixed-beta sigma-K KL study | planned | `No dedicated 20-seed analysis driver exists yet.` |
-| `fig3_fixed_beta_kl_bshs_20seed` | Fig. 4 fixed-beta KL-BSHS boxplot at beta = 0.9 | available | `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600` |
-| `fig6_base_multiseed_20seed` | Base beta sweep recovery grid (beta = 0.5..1.2) | missing | `outputs/analysis/fig6_multiseed_all600_seeds101_120` |
-| `fig6_base_q80_summary_20seed` | Base beta-vs-Q80 summary | legacy/out-of-sync | `outputs/analysis/fig6_beta_q80_summary/RUN_CONFIG.json` |
-| `fig6_wide_multiseed_20seed` | Wide beta sweep recovery grid (beta = 0.1..2.0) | missing | `outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds101_120` |
-| `fig6_wide_q80_summary_iqr_20seed` | Wide beta-vs-Q80 summary (median + IQR) | legacy/out-of-sync | `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/RUN_CONFIG.json` |
-| `fig6_wide_q80_summary_iqr_seed_traces_20seed` | Wide beta-vs-Q80 summary with seed traces | legacy/out-of-sync | `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/RUN_CONFIG.json` |
-| `fig6_wide_q80_summary_mean_std_20seed` | Wide beta-vs-Q80 summary (mean +/- std) | legacy/out-of-sync | `outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_mean_std/RUN_CONFIG.json` |
+| `experiment_1_kl_diagnostics` | KL diagnostic panels and fixed-beta comparison | available | `plots/experiment_1_kl_diagnostics` |
+| `experiment_2_beta_kl_summary` | Full beta-sweep KL summary | available | `plots/experiment_2_beta_kl_summary` |
+| `experiment_3_beta_quality_coverage` | Full beta-sweep quality coverage summary | available | `plots/experiment_3_beta_quality_coverage` |
+| `experiment_4_recovery_sigmak_triplet` | Recovery curves over parity/spectral settings | available | `plots/experiment_4_recovery_sigmak_triplet` |
+| `experiment_12_global_best_iqp_vs_mse` | Seedwise IQP-parity vs IQP-MSE global-best comparison | available | `plots/experiment_12_global_best_iqp_vs_mse` |
+| `experiment_15_ibm_hardware_seedwise_best_coverage` | Matched real-hardware validation | available | `plots/experiment_15_ibm_hardware_seedwise_best_coverage` |
+| `aligned_publication_figures` | Composite LaTeX-sized publication figures | available | `plots/aligned_kl_triptych` |
 
 ## Static Benchmark Disclosure
 
@@ -31,11 +30,11 @@ It combines the static disclosure needed by the manuscript with the live registr
 
 - Index: `(beta, s)`
 - Beta values: `0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2`
-- Seed IDs: `101..120 (20 seeds)`
-- Total matched instances in the wide sweep: `400`
+- Seed IDs: `111..120 (10 seeds)`
+- Total matched instances in the wide sweep: `200`
 - Shared train data within instance: `True`
 - Shared parity band within instance: `True`
-- Definition text: A matched instance is indexed by (beta, s), with beta in {0.1, 0.2, ..., 2.0} and s in {1, ..., 20}, yielding 400 matched instances in total.
+- Definition text: A matched instance is indexed by (beta, s), with beta in {0.1, 0.2, ..., 2.0} and s in {111, ..., 120}, yielding 200 matched instances in total.
 
 ### Randomness Stack
 
@@ -75,14 +74,14 @@ Derived seed formulas used in the current analysis drivers:
 | Ising+fields (NN+NNN) | NN+NNN Ising pair products plus local fields | 36 features | solver=first-order gradient descent via PennyLane AdamOptimizer, search_budget=600, regularization=none |
 | Dense Ising+fields | dense Ising pair products plus local fields | 78 features | solver=first-order gradient descent via PennyLane AdamOptimizer, search_budget=600, regularization=none |
 | MaxEnt parity | parity-band sufficient statistics | 512 parameters | solver=first-order gradient descent via torch.optim.Adam, search_budget=600 |
-| AR Transformer | autoregressive MLE on big-endian bit ordering | 67969 parameters | d_model=64, layers=2, heads=4, dropout=0.0, weight_decay=0.0, lr=0.001, epochs=600 |
+| AR Transformer | autoregressive MLE on big-endian bit ordering | 9057 parameters | d_model=32, layers=1, heads=4, dropout=0.0, weight_decay=0.0, lr=0.001, epochs=600 |
 
 ### Transformer Transparency
 
 - The AR Transformer is intentionally over-documented because it is the easiest baseline to challenge as under-tuned.
 - Bit ordering: `most-significant to least-significant bit`
-- d_model: `64`
-- layers: `2`
+- d_model: `32`
+- layers: `1`
 - heads: `4`
 - dropout: `0.0`
 - weight decay: `0.0`
@@ -101,46 +100,16 @@ Derived seed formulas used in the current analysis drivers:
 - `classical_maxent_parity`: `single initialization, no restart sweep`
 - `selection_rule`: `single trained run per matched instance`
 - Paired tests: `paired Wilcoxon signed-rank, Sign test`
-- Paired sample size: `400`
+- Paired sample size: `200`
 - Sweep summaries: `mean ± 95% CI, median + IQR`
 - Capacity note: Capacities are disclosed rather than force-matched; all models share the same n, matched-instance data, and fixed training-budget protocol.
 - Robustness axes: `sample_complexity_m=50, 100, 200, 500, 1000`, `elite_thresholds=top-5%, top-10%, top-20%`, `larger_n_pilots=14, 16, 18`
-- Package contents: `raw per-instance metrics, seed lists, scripts to regenerate Table II and all figures, configs`
+- Package contents: `raw per-instance metrics, seed lists, scripts to regenerate manuscript tables and figures, configs`
 
 ## Latest Registered Benchmark-Standard Runs
 
-### `fig3_fixed_beta_kl_bshs_20seed`
-
-- Title: Fig4 fixed-beta KL-BSHS benchmark at beta = 0.9 (registered from existing artifact)
-- Recorded at: `2026-03-18T11:39:29Z`
-- Run config: `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/RUN_CONFIG.json`
-- Outdir: `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600`
-- Seeds: `101..120 (20 seeds)`
-- Betas: `0.9`
-- Key config:
-  - `K`: `512`
-  - `artr_epochs`: `600`
-  - `beta`: `0.9`
-  - `holdout_k`: `20`
-  - `holdout_m_train`: `5000`
-  - `holdout_mode`: `global`
-  - `holdout_pool`: `400`
-  - `iqp_steps`: `600`
-  - `maxent_steps`: `600`
-  - `n`: `12`
-  - `q_eval`: `1000`
-  - `sigma`: `1`
-  - `train_m`: `200`
-- Outputs:
-  - `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/fig3_kl_bshs_seedmean_scatter_beta_0p90_dual_axis_boxplot.pdf`
-  - `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/fig3_kl_bshs_seedmean_scatter_beta_0p90_dual_axis_boxplot.png`
-- Metrics:
-  - `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/kl_bshs_points_multiseed_beta_q1000_beta0p90_newseeds20.csv`
-  - `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600/kl_bshs_summary_multiseed_beta_q1000_beta0p90_newseeds20.json`
-- Notes:
-  - Backfilled from the already committed 20-seed artifact directory.
-  - This establishes the initial ledger entry before the next fresh rerun.
+No active benchmark-standard runs have been registered yet by the auto-logger.
 
 ## Run History
 
-1. `2026-03-18T11:39:29Z` | `fig3_fixed_beta_kl_bshs_20seed` | `outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600` | seeds `101..120 (20 seeds)`
+No runs recorded yet.

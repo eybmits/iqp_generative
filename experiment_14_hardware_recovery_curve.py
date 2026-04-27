@@ -11,7 +11,7 @@ from typing import Dict, List, Sequence
 
 import numpy as np
 
-from final_plot_style import apply_final_style, save_pdf
+from final_plot_style import apply_final_style, save_exact_figure
 from model_labels import IQP_MSE_LABEL, IQP_PARITY_LABEL
 from training_protocol import write_training_protocol
 
@@ -159,10 +159,10 @@ def _render_plot(
         frameon=True,
         facecolor="white",
         edgecolor="#bfbfbf",
-        fontsize=6.8 if paper else 6.6,
     )
     fig.savefig(out_png, dpi=300, bbox_inches="tight", pad_inches=0.03)
-    save_pdf(fig, out_pdf)
+    save_exact_figure(fig, out_pdf)
+    plt.close(fig)
 
 
 def main() -> None:

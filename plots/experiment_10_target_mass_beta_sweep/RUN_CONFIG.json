@@ -31,9 +31,17 @@
     1.2,
     1.4
   ],
+  "use_tex": true,
+  "recompute": false,
   "pdf": "plots/experiment_10_target_mass_beta_sweep/experiment_10_target_mass_beta_sweep.pdf",
   "png": "plots/experiment_10_target_mass_beta_sweep/experiment_10_target_mass_beta_sweep.png",
-  "publication_pdf": "plots/experiment_10_target_mass_beta_sweep/fig1_target_sharpness_beta_sweep_4x3.pdf",
-  "publication_png": "plots/experiment_10_target_mass_beta_sweep/fig1_target_sharpness_beta_sweep_4x3.png",
+  "publication_pdf": "plots/experiment_10_target_mass_beta_sweep/experiment_10_target_mass_beta_sweep_ieee_singlecol.pdf",
+  "publication_png": "plots/experiment_10_target_mass_beta_sweep/experiment_10_target_mass_beta_sweep_ieee_singlecol.png",
+  "wider_reference_pdf": "plots/experiment_10_target_mass_beta_sweep/experiment_10_target_mass_beta_sweep_wider_reference.pdf",
+  "wider_reference_png": "plots/experiment_10_target_mass_beta_sweep/experiment_10_target_mass_beta_sweep_wider_reference.png",
+  "publication_natural_width_pt": 252.0,
+  "publication_natural_height_pt": 146.097,
+  "wider_reference_natural_width_pt": 280.0,
+  "wider_reference_natural_height_pt": 168.0,
   "csv": "plots/experiment_10_target_mass_beta_sweep/experiment_10_target_mass_beta_sweep.csv"
 }

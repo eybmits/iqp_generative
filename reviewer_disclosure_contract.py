@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 CANONICAL_BETA_VALUES: List[float] = [round(0.1 * i, 1) for i in range(1, 21)]
-CANONICAL_MATCHED_INSTANCE_SEED_IDS: List[int] = list(range(101, 121))
+CANONICAL_MATCHED_INSTANCE_SEED_IDS: List[int] = list(range(111, 121))
 
 
 def reviewer_disclosure_contract() -> Dict[str, Any]:
@@ -20,7 +20,7 @@ def reviewer_disclosure_contract() -> Dict[str, Any]:
             "shared_parity_band_within_instance": True,
             "definition_text": (
                 "A matched instance is indexed by (beta, s), with beta in {0.1, 0.2, ..., 2.0} "
-                "and s in {1, ..., 20}, yielding 400 matched instances in total."
+                "and s in {111, ..., 120}, yielding 200 matched instances in total."
             ),
         },
         "exact_randomness_stack": {
@@ -133,9 +133,10 @@ def reviewer_disclosure_contract() -> Dict[str, Any]:
             },
             "classical_transformer_mle": {
                 "bit_ordering": "most-significant to least-significant bit",
-                "d_model": 64,
-                "layers": 2,
+                "d_model": 32,
+                "layers": 1,
                 "heads": 4,
+                "dim_ff": 64,
                 "dropout": 0.0,
                 "weight_decay": 0.0,
                 "learning_rate": 1e-3,
@@ -150,14 +151,14 @@ def reviewer_disclosure_contract() -> Dict[str, Any]:
             "classical_nnn_fields_parity_parameters_n12": 36,
             "classical_dense_fields_xent_parameters_n12": 78,
             "classical_maxent_parity_parameters_default_K512": 512,
-            "classical_transformer_mle_parameters_n12_default": 67969,
+            "classical_transformer_mle_parameters_n12_default": 9057,
             "note": (
                 "Capacities are disclosed rather than force-matched; all models share the same n, "
                 "matched-instance data, and fixed training-budget protocol."
             ),
         },
         "metric_aggregation": {
-            "protocol": "compute per matched instance first, then aggregate over all 400 matched instances",
+            "protocol": "compute per matched instance first, then aggregate over all 200 matched instances",
             "no_sample_pooling_before_instance_metrics": True,
             "kl_wins_definition": (
                 "KL wins counts matched (beta, seed) instances on which the model achieves the lowest "
@@ -167,7 +168,7 @@ def reviewer_disclosure_contract() -> Dict[str, Any]:
         "statistics_reporting_protocol": {
             "sweep_summaries": ["mean ± 95% CI", "median + IQR"],
             "paired_tests": ["paired Wilcoxon signed-rank", "Sign test"],
-            "paired_test_sample_size": 400,
+            "paired_test_sample_size": 200,
             "report_effect_direction": True,
             "report_p_value": True,
         },
@@ -194,12 +195,12 @@ def reviewer_disclosure_contract() -> Dict[str, Any]:
         "reproducibility_package_contents": [
             "raw per-instance metrics",
             "seed lists",
-            "scripts to regenerate Table II and all figures",
+            "scripts to regenerate manuscript tables and figures",
             "configs",
         ],
         "artifact_specific_seed_note": (
             "Frozen final figures and curated post-freeze analysis reruns preserve artifact-specific seed "
             "lists such as 42..46 and 101..112. These explicit artifact seeds must not be "
-            "conflated with the canonical 20-seed matched-instance benchmark disclosure based on 101..120."
+            "conflated with the active 10-seed matched-instance benchmark disclosure based on 111..120."
         ),
     }

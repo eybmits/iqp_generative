@@ -1,0 +1,31 @@
+{
+  "script": "make_aligned_recovery_fourpanel.py",
+  "output_pdf": "plots/aligned_recovery_fourpanel/fig_recovery_fourpanel_aligned_textwidth.pdf",
+  "output_png": "plots/aligned_recovery_fourpanel/fig_recovery_fourpanel_aligned_textwidth.png",
+  "natural_width_pt": 516.0,
+  "natural_height_pt": 145.0,
+  "intended_latex_include": "\\includegraphics[width=1.0\\textwidth]{...}",
+  "use_tex": true,
+  "source_panel_a_pdf": "plots/experiment_4_recovery_sigmak_triplet_seed118/experiment_4_recovery_best_iqp_vs_best_spectral.pdf",
+  "source_panel_b_pdf": "plots/experiment_4_recovery_sigmak_triplet_seed118/experiment_4_recovery_parity_sigmak_vs_iqp_mse.pdf",
+  "source_panel_c_pdf": "plots/experiment_4_recovery_sigmak_triplet_seed118/experiment_4_recovery_spectral_sigmak_only.pdf",
+  "source_panel_d_pdf": "plots/experiment_16_seedwise_best_hardware_recovery_curve/experiment_16_seedwise_best_hardware_recovery_curve_avg_common_seeds_no_spectral_paper.pdf",
+  "source_exp4_npz": "plots/experiment_4_recovery_sigmak_triplet_seed118/coverage_sigmak_triplet_data.npz",
+  "source_exp4_run_config": "plots/experiment_4_recovery_sigmak_triplet_seed118/RUN_CONFIG.json",
+  "source_exp16_npz": "plots/experiment_16_seedwise_best_hardware_recovery_curve/experiment_16_seedwise_best_hardware_recovery_curve_avg_common_seeds_no_spectral_paper.npz",
+  "exp4_parity_key_used": "sigma=1, K=512",
+  "exp4_spectral_key_used": "sigma=1, K=512",
+  "exp16_selected_seeds": [
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120
+  ],
+  "legend_simplification": "Removed sigma/K parentheticals, enlarged legends, and standardized IQP-parity/IQP-MSE hardware-simulation labels."
+}

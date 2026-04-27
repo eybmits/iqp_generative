@@ -85,6 +85,12 @@ except Exception:
     F = _FStub()  # type: ignore[assignment]
 
 from training_protocol import STANDARD_SEED_IDS_CSV, write_training_protocol
+from final_plot_style import (
+    IEEE_TWOUP_PANEL_H_IN,
+    IEEE_TWOUP_PANEL_W_IN,
+    apply_ieee_latex_style,
+    save_exact_figure,
+)
 
 
 ROOT = Path(__file__).resolve().parent
@@ -114,12 +120,12 @@ MEDIUM_TRANSFORMER = {
 
 FIG_W = 270.0 / 72.0
 FIG_H = 185.52 / 72.0
-POINTCLOUD_FIG_W = 320.0 / 72.0
-POINTCLOUD_FIG_H = FIG_H
-POINTCLOUD_LEFT = 0.17
+POINTCLOUD_FIG_W = IEEE_TWOUP_PANEL_W_IN
+POINTCLOUD_FIG_H = IEEE_TWOUP_PANEL_H_IN
+POINTCLOUD_LEFT = 0.19
 POINTCLOUD_RIGHT = 0.985
-POINTCLOUD_BOTTOM = 0.22
-POINTCLOUD_TOP = 0.93
+POINTCLOUD_BOTTOM = 0.24
+POINTCLOUD_TOP = 0.95
 POINTCLOUD_XPAD_IN_STEPS = 0.35
 PAPER_POINTCLOUD_Q1000_PDF = "fig7_beta_quality_coverage_q1000.pdf"
 
@@ -936,7 +942,7 @@ def _render_plot(series_rows: Sequence[Dict[str, object]], *, budget_q: int, out
 
 
 def _render_pointcloud(metrics_rows: Sequence[Dict[str, object]], *, budget_q: int, out_pdf: Path) -> None:
-    apply_final_style()
+    apply_ieee_latex_style(use_tex=True)
     metric_key = f"quality_coverage_Q{int(budget_q)}"
     grouped: Dict[str, Dict[float, List[float]]] = defaultdict(lambda: defaultdict(list))
     all_betas = sorted({float(row["beta"]) for row in metrics_rows})
@@ -1036,13 +1042,16 @@ def _render_pointcloud(metrics_rows: Sequence[Dict[str, object]], *, budget_q: i
         handles=_legend_handles(),
         loc="upper right",
         frameon=True,
+        framealpha=1.0,
+        facecolor="white",
+        edgecolor="#BFBFBF",
         borderpad=0.25,
         labelspacing=0.25,
         handlelength=1.65,
         handletextpad=0.5,
     )
     legend.set_zorder(100)
-    fig.savefig(out_pdf, format="pdf")
+    save_exact_figure(fig, out_pdf)
     plt.close(fig)
 
 

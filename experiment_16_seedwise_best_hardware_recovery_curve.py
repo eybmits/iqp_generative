@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
 
-from final_plot_style import apply_final_style, save_pdf
+from final_plot_style import apply_final_style, save_exact_figure
 from model_labels import IQP_MSE_LABEL, IQP_PARITY_LABEL
 from training_protocol import write_training_protocol
 
@@ -182,7 +182,6 @@ def _render_plot(
             facecolor="white",
             edgecolor="#bfbfbf",
             framealpha=1.0,
-            fontsize=6.8,
         ).set_zorder(20)
     else:
         ax.legend(
@@ -191,10 +190,10 @@ def _render_plot(
             facecolor="white",
             edgecolor="#bfbfbf",
             framealpha=1.0,
-            fontsize=6.5,
         ).set_zorder(20)
     fig.savefig(out_png, dpi=300, bbox_inches="tight", pad_inches=0.03)
-    save_pdf(fig, out_pdf)
+    save_exact_figure(fig, out_pdf)
+    plt.close(fig)
 
 
 def main() -> None:

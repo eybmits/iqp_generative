@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Central paper-side ledger for benchmark-standard 20-seed experiments."""
+"""Central paper-side ledger for active benchmark-standard experiments."""
 
 from __future__ import annotations
 
@@ -14,68 +14,58 @@ try:
 except ImportError:
     from experiments.analysis.reviewer_disclosure_contract import reviewer_disclosure_contract
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parent
 DOC_PATH = ROOT / "docs" / "paper_benchmark_ledger.md"
 HISTORY_PATH = ROOT / "docs" / "paper_benchmark_run_history.json"
-BENCHMARK_SEEDS = list(range(101, 121))
+BENCHMARK_SEEDS = list(range(111, 121))
 
 EXPERIMENT_SPECS: List[Dict[str, object]] = [
     {
-        "experiment_id": "fig2_fixed_beta_sigmak_kl_20seed",
-        "paper_target": "Fig. 3 / Table III fixed-beta sigma-K KL study",
-        "status_kind": "planned",
-        "artifact_hint": "No dedicated 20-seed analysis driver exists yet.",
-    },
-    {
-        "experiment_id": "fig3_fixed_beta_kl_bshs_20seed",
-        "paper_target": "Fig. 4 fixed-beta KL-BSHS boxplot at beta = 0.9",
+        "experiment_id": "experiment_1_kl_diagnostics",
+        "paper_target": "KL diagnostic panels and fixed-beta comparison",
         "status_kind": "artifact_dir",
-        "artifact_path": "outputs/analysis/fig3_kl_bshs_seedmean_scatter_20seeds_all600",
+        "artifact_path": "plots/experiment_1_kl_diagnostics",
     },
     {
-        "experiment_id": "fig6_base_multiseed_20seed",
-        "paper_target": "Base beta sweep recovery grid (beta = 0.5..1.2)",
+        "experiment_id": "experiment_2_beta_kl_summary",
+        "paper_target": "Full beta-sweep KL summary",
         "status_kind": "artifact_dir",
-        "artifact_path": "outputs/analysis/fig6_multiseed_all600_seeds101_120",
+        "artifact_path": "plots/experiment_2_beta_kl_summary",
     },
     {
-        "experiment_id": "fig6_base_q80_summary_20seed",
-        "paper_target": "Base beta-vs-Q80 summary",
-        "status_kind": "run_config_substring",
-        "run_config_path": "outputs/analysis/fig6_beta_q80_summary/RUN_CONFIG.json",
-        "required_substrings": ["fig6_multiseed_all600_seeds101_120"],
-    },
-    {
-        "experiment_id": "fig6_wide_multiseed_20seed",
-        "paper_target": "Wide beta sweep recovery grid (beta = 0.1..2.0)",
+        "experiment_id": "experiment_3_beta_quality_coverage",
+        "paper_target": "Full beta-sweep quality coverage summary",
         "status_kind": "artifact_dir",
-        "artifact_path": "outputs/analysis/fig6_multiseed_beta0p1_2p0_all600_seeds101_120",
+        "artifact_path": "plots/experiment_3_beta_quality_coverage",
     },
     {
-        "experiment_id": "fig6_wide_q80_summary_iqr_20seed",
-        "paper_target": "Wide beta-vs-Q80 summary (median + IQR)",
-        "status_kind": "run_config_substring",
-        "run_config_path": "outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr/RUN_CONFIG.json",
-        "required_substrings": ["fig6_multiseed_beta0p1_2p0_all600_seeds101_120"],
+        "experiment_id": "experiment_4_recovery_sigmak_triplet",
+        "paper_target": "Recovery curves over parity/spectral settings",
+        "status_kind": "artifact_dir",
+        "artifact_path": "plots/experiment_4_recovery_sigmak_triplet",
     },
     {
-        "experiment_id": "fig6_wide_q80_summary_iqr_seed_traces_20seed",
-        "paper_target": "Wide beta-vs-Q80 summary with seed traces",
-        "status_kind": "run_config_substring",
-        "run_config_path": "outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_iqr_seed_traces/RUN_CONFIG.json",
-        "required_substrings": ["fig6_multiseed_beta0p1_2p0_all600_seeds101_120"],
+        "experiment_id": "experiment_12_global_best_iqp_vs_mse",
+        "paper_target": "Seedwise IQP-parity vs IQP-MSE global-best comparison",
+        "status_kind": "artifact_dir",
+        "artifact_path": "plots/experiment_12_global_best_iqp_vs_mse",
     },
     {
-        "experiment_id": "fig6_wide_q80_summary_mean_std_20seed",
-        "paper_target": "Wide beta-vs-Q80 summary (mean +/- std)",
-        "status_kind": "run_config_substring",
-        "run_config_path": "outputs/analysis/fig6_beta_q80_summary_beta0p1_2p0_mean_std/RUN_CONFIG.json",
-        "required_substrings": ["fig6_multiseed_beta0p1_2p0_all600_seeds101_120"],
+        "experiment_id": "experiment_15_ibm_hardware_seedwise_best_coverage",
+        "paper_target": "Matched real-hardware validation",
+        "status_kind": "artifact_dir",
+        "artifact_path": "plots/experiment_15_ibm_hardware_seedwise_best_coverage",
+    },
+    {
+        "experiment_id": "aligned_publication_figures",
+        "paper_target": "Composite LaTeX-sized publication figures",
+        "status_kind": "artifact_dir",
+        "artifact_path": "plots/aligned_kl_triptych",
     },
 ]
 
 
-def is_benchmark_20seed_run(seed_values: Sequence[int]) -> bool:
+def is_benchmark_run(seed_values: Sequence[int]) -> bool:
     return [int(x) for x in seed_values] == BENCHMARK_SEEDS
 
 
@@ -106,7 +96,7 @@ def _load_history() -> Dict[str, object]:
         return _load_json(HISTORY_PATH)
     return {
         "schema_version": 1,
-        "generated_from": "experiments/analysis/paper_benchmark_ledger.py",
+        "generated_from": "paper_benchmark_ledger.py",
         "runs": [],
     }
 
@@ -144,7 +134,7 @@ def _seed_label(seed_values: Sequence[int]) -> str:
     if not vals:
         return "n/a"
     if vals == BENCHMARK_SEEDS:
-        return "101..120 (20 seeds)"
+        return "111..120 (10 seeds)"
     return ", ".join(str(x) for x in vals)
 
 
@@ -230,7 +220,7 @@ def record_benchmark_run(
 ) -> None:
     run_config = _load_json(run_config_path)
     seed_values = _extract_seed_values(run_config)
-    if not is_benchmark_20seed_run(seed_values):
+    if not is_benchmark_run(seed_values):
         refresh_paper_benchmark_ledger()
         return
 
@@ -313,19 +303,19 @@ def _write_markdown_ledger(history: Dict[str, object]) -> None:
     lines: List[str] = [
         "# Paper Benchmark Ledger",
         "",
-        f"_Auto-generated from `experiments/analysis/paper_benchmark_ledger.py`. Last updated: {history.get('last_updated_utc', 'n/a')}_",
+        f"_Auto-generated from `paper_benchmark_ledger.py`. Last updated: {history.get('last_updated_utc', 'n/a')}_",
         "",
         "This file is the central paper-side benchmark note for the current repository state.",
-        "It combines the static disclosure needed by the manuscript with the live registry of benchmark-standard 20-seed experiment runs.",
+        "It combines the static disclosure needed by the manuscript with the live registry of active benchmark-standard experiment runs.",
         "",
         "## Draft Sync",
         "",
-        "- Current repository benchmark standard: `20` matched seeds `101..120`.",
-        "- Current matched-instance count for the wide beta sweep: `20 betas x 20 seeds = 400`.",
-        "- Any paper draft that still says `10` seeds or `200` matched instances is out of sync with the current repo standard.",
-        "- Frozen final artifacts under `outputs/final_plots/` remain historical snapshots and are not the benchmark-standard source of truth.",
+        "- Current repository benchmark standard: `10` matched seeds `111..120`.",
+        "- Current matched-instance count for the wide beta sweep: `20 betas x 10 seeds = 200`.",
+        "- Historical 5-seed, 12-seed, and 20-seed snapshots are legacy artifacts and do not override the active final-reporting standard.",
+        "- The source of truth is the script plus each experiment-local `RUN_CONFIG.json` under `plots/`.",
         "",
-        "## Current 20-Seed Experiment Status",
+        "## Current Active Experiment Status",
         "",
         "| Experiment | Paper Target | Status | Artifact |",
         "| --- | --- | --- | --- |",
@@ -484,7 +474,8 @@ def _write_markdown_ledger(history: Dict[str, object]) -> None:
     )
 
     if not latest_runs:
-        lines.append("No benchmark-standard 20-seed runs have been registered yet by the auto-logger.")
+        lines.append("No active benchmark-standard runs have been registered yet by the auto-logger.")
+        lines.append("")
     else:
         for experiment_id in sorted(latest_runs):
             entry = latest_runs[experiment_id]

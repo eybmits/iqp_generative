@@ -6,6 +6,7 @@
   "seed": 45,
   "metric": "recovery",
   "comparison_spectral_key": "sigma=1, K=512",
+  "parity_key_mode": "reference",
   "best_parity_key": "sigma=1, K=512",
   "best_spectral_key": "sigma=1, K=512",
   "best_spectral_selection_metric": "max_recovery_at_Q",

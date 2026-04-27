@@ -38,14 +38,20 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib import colors  # noqa: E402
 from matplotlib.patches import Rectangle  # noqa: E402
 
+from final_plot_style import (
+    IEEE_THREEUP_PANEL_H_IN,
+    IEEE_THREEUP_PANEL_W_IN,
+    apply_ieee_latex_style,
+    save_exact_figure,
+)
 from model_labels import IQP_MSE_LABEL, IQP_PARITY_LABEL
 
 
 ROOT = Path(__file__).resolve().parent
 SCRIPT_REL = "experiment_1_kl_diagnostics.py"
 
-FIG_W = 243.12 / 72.0
-FIG_H = 185.52 / 72.0
+FIG_W = IEEE_THREEUP_PANEL_W_IN
+FIG_H = IEEE_THREEUP_PANEL_H_IN
 HEATMAP_FIGSIZE = (FIG_W, FIG_H)
 HEATMAP_SQUARE_CELLS_FIGSIZE = (FIG_W, FIG_H * 1.55)
 BAR_FIGSIZE = (FIG_W, FIG_H)
@@ -80,8 +86,6 @@ CMAP_RANK = colors.LinearSegmentedColormap.from_list(
 SIGMA_VALUES = [0.5, 1.0, 2.0, 3.0]
 K_VALUES = [128, 256, 512]
 CI95_T_DF9 = 2.2621571628540993
-PANEL_C_BEST_PARITY_MEAN = 0.402
-PANEL_C_BEST_PARITY_CI95 = 0.021
 PANEL_C_INCLUDE_UNIFORM = False
 PANEL_A_STYLE = {
     "aspect": "auto",
@@ -112,8 +116,7 @@ PANEL_C_STYLE = {
     "major_xtick_step": 0.2,
     "minor_xtick_step": 0.1,
     "include_uniform": PANEL_C_INCLUDE_UNIFORM,
-    "display_best_parity_mean": PANEL_C_BEST_PARITY_MEAN,
-    "display_best_parity_ci95": PANEL_C_BEST_PARITY_CI95,
+    "selection_rule": "fixed_global_best_over_panel_c_seeds_by_mean",
 }
 
 
@@ -127,26 +130,12 @@ def _approved_style_metadata() -> dict:
 
 
 def apply_style() -> None:
+    apply_ieee_latex_style(use_tex=True)
     plt.rcParams.update(
         {
-            "font.size": 12,
-            "axes.labelsize": 12,
-            "xtick.labelsize": 10,
-            "ytick.labelsize": 10,
-            "legend.fontsize": 7.2,
-            "lines.linewidth": 2.0,
-            "lines.markersize": 6,
-            "axes.linewidth": 1.2,
-            "xtick.major.width": 1.0,
-            "ytick.major.width": 1.0,
-            "xtick.major.size": 4,
-            "ytick.major.size": 4,
-            "legend.framealpha": 0.9,
             "legend.edgecolor": COLOR_SUBTEXT,
-            "pdf.fonttype": 42,
-            "ps.fonttype": 42,
-            "savefig.bbox": None,
-            "savefig.pad_inches": 0.03,
+            "grid.color": "#E2DFDB",
+            "grid.alpha": 0.65,
         }
     )
 
@@ -163,7 +152,7 @@ def _luminance(rgba: tuple[float, float, float, float]) -> float:
 
 
 def _save_fig(fig: plt.Figure, path: Path) -> None:
-    fig.savefig(path, format="pdf")
+    save_exact_figure(fig, path)
     fig.savefig(path.with_suffix(".png"), format="png")
     plt.close(fig)
 
@@ -179,6 +168,31 @@ def _ci95_halfwidth(vals: np.ndarray) -> float:
     sem = float(np.std(arr, ddof=1) / math.sqrt(arr.size))
     tcrit = CI95_T_DF9 if arr.size == 10 else 1.96
     return tcrit * sem
+
+
+def _panel_c_indices(data: dict) -> np.ndarray:
+    all_seeds = np.asarray(data["all_seeds"], dtype=np.int64)
+    panel_c_seeds = np.asarray(data["panel_c_seeds"], dtype=np.int64)
+    all_seed_to_idx = {int(seed): idx for idx, seed in enumerate(all_seeds.tolist())}
+    return np.asarray([all_seed_to_idx[int(seed)] for seed in panel_c_seeds.tolist()], dtype=np.int64)
+
+
+def _panel_c_global_best_summary(data: dict) -> dict:
+    panel_c_idx = _panel_c_indices(data)
+    sigma_values = np.asarray(data["sigma_values"], dtype=np.float64)
+    k_values = np.asarray(data["k_values"], dtype=np.int64)
+    kl_grids = np.asarray(data["kl_grid_by_seed"], dtype=np.float64)[panel_c_idx]
+    mean_grid = np.mean(kl_grids, axis=0)
+    best_flat_idx = int(np.argmin(mean_grid))
+    best_i, best_j = np.unravel_index(best_flat_idx, mean_grid.shape)
+    best_vals = np.asarray(kl_grids[:, best_i, best_j], dtype=np.float64)
+    return {
+        "best_sigma": float(sigma_values[best_i]),
+        "best_k": int(k_values[best_j]),
+        "best_vals": best_vals,
+        "best_mean": float(np.mean(best_vals)),
+        "best_ci95": float(_ci95_halfwidth(best_vals)),
+    }
 
 
 def int2bits(k: int, n: int) -> np.ndarray:
@@ -586,7 +600,7 @@ def render_heatmap_panel_legacy_consistent(
                 f"{kl_val:.3f}",
                 ha="center",
                 va="center",
-                fontsize=9.5,
+                fontsize=10.1,
                 color=text_color,
                 fontweight="bold" if (i == best_i and j == best_j) else "normal",
             )
@@ -615,13 +629,14 @@ def render_benchmark_panel(
     mse_ci: float,
     uniform_kl: float,
     include_uniform: bool,
+    best_sublabel: str = "",
 ) -> Path:
     apply_style()
     fig, ax = plt.subplots(figsize=LOLLIPOP_FIGSIZE, constrained_layout=True)
 
     benchmark_entries = [
         ("Target p*", COLOR_TEXT, 0.0, 0.0, ""),
-        (f"Best {IQP_PARITY_LABEL}", "#ea8a7d", float(best_mean), float(best_ci), r"best over $\sigma,K$ per seed"),
+        (f"Best {IQP_PARITY_LABEL}", "#ea8a7d", float(best_mean), float(best_ci), str(best_sublabel)),
         (IQP_MSE_LABEL, "#86afe8", float(mse_mean), float(mse_ci), ""),
     ]
     if include_uniform:
@@ -677,7 +692,7 @@ def render_benchmark_panel(
             y_pos + 0.02,
             label,
             transform=ytrans,
-            fontsize=9.8,
+            fontsize=10.4,
             fontweight="normal",
             va="center",
             ha="right",
@@ -688,7 +703,7 @@ def render_benchmark_panel(
             display_kl + ci_val + value_pad,
             y_pos,
             f"KL {kl_val:.3f}" if ci_val <= 0.0 else f"KL {kl_val:.3f} ± {ci_val:.3f}",
-            fontsize=6.9,
+            fontsize=7.6,
             fontweight="normal",
             va="center",
             ha="left",
@@ -701,7 +716,7 @@ def render_benchmark_panel(
                 y_pos - 0.34,
                 sublabel,
                 transform=ytrans,
-                fontsize=5.5,
+                fontsize=6.1,
                 va="top",
                 ha="right",
                 fontstyle="italic",
@@ -859,8 +874,9 @@ def save_experiment_data(outdir: Path, data: dict, *, n: int, train_m: int, laye
         writer.writeheader()
         writer.writerows(list(data["points_rows"]))
 
-    panel_c_best_mean = PANEL_C_BEST_PARITY_MEAN
-    panel_c_best_ci95 = PANEL_C_BEST_PARITY_CI95
+    panel_c_summary = _panel_c_global_best_summary(data)
+    panel_c_best_mean = float(panel_c_summary["best_mean"])
+    panel_c_best_ci95 = float(panel_c_summary["best_ci95"])
     panel_c_mse_mean = float(np.mean(np.asarray(data["panel_c_mse_vals"], dtype=np.float64)))
     panel_c_mse_ci95 = float(_ci95_halfwidth(np.asarray(data["panel_c_mse_vals"], dtype=np.float64)))
     style_metadata = _approved_style_metadata()
@@ -870,7 +886,7 @@ def save_experiment_data(outdir: Path, data: dict, *, n: int, train_m: int, laye
             {
                 "script": SCRIPT_REL,
                 "outdir": str(outdir.relative_to(ROOT)),
-                "protocol": "panel_ab_fixed_seed__panel_c_seedwise_best_over_grid",
+                "protocol": "panel_ab_fixed_seed__panel_c_global_best_over_grid_by_mean",
                 "beta": float(data["beta"]),
                 "panel_ab_seed": int(np.asarray(data["panel_ab_seed"])[0]),
                 "panel_c_seeds": np.asarray(data["panel_c_seeds"], dtype=np.int64).tolist(),
@@ -883,15 +899,13 @@ def save_experiment_data(outdir: Path, data: dict, *, n: int, train_m: int, laye
                 "k_values": np.asarray(data["k_values"], dtype=np.int64).tolist(),
                 "panel_ab_best_sigma": float(np.asarray(data["panel_ab_best_sigma"])[0]),
                 "panel_ab_best_k": int(np.asarray(data["panel_ab_best_k"])[0]),
-                "panel_c_seedwise_best_sigma": np.asarray(data["panel_c_seedwise_best_sigma"], dtype=np.float64).tolist(),
-                "panel_c_seedwise_best_k": np.asarray(data["panel_c_seedwise_best_k"], dtype=np.int64).tolist(),
+                "panel_c_global_best_sigma": float(panel_c_summary["best_sigma"]),
+                "panel_c_global_best_k": int(panel_c_summary["best_k"]),
                 "panel_c_best_parity_mean": panel_c_best_mean,
                 "panel_c_best_parity_ci95": panel_c_best_ci95,
                 "panel_c_iqp_mse_mean": panel_c_mse_mean,
                 "panel_c_iqp_mse_ci95": panel_c_mse_ci95,
                 "uniform_kl": float(np.asarray(data["uniform_kl"])[0]),
-                "panel_c_display_best_parity_mean": PANEL_C_BEST_PARITY_MEAN,
-                "panel_c_display_best_parity_ci95": PANEL_C_BEST_PARITY_CI95,
                 "panel_c_include_uniform": PANEL_C_INCLUDE_UNIFORM,
                 **style_metadata,
             },
@@ -935,12 +949,21 @@ def load_experiment_data(npz_path: Path) -> dict:
 
 
 def render_all_panels(*, outdir: Path, data: dict) -> None:
-    panel_c_best_mean = PANEL_C_BEST_PARITY_MEAN
-    panel_c_best_ci95 = PANEL_C_BEST_PARITY_CI95
+    panel_c_summary = _panel_c_global_best_summary(data)
+    panel_c_best_mean = float(panel_c_summary["best_mean"])
+    panel_c_best_ci95 = float(panel_c_summary["best_ci95"])
     panel_c_mse_mean = float(np.mean(np.asarray(data["panel_c_mse_vals"], dtype=np.float64)))
     panel_c_mse_ci95 = float(_ci95_halfwidth(np.asarray(data["panel_c_mse_vals"], dtype=np.float64)))
 
     render_heatmap_panel(
+        outdir=outdir,
+        sigma_values=[float(x) for x in np.asarray(data["sigma_values"], dtype=np.float64).tolist()],
+        k_values=[int(x) for x in np.asarray(data["k_values"], dtype=np.int64).tolist()],
+        panel_ab_grid=np.asarray(data["panel_ab_grid"], dtype=np.float64),
+        panel_ab_best_sigma=float(np.asarray(data["panel_ab_best_sigma"])[0]),
+        panel_ab_best_k=int(np.asarray(data["panel_ab_best_k"])[0]),
+    )
+    render_heatmap_panel_legacy_consistent(
         outdir=outdir,
         sigma_values=[float(x) for x in np.asarray(data["sigma_values"], dtype=np.float64).tolist()],
         k_values=[int(x) for x in np.asarray(data["k_values"], dtype=np.int64).tolist()],
@@ -962,6 +985,7 @@ def render_all_panels(*, outdir: Path, data: dict) -> None:
         mse_ci=panel_c_mse_ci95,
         uniform_kl=float(np.asarray(data["uniform_kl"])[0]),
         include_uniform=PANEL_C_INCLUDE_UNIFORM,
+        best_sublabel=rf"fixed global-best $(\sigma,K)=({panel_c_summary['best_sigma']:g},{int(panel_c_summary['best_k'])})$",
     )
 
 

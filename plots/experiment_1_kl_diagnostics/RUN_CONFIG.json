@@ -1,7 +1,7 @@
 {
-  "script": "final_plots/experiment_1_kl_diagnostics.py",
-  "outdir": "outputs/final_plots/experiment_1_kl_diagnostics",
-  "protocol": "panel_ab_fixed_seed__panel_c_seedwise_best_over_grid",
+  "script": "experiment_1_kl_diagnostics.py",
+  "outdir": "plots/experiment_1_kl_diagnostics",
+  "protocol": "panel_ab_fixed_seed__panel_c_global_best_over_grid_by_mean",
   "beta": 0.9,
   "panel_ab_seed": 42,
   "panel_c_seeds": [
@@ -34,37 +34,13 @@
   ],
   "panel_ab_best_sigma": 2.0,
   "panel_ab_best_k": 512,
-  "panel_c_seedwise_best_sigma": [
-    2.0,
-    0.5,
-    2.0,
-    3.0,
-    1.0,
-    3.0,
-    2.0,
-    3.0,
-    2.0,
-    2.0
-  ],
-  "panel_c_seedwise_best_k": [
-    512,
-    512,
-    128,
-    512,
-    512,
-    512,
-    512,
-    512,
-    256,
-    256
-  ],
-  "panel_c_best_parity_mean": 0.41481865650130023,
-  "panel_c_best_parity_ci95": 0.039897987256545406,
+  "panel_c_global_best_sigma": 3.0,
+  "panel_c_global_best_k": 512,
+  "panel_c_best_parity_mean": 0.4682919781980625,
+  "panel_c_best_parity_ci95": 0.05494840640304531,
   "panel_c_iqp_mse_mean": 0.49207221387947353,
   "panel_c_iqp_mse_ci95": 0.057699413954040005,
   "uniform_kl": 2.679935218924573,
-  "panel_c_display_best_parity_mean": 0.402,
-  "panel_c_display_best_parity_ci95": 0.021,
   "panel_c_include_uniform": false,
   "style_standard": "experiment_1_locked_visual_standard_2026-03-23",
   "panel_a_style": {
@@ -96,7 +72,6 @@
     "major_xtick_step": 0.2,
     "minor_xtick_step": 0.1,
     "include_uniform": false,
-    "display_best_parity_mean": 0.402,
-    "display_best_parity_ci95": 0.021
+    "selection_rule": "fixed_global_best_over_panel_c_seeds_by_mean"
   }
 }

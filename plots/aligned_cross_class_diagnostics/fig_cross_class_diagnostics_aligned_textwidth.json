@@ -1,0 +1,11 @@
+{
+  "script": "make_aligned_cross_class_diagnostics.py",
+  "output_pdf": "plots/aligned_cross_class_diagnostics/fig_cross_class_diagnostics_aligned_textwidth.pdf",
+  "output_png": "plots/aligned_cross_class_diagnostics/fig_cross_class_diagnostics_aligned_textwidth.png",
+  "documents_copy": "/Users/superposition/Documents/fig_cross_class_diagnostics_aligned_textwidth.pdf",
+  "single_kl_pdf": "plots/aligned_cross_class_diagnostics/experiment_2_beta_kl_summary_pointcloud_legend_only.pdf",
+  "single_coverage_pdf": "plots/aligned_cross_class_diagnostics/experiment_3_beta_quality_coverage_q1000_pointcloud_legend_only.pdf",
+  "source_kl_pointcloud_pdf": "plots/experiment_2_beta_kl_summary/experiment_2_beta_kl_summary_pointcloud.pdf",
+  "source_coverage_pointcloud_pdf": "plots/experiment_3_beta_quality_coverage/experiment_3_beta_quality_coverage_q1000_pointcloud.pdf",
+  "legend_only_changes": "Marker-only legend handles, shortened Ising+fields label, compact right-aligned legend."
+}

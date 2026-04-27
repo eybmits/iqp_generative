@@ -24,6 +24,12 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.ticker import FuncFormatter, MaxNLocator  # noqa: E402
 
+from final_plot_style import (
+    IEEE_COMPACT_PANEL_H_IN,
+    IEEE_COMPACT_PANEL_W_IN,
+    apply_ieee_latex_style,
+    save_exact_figure,
+)
 from model_labels import IQP_MSE_LABEL, IQP_PARITY_LABEL
 
 from experiment_1_kl_diagnostics import (  # noqa: E402
@@ -62,8 +68,8 @@ DEFAULT_KS = (128, 256, 512)
 DEFAULT_BEST_BUDGET = 1000
 DEFAULT_PARITY_REFERENCE_KEY = "sigma=1, K=512"
 
-FIG_W = 243.12 / 72.0
-FIG_H = 185.52 / 72.0
+FIG_W = IEEE_COMPACT_PANEL_W_IN
+FIG_H = IEEE_COMPACT_PANEL_H_IN
 
 TARGET_COLOR = "#2F2A2B"
 UNIFORM_COLOR = "#C6C9CF"
@@ -73,28 +79,7 @@ SPECTRAL_BEST_COLOR = "#666666"
 
 
 def apply_final_style() -> None:
-    plt.rcParams.update(
-        {
-            "font.size": 12,
-            "axes.labelsize": 12,
-            "xtick.labelsize": 10,
-            "ytick.labelsize": 10,
-            "legend.fontsize": 7.2,
-            "lines.linewidth": 2.0,
-            "lines.markersize": 6,
-            "axes.linewidth": 1.2,
-            "xtick.major.width": 1.0,
-            "ytick.major.width": 1.0,
-            "xtick.major.size": 4,
-            "ytick.major.size": 4,
-            "legend.framealpha": 0.9,
-            "legend.edgecolor": "gray",
-            "pdf.fonttype": 42,
-            "ps.fonttype": 42,
-            "savefig.bbox": None,
-            "savefig.pad_inches": 0.03,
-        }
-    )
+    apply_ieee_latex_style(use_tex=True)
 
 
 def _try_rel(path: Path) -> str:
@@ -256,7 +241,7 @@ def _style_ax(ax: plt.Axes, Q: np.ndarray, ylabel: str = r"$R(Q)$") -> None:
 
 
 def _save_pdf(fig: plt.Figure, path: Path) -> None:
-    fig.savefig(path, bbox_inches="tight", pad_inches=0.03)
+    save_exact_figure(fig, path)
     plt.close(fig)
 
 
@@ -470,7 +455,6 @@ def render_triplet(
         frameon=True,
         facecolor="white",
         edgecolor="#bfbfbf",
-        fontsize=6.8,
     )
     path1 = outdir / "experiment_4_recovery_best_iqp_vs_best_spectral.pdf"
     _save_pdf(fig1, path1)
@@ -490,7 +474,7 @@ def render_triplet(
         handles=[
             Line2D([0], [0], color=TARGET_COLOR, lw=2.1, label=r"Target $p^*$"),
             Line2D([0], [0], color=PARITY_BEST_COLOR, lw=2.8, label=f"{IQP_PARITY_LABEL} ({best_parity_key})"),
-            Line2D([0], [0], color=red_shades[-1], lw=1.4, label=f"{IQP_PARITY_LABEL} (other σ,K)"),
+            Line2D([0], [0], color=red_shades[-1], lw=1.4, label=rf"{IQP_PARITY_LABEL} (other $(\sigma,K)$)"),
             Line2D([0], [0], color=PARITY_MSE_COLOR, lw=2.0, label=IQP_MSE_LABEL),
             Line2D([0], [0], color=UNIFORM_COLOR, lw=1.7, ls=":", label="Uniform"),
         ],
@@ -498,7 +482,6 @@ def render_triplet(
         frameon=True,
         facecolor="white",
         edgecolor="#bfbfbf",
-        fontsize=6.8,
     )
     path2 = outdir / "experiment_4_recovery_parity_sigmak_vs_iqp_mse.pdf"
     _save_pdf(fig2, path2)
@@ -531,7 +514,6 @@ def render_triplet(
         frameon=True,
         facecolor="white",
         edgecolor="#bfbfbf",
-        fontsize=6.8,
     )
     path3 = outdir / "experiment_4_recovery_spectral_sigmak_only.pdf"
     _save_pdf(fig3, path3)

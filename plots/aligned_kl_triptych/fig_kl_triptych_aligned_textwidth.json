@@ -1,0 +1,18 @@
+{
+  "script": "make_aligned_kl_triptych.py",
+  "output_pdf": "plots/aligned_kl_triptych/fig_kl_triptych_aligned_textwidth.pdf",
+  "output_png": "plots/aligned_kl_triptych/fig_kl_triptych_aligned_textwidth.png",
+  "natural_width_pt": 516.0,
+  "natural_height_pt": 150.0,
+  "intended_latex_include": "\\includegraphics[width=1.0\\textwidth]{...}",
+  "source_score_csv": "plots/experiment_8_fixed_beta_bucket_fit_iqp_vs_mse/experiment_8_fixed_beta_bucket_fit_iqp_vs_mse_bucket_masses.csv",
+  "source_exp1_npz": "plots/experiment_1_kl_diagnostics/experiment_1_data.npz",
+  "panel_c_values": {
+    "best_iqp_parity_mean": 0.402,
+    "best_iqp_parity_ci": 0.021,
+    "iqp_mse_mean": 0.492,
+    "iqp_mse_ci": 0.058,
+    "source_panel": "plots/experiment_1_kl_diagnostics/fig2_kl_summary_panels_benchmark_only.pdf"
+  },
+  "use_tex": true
+}

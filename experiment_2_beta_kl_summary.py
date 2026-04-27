@@ -84,6 +84,12 @@ except Exception:
     F = _FStub()  # type: ignore[assignment]
 
 from training_protocol import STANDARD_SEED_IDS_CSV, write_training_protocol
+from final_plot_style import (
+    IEEE_TWOUP_PANEL_H_IN,
+    IEEE_TWOUP_PANEL_W_IN,
+    apply_ieee_latex_style,
+    save_exact_figure,
+)
 
 
 ROOT = Path(__file__).resolve().parent
@@ -111,12 +117,12 @@ MEDIUM_TRANSFORMER = {
 
 FIG_W = 270.0 / 72.0
 FIG_H = 185.52 / 72.0
-POINTCLOUD_FIG_W = 320.0 / 72.0
-POINTCLOUD_FIG_H = FIG_H
-POINTCLOUD_LEFT = 0.17
+POINTCLOUD_FIG_W = IEEE_TWOUP_PANEL_W_IN
+POINTCLOUD_FIG_H = IEEE_TWOUP_PANEL_H_IN
+POINTCLOUD_LEFT = 0.19
 POINTCLOUD_RIGHT = 0.985
-POINTCLOUD_BOTTOM = 0.22
-POINTCLOUD_TOP = 0.93
+POINTCLOUD_BOTTOM = 0.24
+POINTCLOUD_TOP = 0.95
 POINTCLOUD_XPAD_IN_STEPS = 0.35
 PAPER_POINTCLOUD_PDF = "fig6_beta_kl_summary.pdf"
 
@@ -908,7 +914,7 @@ def _render_pointcloud(
     ymin_override: float | None = None,
     ymax_override: float | None = None,
 ) -> None:
-    apply_final_style()
+    apply_ieee_latex_style(use_tex=True)
     grouped: Dict[str, Dict[float, List[float]]] = defaultdict(lambda: defaultdict(list))
     all_betas = sorted({float(row["beta"]) for row in metrics_rows})
     for row in metrics_rows:
@@ -962,9 +968,9 @@ def _render_pointcloud(
                 yerr=sd_arr,
                 fmt="none",
                 ecolor=color,
-                elinewidth=1.15,
-                capsize=2.6,
-                capthick=1.15,
+                elinewidth=1.0,
+                capsize=2.2,
+                capthick=1.0,
                 alpha=0.55,
                 zorder=3,
             )
@@ -973,14 +979,14 @@ def _render_pointcloud(
                 y_arr,
                 color=color,
                 ls=style["ls"],
-                lw=float(style["lw"]) * 0.85,
+                lw=float(style["lw"]) * 0.74,
                 alpha=0.9,
                 zorder=4,
             )
             ax.scatter(
                 x_arr,
                 y_arr,
-                s=28,
+                s=24,
                 color=color,
                 alpha=0.95,
                 edgecolors="white",
@@ -1010,14 +1016,19 @@ def _render_pointcloud(
     legend = ax.legend(
         handles=_legend_handles(),
         loc="upper right",
+        alignment="right",
         frameon=True,
-        borderpad=0.25,
-        labelspacing=0.25,
-        handlelength=1.65,
-        handletextpad=0.5,
+        framealpha=1.0,
+        facecolor="white",
+        edgecolor="#BFBFBF",
+        fontsize=8.2,
+        borderpad=0.18,
+        labelspacing=0.18,
+        handlelength=1.35,
+        handletextpad=0.4,
     )
     legend.set_zorder(100)
-    fig.savefig(out_pdf, format="pdf")
+    save_exact_figure(fig, out_pdf)
     plt.close(fig)
 
 
