@@ -32,6 +32,7 @@ Saved artifacts:
 - final PNG: `plots/experiment_6_ablation_n_sweep_all_baselines_n10_20/experiment_6_ablation_n_sweep_all_baselines.png`
 - pointcloud PDF: `plots/experiment_6_ablation_n_sweep_all_baselines_n10_20/experiment_6_ablation_n_sweep_all_baselines_pointcloud.pdf`
 - pointcloud PNG: `plots/experiment_6_ablation_n_sweep_all_baselines_n10_20/experiment_6_ablation_n_sweep_all_baselines_pointcloud.png`
+- compact LaTeX table: `plots/experiment_6_ablation_n_sweep_all_baselines_n10_20/experiment_6_ablation_n_sweep_all_baselines_compact_table.tex`
 - local protocol doc: `TRAINING_PROTOCOL.md`
 
 - source driver: `experiment_6_ablation_n_sweep_all_baselines.py`
